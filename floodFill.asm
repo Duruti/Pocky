@@ -98,6 +98,7 @@ setColor:
    add l
    ld l,a
    ld a,(couleurRemplissage)
+   ld (currentSprite),a
    ld (hl),a
 
    call changeColors

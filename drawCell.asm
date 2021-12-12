@@ -1,5 +1,5 @@
 drawcells:
-DEFB #ED,#FF
+;DEFB #ED,#FF
 
 ld de,lines
 
@@ -97,6 +97,6 @@ drawLine2:
    dec b
    jp nz,drawLine2
 
-DEFB #ED,#FF
+;DEFB #ED,#FF
 
 ret

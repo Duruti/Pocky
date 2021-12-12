@@ -96,7 +96,7 @@ addLevel:
    ; Change la taille de la grille max 13 et mini 4
    ld a,(nbRows)
    inc a
-   cp 14
+   cp 13
    jr z,initAddLevel
    ld (nbRows),a
    ld (nbLines),a
