@@ -1,6 +1,7 @@
 ; affiche un sprite 4 octets * 16 lignes
 ; calcule la ligne de départ
-; numero ligne + 15 on commence par la fin
+
+
 
 
 ld hl,Palette
@@ -8,7 +9,7 @@ call loadPalette
 
 xor A
 ld (posx),a
-ld b,6
+ld b,10
 ld hl, dataSprite 
 bcl: 
    push bc
@@ -68,6 +69,20 @@ drawSprite:
    ldi:ldi:ldi:ldi : ld a,d : add 8 : ld d,A : ld a,(saveAdrX) : ld e,a
    ldi:ldi:ldi:ldi 
 
+   ld hl,mkey
+   ld de,&c000
+   call drawMask
+   ld hl,key
+   ld de,&c000
+   call drawSpriteOr
+
+   ld hl,mpadlock
+   ld de,&c004
+   call drawMask
+   ld hl,padlock
+   ld de,&c004
+   call drawSpriteOr
+
    ret
 
 
@@ -104,14 +119,16 @@ saveAdrX : db 0
 AdrCurrentLine : dw 0
 
 dataSprite: 
-INCbin	"spriteRoutine/cell1.bin"
-INCbin	"spriteRoutine/cell2.bin"
-INCbin	"spriteRoutine/cell3.bin"
-INCbin	"spriteRoutine/cell4.bin"
 INCbin	"spriteRoutine/cell5.bin"
+INCbin	"spriteRoutine/cell3.bin"
+INCbin	"spriteRoutine/cell2.bin"
+INCbin	"spriteRoutine/cell4.bin"
+INCbin	"spriteRoutine/cell1.bin"
 INCbin	"spriteRoutine/cell6.bin"
-
-
+mkey: INCbin	"spriteRoutine/mkey.bin" endMkey:
+key: INCbin	"spriteRoutine/key.bin" endKey:
+mpadlock: INCbin	"spriteRoutine/mpadlock.bin" 
+padlock: INCbin	"spriteRoutine/padlock.bin" 
 LIGNES: 
       DW &C000,&C800,&D000,&D800,&E000,&E800,&F000,&F800 ; 0-7
       DW &C050,&C850,&D050,&D850,&E050,&E850,&F050,&F850 ; 8-15
@@ -138,3 +155,6 @@ LIGNES:
       DW &C6E0,&CEE0,&D6E0,&DEE0,&E6E0,&EEE0,&F6E0,&FEE0 ; 176-183
       DW &C730,&CF30,&D730,&DF30,&E730,&EF30,&F730,&FF30 ; 184-191
       DW &C780,&CF80,&D780,&DF80,&E780,&EF80,&F780,&FF80 ; 192-199
+
+
+ read "spriteRoutine/transparence.asm"     

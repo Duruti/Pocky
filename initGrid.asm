@@ -1,3 +1,35 @@
+initCell:
+   ld c,A ; save a
+
+   ; recupere y
+   and %00001111
+   ld b,a
+   ld a,(nbRows)
+   ld d,a
+   xor a
+
+   addRowsInit:
+      add d      
+      dec b
+      jr nz,addRowsInit
+   
+   ld b,A ; save a
+   ld a,c
+   and %11110000
+   srl a: srl a: srl a: srl a
+
+   add B
+
+   ld hl,grid
+   add l
+   ld l,a
+
+   ld b,1
+   jp loopInitGrid
+   
+   ret
+
+
 initGrid:
    ld hl,grid
    call getNbCells

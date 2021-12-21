@@ -2,8 +2,8 @@
 changeColors:
    ; dans A on à le numero de couleurRemplissage
 
-   ld hl,grid
-   ld (hl),a
+   ;ld hl,grid
+   ;ld (hl),a
    ld de,Colors
    add a,e
    ld e,a
