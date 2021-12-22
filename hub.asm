@@ -2,7 +2,7 @@
 drawHub:
    ; ld hl,Colors
    
-   ld a,14 ; positionne le hub sur la 14 eme lignes
+   ld a,13 ; positionne le hub sur la 14 eme lignes
    ld (currentLine),a
 
    ; fait le calcul pour centrer le hub
@@ -72,7 +72,7 @@ drawCursor:
    add b
    
    ld (colonne),a
-   ld a,13
+   ld a,12
    ld (currentLine),a
    ld a,8
    ld (currentSprite),a
@@ -89,7 +89,7 @@ drawCursor:
 
 resetCursor:
     
-   ld a,13 ; positionne le hub sur la 14 eme lignes
+   ld a,12 ; positionne le hub sur la 14 eme lignes
    ld (currentLine),a
 
    ; fait le calcul pour centrer le hub

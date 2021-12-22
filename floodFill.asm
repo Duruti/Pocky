@@ -34,6 +34,10 @@ floodFill:
    cp B ; si couleur(pixel) ≠ colcible alors sortir finsi
    ret z
 
+   call addCounter
+   call transferCounter
+   call drawCounter
+
    ;xor A
    ;ld (controlKey),a
 
@@ -413,7 +417,7 @@ controlColor:
    ret
 
 unblock:
-DEFB #ED,#FF
+;DEFB #ED,#FF
    ld a,(nbBlocks)
 
    ld b,a

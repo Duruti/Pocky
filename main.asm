@@ -1,6 +1,17 @@
+; U = Changer la taille de la grille
+; C = Changer le nombre de couleurs
+; Flèche directionnelle gauche-droite déplace le curseur
+; Espace = Valider
+; R = Redemarrer le jeu
+; Q = Quitter le jeu
+
+
+
 ; overscan
 
 ; border 0
+
+
 ld bc,&0
 call &bc38
 
@@ -20,6 +31,12 @@ ld bc,&bd00+32 : out (c),c
 ld bc,&bc00+7 : out (c),c
 ld bc,&bd00+34 : out (c),c
 
+xor A
+ld (compteurCoup),A
+
+  
+
+
 
 ; init
 
@@ -29,6 +46,7 @@ init:
 call cls
 
 xor A
+ld (isWin),a
 ld (offsetX),a
 call drawHub
 
@@ -58,39 +76,8 @@ ld (offsetX),a
 ld hl,Palette
 call loadPalette
 
-;ld hl,adrColor
-;ld de,Colors
-;ld (hl),d
-;inc hl
-;ld (hl),e
+call loadPadlock
 
-; affiche 3 cellules murs
-; ld de,grid + 3
-; ld a,10
-; ld (de),a
-; ld de,grid + 8
-; ld (de),a
-; ld de,grid + 13
-; ld (de),a
-; ld de,grid + 14
-; ld (de),a
-
-
-ld a,4
-ld (nbBlocks),a
-
-ld a,&30
-ld (blocks),a
-call drawPadlock
-ld a,&31
-ld (blocks+1),a
-call drawPadlock
-ld a,&32
-ld (blocks+2),a
-call drawPadlock
-ld a,&42
-ld (blocks+3),a
-call drawPadlock
 
 ld de,grid ; pointeur sur la grille du jeu
 ld a,(nbLines)
@@ -142,39 +129,27 @@ loopLine:
    call drawCursor
 
    ; init le compteur de clés
-   ld a,1
-   ld (nbKey),a
 
-   ; range dans le tableau la coordonnées de la clef sur 1 octet   
-   ld a,&23
-   ld (keys),a
+   call loadKey 
 
-   ; *************
-   ; Rajoute une clef
-   ; **************
+   ; affiche le compteur 
+   call transferCounter
+   call drawCounter
 
-   
-   ld a,(keys) ; recupere la position 
-   ; recupere le X
-   
-   and %11110000
-   srl a : srl a;  srl a ; srl a
-   ld (colonne),a
-
-   ld a,(keys) ; recupere la position 
-   ; recupere la ligne
-   and %1111
-   ld (currentLine),a
-
-;   ld a,4
-;   ld (colonne),a
-   call drawKey 
-
-
+   ; draw nombre hub
+   ld hl,&0819
+    call locate
+   ld hl,textHub
+   call printText
 
 ; gameloop
 
 touche:
+   call checkIsWin
+   ld a,(isWin)
+   cp 1
+   jp z,drawVictory
+
 	call #bb06 ; vecteur clavier attends l'appuis d'une touche
 ;	DEFB #ED,#FF
    cp 'Q'
@@ -212,34 +187,8 @@ touche:
 
 fin:	ret
 
-drawPadlock:
-    ld c,A ; save a
 
-   ; recupere y
-   and %00001111
-   ld b,a
-   ld a,(nbRows)
-   ld d,a
-   xor a
 
-   addRows4:
-      add d      
-      dec b
-      jr nz,addRows4
-   
-   ld b,A ; save a
-   ld a,c
-   and %11110000
-   srl a: srl a: srl a: srl a
-
-   add B
-
-   ld hl,grid
-   add l
-   ld l,a
-   ld a,10
-   ld (hl),a
-   ret
 
 
 
@@ -250,14 +199,22 @@ read "changeColors.asm"
 read "floodFill.asm"
 read "drawCell2.asm"
 read "drawKey.asm"
+read "levelManager.asm"
+read "counter.asm"
+read "victory.asm"
+
+
+; texte
+textWin : db " WIN yeah ",0
+textHub : db "/15",0
 Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 15, 0, 15
 org #6000
 Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
 org #6100
 grid : ds 255,0
 gridCopy : ds 255,0
-blocks : ds 10,0
-nbBlocks : db 0
+blocks : db &30,&31,&32,&42
+nbBlocks : db 4
 nbKey: db 0
 keys: ds 10,0
 
@@ -297,6 +254,7 @@ currentPosition : db 0
 cursorPosition: db 0
 tempPosition: db 0
 compteurCoup : db 0
+isWin : db 0
 
 ; fait commencer la pile en poids faible a 00 pour avoir un index sur 1 octect
 org #7000

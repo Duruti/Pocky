@@ -1,3 +1,17 @@
+; affiche à l'écran une chaine de caractere finissant par 0
+; hl = adresse chaine à afficher
+printText:
+   ld a,(hl)
+   cp 0
+   ret z
+   call &bb5A
+   inc hl
+   jp printText
+
+locate :
+        call &bb75
+        ret
+
 TestKeyboard :
  	ld bc,#f40e  ; Valeur 14 sur le port A
    out (c),c
