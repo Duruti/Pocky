@@ -2,6 +2,8 @@ loadPadlock:
 
    ld a,(nbBlocks)
 
+  
+
    ld e,a
    ld hl,blocks
    loopBlock:
@@ -12,6 +14,8 @@ loadPadlock:
       inc hl
       dec e
       jp nz,loopBlock
+
+   call drawPadlock
 
    ret
 
@@ -24,13 +28,16 @@ drawPadlock:
 
 loadKey:
  
-   
-   ld a,1
+   ld a,(keys)
+   cp &FF
+   ret z  
+
+   ld a,1   
    ld (nbKey),a
 
    ; range dans le tableau la coordonnées de la clef sur 1 octet   
-   ld a,&22
-   ld (keys),a
+  ; ld a,&22
+  ; ld (keys),a
 
    ; *************
    ; Rajoute une clef
@@ -54,6 +61,76 @@ loadKey:
    call drawKey 
 
    ret
+loadLevel:
+   ld hl,levels
+   ld de,10
+   ld a,(currentLevel)
+   dec a
+   jr z,suite
+   ld b,A
+   bclAddAdrLevel:
+      add hl,de
+      djnz bclAddAdrLevel
+   suite:
+   push hl
+   pop ix
+
+  ; ld ix,levels
+   ld a,(ix)
+   ld (maxColor),a
+   ld a,(ix+1)
+   ld (nbLines),a
+   ld a,(ix+2)
+   ld (nbRows),a
+   ld a,(ix+3)
+   ld (keys),a
+   ld a,(ix+4)
+   ld (nbBlocks),a
+   cp 0
+   call nz,loadBlocks
+   
+  
+   ret
+
+loadBlocks:
+   ld c,a
+   ld b,0
+
+  ; ld hl,levels
+
+   inc hl : inc hl : inc hl : inc hl : inc hl
+   ld de,blocks
+   ldir   
+
+   ret
+addLevel1:
+   ld a,(currentLevel)
+   cp 5 ; maxlevel
+   jr z,endAddLevel
+   DEFB #ED,#FF
+   inc A
+   ld (currentLevel),A
+   jp init
+
+   endAddLevel:
+   ld a,1
+   ld (currentLevel),A
+   jp init
+
+decLevel
+   ld a,(currentLevel)
+   cp 1 ; maxlevel
+   jr z,endDecLevel
+   DEFB #ED,#FF
+   dec A
+   ld (currentLevel),A
+   jp init
+
+   endDecLevel:
+   ld a,5
+   ld (currentLevel),A
+   jp init
+
 
 getAdresseCell:
       ; retourne l'adresse dans la grille (hl) en fonction de la position de la cellule dans A

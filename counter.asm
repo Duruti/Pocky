@@ -1,4 +1,4 @@
-adrDrawCounter equ &0719
+adrDrawCounter equ &0D19 ; &0719
 addCounter:
    scf : ccf ; remet a zero le flag C qui peut etre alterer ailleurs
    ; c'est lui qui gere le dépassement quand on utilise daa

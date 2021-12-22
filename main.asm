@@ -39,11 +39,15 @@ ld (compteurCoup),A
 
 
 ; init
+ld a,1
+ld (currentLevel),a
 
 init:
 
 
 call cls
+
+call loadLevel
 
 xor A
 ld (isWin),a
@@ -76,7 +80,9 @@ ld (offsetX),a
 ld hl,Palette
 call loadPalette
 
-call loadPadlock
+ld a,(nbBlocks)
+cp 0
+call nz,loadPadlock
 
 
 ld de,grid ; pointeur sur la grille du jeu
@@ -137,9 +143,19 @@ loopLine:
    call drawCounter
 
    ; draw nombre hub
-   ld hl,&0819
+   ld hl,&0E19 ; 0819 centrer
     call locate
    ld hl,textHub
+   call printText
+
+   ; drawLevel
+   ld a,(currentLevel)
+   add &30
+   ld ix,textLevel
+   ld (ix+4),a
+   ld hl,&0119
+   call locate
+   ld hl,textLevel
    call printText
 
 ; gameloop
@@ -179,6 +195,11 @@ touche:
   ; cp 'A'
 ;	jp z,decCursor
 
+   cp &F0 ; fleche haut
+	jp z,addLevel1
+   cp &F1 ;'a' fleche bas
+	jp z,decLevel
+
    cp ' '
    call z,ChangeColorCursor
   
@@ -207,13 +228,14 @@ read "victory.asm"
 ; texte
 textWin : db " WIN yeah ",0
 textHub : db "/15",0
+textLevel : db "Lvl: ",0
 Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 15, 0, 15
 org #6000
 Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
 org #6100
 grid : ds 255,0
 gridCopy : ds 255,0
-blocks : db &30,&31,&32,&42
+blocks : ds 10,0
 nbBlocks : db 4
 nbKey: db 0
 keys: ds 10,0
@@ -233,6 +255,8 @@ lines :
 adrColor : dw 0
 currentSprite: db 0
 currentColor : db 0
+currentLevel : db 1
+
 colonne : db 0  ; les colonnes sont des multiple de 4 octets 1,2,3 => 4,8,12
 maxColor : db 6 ; 2 a 6 max Couleur maximun
 
@@ -278,3 +302,10 @@ INCbin	"spriteRoutine/padlock.bin"
 
 mkey: INCbin	"spriteRoutine/mkey.bin" endMkey:
 key: INCbin	"spriteRoutine/key.bin" endKey:
+
+levels :
+   db 3,4,4,&FF,0,&30,&31,&32,&42,&06
+   db 4,8,5,&27,5,&30,&31,&32,&42,&06
+   db 6,11,4,&FF,0,&30,&31,&32,&42,&06
+   db 4,7,12,&FF,0,&30,&31,&32,&42,&06
+   db 6,9,9,&55,5,&40,&11,&12,&42,&88
