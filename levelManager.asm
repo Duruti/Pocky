@@ -1,3 +1,6 @@
+
+
+
 loadPadlock:
 
    ld a,(nbBlocks)
@@ -15,7 +18,7 @@ loadPadlock:
       dec e
       jp nz,loopBlock
 
-   call drawPadlock
+   ;call drawPadlock
 
    ret
 
@@ -63,7 +66,7 @@ loadKey:
    ret
 loadLevel:
    ld hl,levels
-   ld de,10
+   ld de,lenghtLevel
    ld a,(currentLevel)
    dec a
    jr z,suite
@@ -76,20 +79,70 @@ loadLevel:
    pop ix
 
   ; ld ix,levels
+
    ld a,(ix)
    ld (maxColor),a
+ ; DEFB #ED,#FF
    ld a,(ix+1)
-   ld (nbLines),a
+   ld (currentTry),a
+   call convertTry
+   ld (maxTry),a
    ld a,(ix+2)
-   ld (nbRows),a
+   ld (nbLines),a
    ld a,(ix+3)
-   ld (keys),a
+   ld (nbRows),a
    ld a,(ix+4)
+   ld (keys),a
+   ld a,(ix+5)
    ld (nbBlocks),a
    cp 0
    call nz,loadBlocks
    
+   ld bc,16
+   add ix,bc
+   ld a,(ix)
+   ld (nbWalls),a
+   cp 0
+   call nz,loadWalls
+   ; charge les walls
+
   
+   ret
+initWalls:
+   ld a,(nbWalls)
+
+  
+
+   ld e,a
+   ld hl,walls
+   loopDrawWalls:
+      ld a,(hl)
+      push hl
+      call drawWalls     
+      pop hl
+      inc hl
+      dec e
+      jp nz,loopDrawWalls
+
+   ;call drawPadlock
+
+   ret
+drawWalls:
+   call getAdresseCell
+
+   ld a,idWall
+   ld (hl),a
+   ret
+
+loadWalls:
+   ld c,a
+   ld b,0
+
+   push ix
+   pop hl 
+   inc hl
+   ld de,walls
+   ldir
    ret
 
 loadBlocks:
@@ -97,17 +150,18 @@ loadBlocks:
    ld b,0
 
   ; ld hl,levels
-
-   inc hl : inc hl : inc hl : inc hl : inc hl
+   ld de,6
+   add hl,de
+;;;   inc hl : inc hl : inc hl : inc hl : inc hl : inc hl ; positionne la pile +6
    ld de,blocks
    ldir   
 
    ret
 addLevel1:
    ld a,(currentLevel)
-   cp 5 ; maxlevel
+   cp maxLevel ; maxlevel
    jr z,endAddLevel
-   DEFB #ED,#FF
+   ;DEFB #ED,#FF
    inc A
    ld (currentLevel),A
    jp init
@@ -121,13 +175,13 @@ decLevel
    ld a,(currentLevel)
    cp 1 ; maxlevel
    jr z,endDecLevel
-   DEFB #ED,#FF
+ ;  DEFB #ED,#FF
    dec A
    ld (currentLevel),A
    jp init
 
    endDecLevel:
-   ld a,5
+   ld a,maxLevel
    ld (currentLevel),A
    jp init
 

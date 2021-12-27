@@ -5,12 +5,15 @@
 ; R = Redemarrer le jeu
 ; Q = Quitter le jeu
 
-
+colorPaperHub equ 1
 
 ; overscan
 
 ; border 0
 
+; align 256 positionne le code a une adresse multiple de 256
+;nop
+;align #FF ;marche pas
 
 ld bc,&0
 call &bc38
@@ -32,26 +35,34 @@ ld bc,&bc00+7 : out (c),c
 ld bc,&bd00+34 : out (c),c
 
 xor A
-ld (compteurCoup),A
+ld (compteurAffichage),A
 
   
 
 
 
 ; init
-ld a,1
+ld a,initCurrentLevel
 ld (currentLevel),a
 
 init:
-
+ld a,1
+call &BB96
+ld a,2
+call &bb90
 
 call cls
 
 call loadLevel
 
+; ld a,3
+; ld (currentTry),a
+
 xor A
 ld (isWin),a
 ld (offsetX),a
+ld (nbTry),A
+
 call drawHub
 
 
@@ -59,7 +70,7 @@ call drawHub
 
 xor A
 ld (currentLine),A
-ld (compteurCoup),a
+ld (compteurAffichage),a
 ld (colonne),A
 ld (cursorPosition),a
 
@@ -80,9 +91,20 @@ ld (offsetX),a
 ld hl,Palette
 call loadPalette
 
+
 ld a,(nbBlocks)
 cp 0
 call nz,loadPadlock
+
+; rajoute les murs
+
+ld a,(nbWalls)
+cp 0
+call nz,initWalls
+; ld ix,grid ; pointeur sur la grille du jeu
+; ld a,idWall
+; ld (ix+4),a
+; ld (ix+5),a
 
 
 ld de,grid ; pointeur sur la grille du jeu
@@ -142,29 +164,57 @@ loopLine:
    call transferCounter
    call drawCounter
 
+
+   ; change le paper
+   ld a,colorPaperHub
+   call  &BB96
+
+
+   call updateTextHub 
+   
    ; draw nombre hub
    ld hl,&0E19 ; 0819 centrer
-    call locate
+   call locate
    ld hl,textHub
    call printText
 
+
    ; drawLevel
    ld a,(currentLevel)
+   ld d,a
+   ld e,10
+   call div
+   ; update unité
    add &30
    ld ix,textLevel
+   ld (ix+5),a
+   ld a,d
+   add &30
    ld (ix+4),a
+
    ld hl,&0119
    call locate
    ld hl,textLevel
    call printText
 
 ; gameloop
+ ; change le paper
+   ld a,5
+   call  &BB96
 
 touche:
+
    call checkIsWin
    ld a,(isWin)
    cp 1
    jp z,drawVictory
+
+   ; check is lose
+   ld a,(nbTry)
+   ld b,a
+   ld a,(currentTry)
+   cp b
+   jp z,gameover 
 
 	call #bb06 ; vecteur clavier attends l'appuis d'une touche
 ;	DEFB #ED,#FF
@@ -176,14 +226,14 @@ touche:
 	jp z,init
 	cp 'r'
 	jp z,init
-   cp 'U'
-	jp z,addLevel
-	cp 'u'
-	jp z,addLevel
-   cp 'C'
-	jp z,addColor
-	cp 'c'
-	jp z,addColor
+   ; cp 'U'
+	; jp z,addLevel
+	; cp 'u'
+	; jp z,addLevel
+   ; cp 'C'
+	; jp z,addColor
+	; cp 'c'
+	; jp z,addColor
 
    cp &F3 ;'z' fleche droite
 	jp z,incCursor
@@ -227,21 +277,21 @@ read "victory.asm"
 
 ; texte
 textWin : db " WIN yeah ",0
+textGameover : db "GAME OVER",0
 textHub : db "/15",0
-textLevel : db "Lvl: ",0
-Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 15, 0, 15
-org #6000
+textLevel : db "Lvl:  ",0
+palette: db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
+
+;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
+;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15
 Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
-org #6100
+align 256
+;org #6000
 grid : ds 255,0
 gridCopy : ds 255,0
-blocks : ds 10,0
-nbBlocks : db 4
-nbKey: db 0
-keys: ds 10,0
 
 
-org #5000
+align 256
 ; table de lignes avec l'adresse ecran
 lines : 
     dw &c000,&c040,&c080,&c0C0,&c100,&c140,&c180,&c1C0
@@ -260,8 +310,21 @@ currentLevel : db 1
 colonne : db 0  ; les colonnes sont des multiple de 4 octets 1,2,3 => 4,8,12
 maxColor : db 6 ; 2 a 6 max Couleur maximun
 
+currentTry : db 0
+maxTry : db 0
+compteurAffichage : db 0
+nbTry : db 0
+
 nbLines : db 5 ;12 nombre de ligne de la grille
 nbRows : db 5 ;12 nombre de colonnes de la grille
+;org #6000
+blocks : ds 10,0
+nbBlocks : db 4
+walls : ds 10,0
+nbWalls : db 4
+nbKey: db 0
+keys: ds 10,0
+
 offsetX: db 0 ; l'offset de décallage pour centrer la grille en X
 tempOffsetX : db 0
 
@@ -277,35 +340,64 @@ tempColor: db 0
 currentPosition : db 0
 cursorPosition: db 0
 tempPosition: db 0
-compteurCoup : db 0
 isWin : db 0
 
 ; fait commencer la pile en poids faible a 00 pour avoir un index sur 1 octect
-org #7000
+align 256
 pileCouleur : ds 255,#FA
-org #7100
-pilePositionKey : ds 255,0
+;org #7100
+;pilePositionKey : ds 255,0
 
 ; data des sprites
 dataSprite: 
-INCbin	"spriteRoutine/cell1.bin"
-INCbin	"spriteRoutine/cell2.bin"
-INCbin	"spriteRoutine/cell3.bin"
-INCbin	"spriteRoutine/cell4.bin"
-INCbin	"spriteRoutine/cell5.bin"
-INCbin	"spriteRoutine/cell6.bin"
-INCbin	"spriteRoutine/cell6.bin"
+ INCbin	"spriteRoutine/t1.bin"
+ INCbin	"spriteRoutine/t2.bin"
+ INCbin	"spriteRoutine/t3.bin"
+ INCbin	"spriteRoutine/t4.bin"
+ INCbin	"spriteRoutine/t5.bin"
+ INCbin	"spriteRoutine/t6.bin"
+ INCbin	"spriteRoutine/t6.bin"
+;INCbin	"spriteRoutine/t76.bin"
+
+;INCbin	"spriteRoutine/cell1.bin"
+;INCbin	"spriteRoutine/cell2.bin"
+;INCbin	"spriteRoutine/cell3.bin"
+;INCbin	"spriteRoutine/cell4.bin"
+;INCbin	"spriteRoutine/cell5.bin"
+;INCbin	"spriteRoutine/cell6.bin"
+;INCbin	"spriteRoutine/cell6.bin"
+
 INCbin	"spriteRoutine/cell7.bin"
-INCbin	"spriteRoutine/cursor.bin"
-INCbin	"spriteRoutine/void.bin"
+;INCbin	"spriteRoutine/cursor.bin"
+INCbin	"spriteRoutine/curs1.bin"
+;INCbin	"spriteRoutine/void.bin"
+INCbin	"spriteRoutine/void2.bin"
 INCbin	"spriteRoutine/padlock.bin"
 
-mkey: INCbin	"spriteRoutine/mkey.bin" endMkey:
+mkey: INCbin "spriteRoutine/mkey.bin" endMkey:
 key: INCbin	"spriteRoutine/key.bin" endKey:
 
+initCurrentLevel equ 1
+lenghtLevel equ 27 ; taille en octet d'un level
+maxLevel equ 10
+
 levels :
-   db 3,4,4,&FF,0,&30,&31,&32,&42,&06
-   db 4,8,5,&27,5,&30,&31,&32,&42,&06
-   db 6,11,4,&FF,0,&30,&31,&32,&42,&06
-   db 4,7,12,&FF,0,&30,&31,&32,&42,&06
-   db 6,9,9,&55,5,&40,&11,&12,&42,&88
+   db 3,4,4,4,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
+   db 3,5,5,5,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 4,7,5,5,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 5,8,5,5,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 6,9,5,5,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 6,12,7,7,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 4,10,4,10,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,6,&50,&51,&52,&40,&41,&42,0,0,0,0
+   
+   ;db 3,25,5,10,&FF,0,&30,&31,&32,&42,00
+   ; key
+   db 3,6,4,8,&63,5,&50,&51,&52,&62,&72,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 4,13,8,8,&77,4,&33,&34,&43,&44,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 5,13,12,4,&3B,8,&12,&13,&22,&23,&18,&19,&28,&29,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+
+
+
+   db 4,28,7,12,&FF,0,&30,&31,&32,&42,&06
+   db 6,32,9,9,&55,5,&40,&11,&12,&42,&88

@@ -33,6 +33,25 @@ TestKeyboard :
    out (c),c
    ret
 
+div :
+ ;;https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division
+ ; div d/e => result d , a => modulo
+   xor	a
+   ld	b, 8
+
+   loopDiv:
+        sla	d
+        rla
+        cp	e
+        jr	c, $+4
+        sub	e
+        inc	d
+        
+        djnz	loopDiv
+        
+        ret
+
+
 random:
         push    hl
         push    de
@@ -84,7 +103,7 @@ frm:    IN    A,(C)     ;On recupere l'octet contenu sur le port dans A
 cls:
 	Ld hl,#c000
 	Ld de,#c001
-	ld a,&3F
+	ld a,&c0 ; &3F
 	Ld (hl),a
 	Ld bc,#4000
 	Ldir

@@ -1,3 +1,16 @@
+idWall equ 9
+
+gameover:
+   ld a,5
+   call  &BB96
+   ld hl,&000A
+   call locate
+   ld hl,textGameover
+   call printText
+   
+   jp loopGameover
+
+
 checkIsWin:
    ; parcours la grille 
    ; si une des cases est differente de la couleur de la celulle 0,0
@@ -14,8 +27,11 @@ checkIsWin:
    ld c,a
    bclCheckGrid:
       ld a,(hl)
+      cp idWall
+      jr z,next
       cp c
       ret nz ; on sort si different
+      next:
       inc hl
       djnz bclCheckGrid
    
@@ -39,14 +55,23 @@ getLenghtGrid:
 
 drawVictory:
 
+   ld a,5
+   call  &BB96
    ld hl,&000A
    call locate
    ld hl,textWin
    call printText
-   
+
 
 loopVictory:
    call #bb06 
    cp ' '
    jr nz,loopVictory
+   ; passe au level suivant
+   jp addLevel1 
+
+loopGameover:
+   call #bb06 
+   cp ' '
+   jr nz,loopGameover
    jp init

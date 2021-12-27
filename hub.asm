@@ -227,7 +227,23 @@ decCursor:
       call drawCursor
       jp touche
 
+updateTextHub:
+   
+   ;Modifie directement la chaine de texte
+   ld ix,textHub
+   ; unitée
+   ld a,(maxTry)
+   and %00001111
+   add &30
+   ld (ix+2),a
+   ; decimal
+   ld a,(maxTry)
+   and %11110000
+   srl a : srl a :srl a :srl a
+   add &30
+   ld (ix+1),a
 
+   ret
 
 ChangeColorCursor:
    ; applique le floodfill avec la couleur sous le curseur 

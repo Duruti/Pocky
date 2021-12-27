@@ -1,22 +1,30 @@
 adrDrawCounter equ &0D19 ; &0719
 addCounter:
+   ; j'ai fais un double compteur, un pour l'affichage et l'autre pour tester le game over
+   
+   
+   ld a,(nbTry)
+   inc A
+   ld (nbTry),A
+
    scf : ccf ; remet a zero le flag C qui peut etre alterer ailleurs
    ; c'est lui qui gere le dépassement quand on utilise daa
 
-   ld a,(compteurCoup)
+
+   ld a,(compteurAffichage)
    inc A
    daa
-   ld (compteurCoup),a
+   ld (compteurAffichage),a
    ret
 
 getUnity:
-   ld a,(compteurCoup)
+   ld a,(compteurAffichage)
    and %00001111
 
    ret
 
 getDecimal:
-   ld a,(compteurCoup)
+   ld a,(compteurAffichage)
    and %11110000
    srl a : srl a : srl a : srl a
    ret
@@ -26,10 +34,23 @@ transferCounter:
    call getDecimal
    ld d,a
    ret
+convertTry:
+   ld d,a
+   ld e,10
+   call div
+   ; decale a vers le poids fort
+   sla d : sla d: sla d : sla d
+   add d ; rajoute le poids faible
+   ; dans a on a le compteur max a afficher
+
+   ret
 
 drawCounter:
    ; affiche le compteur
    ; unité 
+   ld a,colorPaperHub
+   call  &BB96
+
    ld hl,adrDrawCounter
    call &bb75
    ld a,e
