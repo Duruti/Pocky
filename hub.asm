@@ -247,8 +247,10 @@ updateTextHub:
 
 ChangeColorCursor:
    ; applique le floodfill avec la couleur sous le curseur 
+   DEFB #ED,#FF
    ld a,(cursorPosition)
    call floodFill
+   DEFB #ED,#FF
    ret
 
 

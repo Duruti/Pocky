@@ -91,14 +91,23 @@ loadLevel:
    ld (nbLines),a
    ld a,(ix+3)
    ld (nbRows),a
-   ld a,(ix+4)
+      ;seed +4,+5
+   push hl
+   ld h,(ix+4)
+   ld l,(ix+5)
+   ld  (rndseed+1),hl   
+
+   ld hl,&c0de
+   ld  (rndseed+4),hl   
+   pop hl
+   ld a,(ix+6)
    ld (keys),a
-   ld a,(ix+5)
+   ld a,(ix+7)
    ld (nbBlocks),a
    cp 0
    call nz,loadBlocks
    
-   ld bc,16
+   ld bc,18 ; decalle ix de 18 
    add ix,bc
    ld a,(ix)
    ld (nbWalls),a

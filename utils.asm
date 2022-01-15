@@ -52,7 +52,7 @@ div :
         ret
 
 
-random:
+rnd:
         push    hl
         push    de
         ld      hl,(randData)
@@ -69,6 +69,35 @@ random:
         ret
 
 randData dw &5000
+
+random:
+        push    hl
+        push    de
+
+        rndseed:     ld  hl,&A280   ; yw -> zt
+                ld  de,&C0DE   ; xz -> yw
+                ld  (rndseed+4),hl  ; x = y, z = w
+                ld  a,l         ; w = w ^ ( w << 3 )
+                add a,a
+                add a,a
+                add a,a
+                xor l
+                ld  l,a
+                ld  a,d         ; t = x ^ (x << 1)
+                add a,a
+                xor d
+                ld  h,a
+                rra             ; t = t ^ (t >> 1) ^ w
+                xor h
+                xor l
+                ld  h,e         ; y = z
+                ld  l,a         ; w = t
+                ld  (rndseed+1),hl
+        pop     de
+        pop     hl
+        
+        ret 
+
 
 loadPalette
 
@@ -103,7 +132,7 @@ frm:    IN    A,(C)     ;On recupere l'octet contenu sur le port dans A
 cls:
 	Ld hl,#c000
 	Ld de,#c001
-	ld a,&c0 ; &3F
+	ld a,&30 ; &3F
 	Ld (hl),a
 	Ld bc,#4000
 	Ldir
