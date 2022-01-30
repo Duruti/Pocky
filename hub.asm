@@ -41,6 +41,8 @@ drawHub:
 
       dec b
       jp nz,loopDrawHub
+
+      call clearLine
    ret
 
 
@@ -163,16 +165,19 @@ incCursor:
    ; routine à revoir
 
    ld a,(offsetX)
-   push af
+   
+   push af ; sauve l'offset
    xor a
    ld (offsetX),a
 
    call drawHub
-   pop af
+   
+   pop af ; restaure l'offset
    ld (offsetX),a
 
    call drawCursor
-   jp touche
+   ret
+;   jp touche
 
    initCursor:
       xor a
@@ -187,6 +192,8 @@ incCursor:
       ld (offsetX),a
 
       call drawCursor
+
+      ret
       jp touche
 
 decCursor:
@@ -209,6 +216,8 @@ decCursor:
    ld (offsetX),a
 
    call drawCursor
+   ret
+
    jp touche
 
    initCursorHigh:
@@ -220,11 +229,12 @@ decCursor:
       xor a
       ld (offsetX),a
 
-      call drawHub
+     ; call drawHub
       pop af
       ld (offsetX),a
 
       call drawCursor
+      ret
       jp touche
 
 updateTextHub:
@@ -235,24 +245,101 @@ updateTextHub:
    ld a,(maxTry)
    and %00001111
    add &30
-   ld (ix+2),a
+   ld (ix+11),a
    ; decimal
    ld a,(maxTry)
    and %11110000
    srl a : srl a :srl a :srl a
    add &30
-   ld (ix+1),a
+   ld (ix+10),a
 
    ret
 
 ChangeColorCursor:
    ; applique le floodfill avec la couleur sous le curseur 
-   DEFB #ED,#FF
+  ; DEFB #ED,#FF
    ld a,(cursorPosition)
    call floodFill
-   DEFB #ED,#FF
+  ; DEFB #ED,#FF
    ret
 
+clearHud:
+   ld hl,&FEC0
+   ld bc,&4021
+   ld a,0
+   call FillRect
+   ret
+
+
+
+; clearHud1:
+
+;    ; premiere ligne
+;   call clearLine
+
+;    ; efface le Hud
+;    ; ligne 
+;       ld a,0
+;       ld (colonne),a
+;       ld a,14
+;       ld (currentLine),a
+;       ld a,11
+;       ld (currentSprite),a
+
+
+;    ld bc,&1002
+
+;    bclRowClearHub:
+
+;       push bc
+;       ld a,(offsetX)
+;       push af
+;       xor a
+;       ld (offsetX),a
+
+;          ;call drawHub
+;       call drawcells
+;       pop af
+;       ld (offsetX),a
+;       ld a,(colonne)
+;       add 4
+;       ld (colonne),a
+;       pop bc
+;       dec B
+;       jp nz,bclRowClearHub
+  
+;       xor A
+;       ld (colonne),a
+;       ld a,(currentLine)
+;       inc a
+;       ld (currentLine),a
+;       ld b,15
+;       dec C
+;       jp nz,bclRowClearHub
+      
+;    ret
+
+clearLine:
+    ; premiere ligne
+   ld b,64
+      ld hl,&FEC0
+   bclClear
+      ld (hl),&0
+      inc hl
+      djnz bclClear
+      ret
+
+; clearLastCell:
+  
+  
+;    ld hl,&FF7C
+;    ld b,8
+;    c1
+;    ld (hl),255
+;    inc hl
+;    dec b
+;    djnz c1
+;    ret
 
 currentCaractere : db 0
 ; org #9000

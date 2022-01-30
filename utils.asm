@@ -1,6 +1,6 @@
 ; affiche à l'écran une chaine de caractere finissant par 0
 ; hl = adresse chaine à afficher
-printText:
+printTextVecteur:
    ld a,(hl)
    cp 0
    ret z
@@ -11,6 +11,62 @@ printText:
 locate :
         call &bb75
         ret
+
+FillRect:
+        ; hl = adresse destination
+        ; a = valeur a remplir
+        ; bc = colonne, ligne
+	ld d,b
+		
+	push af
+	fillRowRight
+		ld (hl),a
+		inc hl 
+		djnz fillRowRight
+
+	dec c
+	jp z,endFill
+ 	      
+	dec hl
+	call calcul64
+	
+	
+	ld b,d
+	pop af
+	push af
+	
+	fillRowLeft
+		ld (hl),a
+		dec hl 
+		djnz fillRowLeft
+
+	dec c
+	jp z,endFill
+	inc hl
+	call calcul64
+
+	ld b,d
+	pop af
+	push af
+	
+
+	jp fillRowRight
+	
+endFill
+	pop af
+	ret
+calcul64
+	ld a,h
+	add 8
+	ld h,a
+
+	ret nc
+	push bc
+	ld bc,#C040
+	add hl,bc
+	pop bc
+	ret
+
 
 TestKeyboard :
  	ld bc,#f40e  ; Valeur 14 sur le port A
@@ -141,7 +197,7 @@ cls:
 ret
 
 
-LIGNES: 
+LIGNES1: 
       DW &C000,&C800,&D000,&D800,&E000,&E800,&F000,&F800 ; 0-7
       DW &C050,&C850,&D050,&D850,&E050,&E850,&F050,&F850 ; 8-15
       DW &C0A0,&C8A0,&D0A0,&D8A0,&E0A0,&E8A0,&F0A0,&F8A0 ; 16-23

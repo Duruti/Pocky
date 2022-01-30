@@ -1,10 +1,16 @@
 idWall equ 9
 
 gameover:
-   ld a,5
-   call  &BB96
-   ld hl,&000A
-   call locate
+   call clearHud
+   xor A
+   ld (exit),a
+
+   ;ld a,5
+   ;call  &BB96
+   ;ld hl,&000A
+   ;call locate
+   ld hl,&0CF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+ 	ld (adrPrint),hl ; save la position
    ld hl,textGameover
    call printText
    
@@ -54,24 +60,43 @@ getLenghtGrid:
    ret
 
 drawVictory:
+   
+   xor A
+   ld (exit),a
 
-   ld a,5
-   call  &BB96
-   ld hl,&000A
-   call locate
+   call clearHud
+
+   ld hl,&0CF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+ 	ld (adrPrint),hl ; save la position
    ld hl,textWin
    call printText
 
 
 loopVictory:
-   call #bb06 
-   cp ' '
+  call getKeys
+   call updateKeys
+
+ 	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
+ 	ld (oldKey),a
+
+ 	ld a,(exit)    	; test si on quitte le programme
+  	cp 1
    jr nz,loopVictory
    ; passe au level suivant
    jp addLevel1 
 
 loopGameover:
-   call #bb06 
-   cp ' '
+   ;call #bb06 
+   ;cp 'f'
+   call getKeys
+   call updateKeys
+
+ 	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
+ 	ld (oldKey),a
+
+ 	ld a,(exit)    	; test si on quitte le programme
+  	cp 1
    jr nz,loopGameover
+   
+   
    jp init

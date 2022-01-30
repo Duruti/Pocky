@@ -7,32 +7,22 @@
 
 colorPaperHub equ 1
 
-; overscan
 
-; border 0
+
+
+; redirige les interruptions
+;save interruption pointer
+	ld hl,(&39)
+	ld (restorInt+1),hl
+ 
+	; change le pointeur d'interruption
+
 
 ; align 256 positionne le code a une adresse multiple de 256
 ;nop
 ;align #FF ;marche pas
 
-ld bc,&0
-call &bc38
-
-
-ld bc,&bc00+1 : out (c),c
-ld bc,&bd00+32 : out (c),c
-
-
-ld bc,&bc00+2 : out (c),c
-ld bc,&bd00+42 : out (c),c
-
-
-ld bc,&bc00+6 : out (c),c
-ld bc,&bd00+32 : out (c),c
-
-
-ld bc,&bc00+7 : out (c),c
-ld bc,&bd00+34 : out (c),c
+call overcanVertical
 
 xor A
 ld (compteurAffichage),A
@@ -44,166 +34,14 @@ ld (compteurAffichage),A
 ; init
 ld a,initCurrentLevel
 ld (currentLevel),a
-
-init:
-ld a,1
-call &BB96
-ld a,2
-call &bb90
-
-call cls
-
-call loadLevel
-
-; ld a,3
-; ld (currentTry),a
-
-xor A
-ld (isWin),a
-ld (offsetX),a
-ld (nbTry),A
-
-call drawHub
-
-
-; init variables
-
-xor A
-ld (currentLine),A
-ld (compteurAffichage),a
-ld (colonne),A
-ld (cursorPosition),a
-
-call initGrid
-
-; calcule l'offset
-; offset = (16-nbRows)/2 * 4
-
- ld a,(nbRows)
- sla a : sla a ; *4
- ld b,a
- ld a,64
- sub b
- srl a 
-ld (offsetX),a
-
-
-ld hl,Palette
-call loadPalette
-
-
-ld a,(nbBlocks)
-cp 0
-call nz,loadPadlock
-
-; rajoute les murs
-
-ld a,(nbWalls)
-cp 0
-call nz,initWalls
-; ld ix,grid ; pointeur sur la grille du jeu
-; ld a,idWall
-; ld (ix+4),a
-; ld (ix+5),a
-
-
-ld de,grid ; pointeur sur la grille du jeu
-ld a,(nbLines)
-ld b,a
-loopLine:
-  
-   push bc
-   ld a,(nbRows)
-   ld b,a ; init boucle
-   loopColonne: 
-      push bc
-      ; lit le tableau
-      ld a,(de)
-      inc de
-      push de
- ;     ld d,0
-  ;    ld e,a
-      ld (currentSprite),a ;couleur du sprite
-      
-     ; ld hl,Colors
-     ; add hl,de
-     ; ld a,(hl)
-     ; ld (currentColor),a
-
-      call drawcells
-
-      ld a,(colonne)
-      add 4
-      ld (colonne),A
-
-      pop de
-      pop bc
-      dec B
-      jp nz,loopColonne
-  
-   xor A
-   ld (colonne),a
-
-   ld a,(currentLine)
- 
-   inc A
-   ld (currentLine),a
-
-   pop bc
-   dec b
-
-   jp nz,loopLine 
-
-   call drawCursor
-
-   ; init le compteur de clés
-
-   call loadKey 
-
-   ; affiche le compteur 
-   call transferCounter
-   call drawCounter
-
-
-   ; change le paper
-   ld a,colorPaperHub
-   call  &BB96
-
-
-   call updateTextHub 
-   
-   ; draw nombre hub
-   ld hl,&0E19 ; 0819 centrer
-   call locate
-   ld hl,textHub
-   call printText
-
-
-   ; drawLevel
-   ld a,(currentLevel)
-   ld d,a
-   ld e,10
-   call div
-   ; update unité
-   add &30
-   ld ix,textLevel
-   ld (ix+5),a
-   ld a,d
-   add &30
-   ld (ix+4),a
-
-   ld hl,&0119
-   call locate
-   ld hl,textLevel
-   call printText
-
-; gameloop
- ; change le paper
-   ld a,5
-   call  &BB96
+ call loadInterruption 
+jp initGame
 
 touche:
+;jp touche
 
+  ; call vbl
+ 
    call checkIsWin
    ld a,(isWin)
    cp 1
@@ -216,8 +54,9 @@ touche:
    cp b
    jp z,gameover 
 
-	call #bb06 ; vecteur clavier attends l'appuis d'une touche
+	;call #bb06 ; vecteur clavier attends l'appuis d'une touche
 ;	DEFB #ED,#FF
+   xor a
    cp 'Q'
 	jp z,fin
 	cp 'q'
@@ -246,20 +85,32 @@ touche:
 ;	jp z,decCursor
 
    cp &F0 ; fleche haut
-	jp z,addLevel1
+;	jp z,addLevel1
    cp &F1 ;'a' fleche bas
 	jp z,decLevel
 
    cp ' '
    call z,ChangeColorCursor
   
- 	
-   jp touche
+
+   call getKeys
+   call updateKeys
+
+ 	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
+ 	ld (oldKey),a
+
+ 	;ld a,(exit)    	; test si on quitte le programme
+  	;cp 1
+  	jr touche
+
+
+  ; jp touche
 
 fin:	ret
 
 
 
+initCurrentLevel equ 1
 
 
 
@@ -273,15 +124,19 @@ read "drawKey.asm"
 read "levelManager.asm"
 read "counter.asm"
 read "victory.asm"
-
-
+read "overscan.asm"
+read "interruption.asm"
+read "keyManager.asm"
+read "initGame.asm"
+read "print.asm"
 ; texte
 textWin : db " WIN yeah ",0
 textGameover : db "GAME OVER",0
-textHub : db "/15",0
+textHub : db "Reste:   /15",0
 textLevel : db "Lvl:  ",0
 
 palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
+paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
 ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
 ;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15
 Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
@@ -382,18 +237,18 @@ INCbin	"spriteRoutine/curs2.bin"
 ;INCbin	"spriteRoutine/void.bin"
 INCbin	"spriteRoutine/void3.bin"
 INCbin	"spriteRoutine/padl3.bin"
+voidMode1: ds 68,&0
 
 mkey: INCbin "spriteRoutine/mkey3.bin" endMkey:
 key: INCbin	"spriteRoutine/key3.bin" endKey:
 
-initCurrentLevel equ 2
 lenghtLevel equ 29 ; taille en octet d'un level
 maxLevel equ 10
-
+nbInt: db 0
 levels :
  ;colors,maxTry,Line,Colums,seed*2,key,nbBlock,10*dataBlock,nbVoid,10*dataVoid
  
-   db 3,4,4,4,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
+   db 3,24,4,4,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
    db 3,5,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
    db 4,7,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
    db 5,8,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -435,3 +290,4 @@ levels :
    out (c),c         
    ld bc,&f600  ; Validation         
    out (c),c; Et A contient la ligne
+
