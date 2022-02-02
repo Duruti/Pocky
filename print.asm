@@ -206,7 +206,7 @@ tableChar ; table pour parser le code ascii en fonction de la font
 	db 41,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14
 	db 15,16,17,18,19,20,21,22,23,24,25,26
 
-
+align 256
 LIGNES: 
 incbin "table64.bin"
 

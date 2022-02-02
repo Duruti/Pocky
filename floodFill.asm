@@ -59,9 +59,12 @@ floodFill:
       add l
       ld l,a
       ; recupere les coordonnées 
+      ld a,1
+      ld (isOffsetY),a
       
       ld a,(hl)
       ld (currentPosition),a
+  
 
       call setColor
 

@@ -24,7 +24,7 @@ add hl,bc
  
 
 ld b,8
-drawLine:
+olddrawLine:
    ld a,(currentColor)
    
    ld (hl),a
@@ -100,3 +100,6 @@ drawLine2:
 ;DEFB #ED,#FF
 
 ret
+drawline:
+
+   ret

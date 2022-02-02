@@ -13,7 +13,6 @@ call FillRect
 
 
 call loadLevel
-
 ; ld a,3
 ; ld (currentTry),a
 
@@ -23,6 +22,8 @@ ld (offsetX),a
 ld (nbTry),A
 ld (exit),a
 
+ld a,0
+ld (isOffsetY),a
 call drawHub
 
 
@@ -36,7 +37,9 @@ ld (cursorPosition),a
 
 call initGrid
 
-; calcule l'offset
+
+call CalcOffsetY
+; calcule l'offset X 
 ; offset = (16-nbRows)/2 * 4
 
  ld a,(nbRows)
@@ -65,7 +68,8 @@ call nz,initWalls
 ; ld a,idWall
 ; ld (ix+4),a
 ; ld (ix+5),a
-
+ld a,1
+ld (isOffsetY),a
 
 ld de,grid ; pointeur sur la grille du jeu
 ld a,(nbLines)
@@ -113,12 +117,17 @@ loopLine:
    dec b
 
    jp nz,loopLine 
-
+   
+   call loadKey 
+  
+  
+   ld a,0
+   ld (isOffsetY),a 
+   
    call drawCursor
 
    ; init le compteur de clés
 
-   call loadKey 
 
    ; affiche le compteur 
    call transferCounter
@@ -183,3 +192,13 @@ loopLine:
  
 
    jp touche
+
+   CalcOffsetY:
+    ld a,(nbLines)
+    sla a: sla a: sla a: sla a ; *16
+    ld b,a
+    ld a,192
+    sub b
+    srl a
+    ld (offsetY),a
+    ret

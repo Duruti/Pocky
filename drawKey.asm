@@ -2,7 +2,8 @@
 
 
 drawKey: 
-   
+  ; ld a,1
+  ; ld (isOffsetY),a
 
    call getAdrScreen
    ld hl,mkey
@@ -35,6 +36,43 @@ getAdrScreen:
    ld a,(de)
    ld h,a
    ; on a dans hl l'adresse ou afficher
+
+    xor A
+   ld (AddOffsetY+1),a
+
+
+   ld a,(isOffsetY)
+   cp 0
+   jr z,calcadrY2
+
+   ld a,(offsetY)
+
+   ld (AddOffsetY2+1),a
+
+
+   calcAdrY2:
+   ld h,0
+   ld a,(currentLine)
+   
+  
+   sla a :sla a : sla a : sla a ; ligne * 16
+   
+   AddOffsetY2: add 0
+   
+   ld l,a
+   ld d,0
+   ld e,l
+   add hl,de
+
+   ld de,lignes
+	add hl,de
+	ld e,(hl)
+	inc hl
+	ld d,(hl)
+   ex hl,de
+
+
+
 
    ; rajoute l'offset a X
    ld a,(offsetX)

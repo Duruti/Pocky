@@ -1,7 +1,10 @@
 ; draw hub
 drawHub:
    ; ld hl,Colors
-   
+   ld a,0
+   ld (isOffsetY),a
+
+
    ld a,13 ; positionne le hub sur la 14 eme lignes
    ld (currentLine),a
 
@@ -47,6 +50,11 @@ drawHub:
 
 
 drawCursor:
+   push af
+   ld a,0
+   ld (isOffsetY),a
+   pop af
+
    ld a,(offsetX)
    ld (tempOffsetX),a
    xor A
