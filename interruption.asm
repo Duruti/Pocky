@@ -1,8 +1,10 @@
 lineInt equ 1 
 
 loadInterruption:
+      di
       KILLSYS            LD             HL,#C9FB:LD (#38),HL
-       
+      ei
+
       FRAMEint  	LD B,#F5
       FRMint     IN A,(C):RRA:JR NC,FRMint 
       Halt : halt : halt 
@@ -28,20 +30,23 @@ interrupt:
 	ld a,(nbInt)
 	cp 6
 	jr nz,endInt
-;call z,changeColor
 	xor a
 	ld (nbInt),a
 
 endInt
+ 
    pop hl : pop de : pop bc : pop af
+  
 	ei
 	ret
 
 colorBack:
 ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
 out (c),c
-	LD BC,#7F10:OUT (C),C:LD C,70:OUT (C),C
-	
+   if Debug
+   	LD BC,#7F10:OUT (C),C:LD C,70:OUT (C),C
+   ENDIF
+
    ld hl,paletteMode0
    call loadPaletteGA
    ret
@@ -59,8 +64,18 @@ changeColor:
       ld a,c
       cp 4
       jr nz,bclPalGAint
+   if Debug
+	   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+   ENDIF
 
-	LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+   if IsMusic
+      call Main_Player_Start + 3
+   ENDIF
+
+  
+   if Debug
+      LD BC,#7F10:OUT (C),C:LD C,86:OUT (C),C
+   ENDIF
 
 	ret
 

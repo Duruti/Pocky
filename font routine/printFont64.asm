@@ -9,8 +9,11 @@ sizeBlocChar equ 8*2 ;8*2
 
 call changeMode
 
+
+call fillrect
+
 ;call test
-;ret
+ret
 
 ld hl,Palette
 call loadPalette
@@ -43,7 +46,81 @@ loopMain
 
 
 	ret
+FillRect:
+        ; hl = adresse destination
+        ; a = valeur a remplir
+        ; bc = colonne, ligne
+	ld hl,&c000
+	ld bc,&1009
+	ld d,b
+	ld a,255
 
+	
+	push af
+	fillRowRight
+		ld (hl),a
+		inc hl 
+		djnz fillRowRight
+
+	dec c
+	jp z,endFill
+ 	      
+	
+	call calcul64
+	
+	
+	ld b,d
+	pop af
+	push af
+	dec hl
+
+	fillRowLeft
+		ld (hl),a
+		dec hl 
+		djnz fillRowLeft
+
+	dec c
+	jp z,endFill
+
+	call calcul64
+
+	ld b,d
+	pop af
+	push af
+	inc hl
+
+	jp fillRowRight
+	
+endFill
+	pop af
+	ret
+calcul64
+	ld a,h
+	add 8
+	ld h,a
+
+	ret nc
+	push bc
+	ld bc,#C040
+	add hl,bc
+	pop bc
+	ret
+
+calcul2:  
+	ld a,d                    ;on recopie D dans A
+        add a,#08                  ;on ajoute #08 à A
+        ld d,a                    ;on recopie A dans D
+                        ;DE contient la nouvelle adresse
+        ret nc
+                ;si débordement on continue donc ici et cela signifie qu'on doit ajouter #C050 à notre adresse
+        ex hl,de                  ;on a besoin que notre adresse soit dans HL pour pouvoir lui additionner quelque chose
+                ;l'adresse est maintenant dans HL
+        ld bc,#C040               ;on met #C050 dans BC
+        add hl,bc                  ;on additionne HL et BC
+                ;HL contient maintenant l'adresse de la ligne inférieure mais on la veut dans DE
+        ex hl,de                  ;on refait l'échange et DE contient donc l'adr
+ 	       
+	ret                      
 
 PrintChar:
 	push bc

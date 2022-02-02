@@ -1,0 +1,1 @@
+rasm.exe -eo -m -amper main.asm -oi  pocky.sna

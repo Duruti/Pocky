@@ -39,6 +39,9 @@ initKeyboard:
 getKeys:
 	;xor a
 	;ld e,a
+	
+	call vbl
+	
 	ld e,&0
 	;ld e,a ; save dans e
 
@@ -83,6 +86,7 @@ getKeys:
 	ld e,a
 
 	ld (newKey),a	
+	
 	ret
 
 updateKeys:
@@ -140,14 +144,18 @@ upAction:
 	ld a,(newKey)
 	bit bitUp,a
 	ret nz
-   jp addLevel1
+	if cheat
+   	jp addLevel1
+	ENDIF
    ; action a faire
 	ret
 downAction:
 	ld a,(newKey)
 	bit bitDown,a
 	ret nz
-   jp decLevel
+	if cheat
+  	   jp decLevel
+	endif
    ; action a faire
 	ret
 

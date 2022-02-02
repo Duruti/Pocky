@@ -5,10 +5,7 @@ gameover:
    xor A
    ld (exit),a
 
-   ;ld a,5
-   ;call  &BB96
-   ;ld hl,&000A
-   ;call locate
+  
    ld hl,&0CF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
    ld hl,textGameover
@@ -73,6 +70,8 @@ drawVictory:
 
 
 loopVictory:
+  ; call vbl
+
   call getKeys
    call updateKeys
 
@@ -88,6 +87,7 @@ loopVictory:
 loopGameover:
    ;call #bb06 
    ;cp 'f'
+  ; call vbl
    call getKeys
    call updateKeys
 

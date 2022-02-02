@@ -50,4 +50,4 @@ getAdrScreen:
    ret 
 
 
-read "spriteRoutine/transparence.asm"
+include "spriteRoutine/transparence.asm"

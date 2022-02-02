@@ -75,34 +75,36 @@ loadLevel:
       add hl,de
       djnz bclAddAdrLevel
    suite:
-   push hl
+   push hl ;transfert hl dans ix
    pop ix
 
   ; ld ix,levels
 
-   ld a,(ix)
+   ld a,(ix)      ;max color
    ld (maxColor),a
  ; DEFB #ED,#FF
-   ld a,(ix+1)
+   ld a,(ix+1)    ; nb essais
    ld (currentTry),a
    call convertTry
    ld (maxTry),a
-   ld a,(ix+2)
+   ld a,(ix+2)    ; nb lignes
    ld (nbLines),a
-   ld a,(ix+3)
+   ld a,(ix+3)    ; nb colonne
    ld (nbRows),a
       ;seed +4,+5
    push hl
    ld h,(ix+4)
    ld l,(ix+5)
-   ld  (rndseed+1),hl   
+   ld  (rndseed+1),hl   ; la seed
 
    ld hl,&c0de
    ld  (rndseed+4),hl   
+   
    pop hl
-   ld a,(ix+6)
+
+   ld a,(ix+6)          ; clef
    ld (keys),a
-   ld a,(ix+7)
+   ld a,(ix+7)          ; nb block
    ld (nbBlocks),a
    cp 0
    call nz,loadBlocks
@@ -159,7 +161,7 @@ loadBlocks:
    ld b,0
 
   ; ld hl,levels
-   ld de,6
+   ld de,8
    add hl,de
 ;;;   inc hl : inc hl : inc hl : inc hl : inc hl : inc hl ; positionne la pile +6
    ld de,blocks

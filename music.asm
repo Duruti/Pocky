@@ -1,79 +1,9 @@
-
-BUILDSNA
-SNASET CPC_TYPE,0
-BANKset 0
-
-run #1000
-org #1000
-
-lineInt equ 3
-
-; synchronise le compteur d'interruption
-
-        call frame
-	xor a
-	ld (nbInt),a
-        ld (timer),a
-        ld (isRun),a
-	; redirige les interruptions
-
-	; change le pointeur d'interruption
-	ld a,&c3 
-        ld (&38),a
-	ld hl,interrupt
-	ld (#39),hl
-	
-        ld hl,Music_Start
-        call Main_Player_Start + 0
+initMusic:	
    
-        ei
-
-bcl:
-	jr bcl
-
-
-interrupt:
-	push af : push bc : push de : push hl
-
-	ld a,(nbInt)
-	inc a
-	ld (nbInt),a
-	cp lineInt
-	call z,changeColor
-	call nz,Colorback
-	ld a,(nbInt)
-	cp 6
-	jr nz,endInt
-	xor a
-	ld (nbInt),a
-
-endInt
-        pop hl : pop de : pop bc : pop af
-
-	ei
-	ret
-
-
-FRAME  	LD B,#F5
-FRM     IN A,(C):RRA:JR NC,FRM : nop : ret
-
-colorBack:
-	
-	lD BC,#7F10:OUT (C),C:LD C,70:OUT (C),C
-	ret
-
-changeColor:
-	
-	
-        LD BC,#7F10:OUT (C),C:LD C,78:OUT (C),C
-        call Main_Player_Start + 3
-  
-	LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
-	ret
-
-timer db 0
-isRun db 0
-nbInt: db 0
+   ld hl,Music_Start
+   call Main_Player_Start + 0
+   
+   ret
 
 
 
@@ -81,10 +11,9 @@ nbInt: db 0
 Main_Player_Start:
         ;Selects the hardware. Not mandatory, as Amstrad CPC is default.
         PLY_AKY_HARDWARE_CPC = 1
-        PLY_AKY_ROM = 1
-        PLY_AKY_ROM_Buffer = #8000
+        
         ;Want a ROM player (a player without automodification)?
-        ;PLY_AKY_Rom = 1                         ;Must be set BEFORE the player is included.
+       ;PLY_AKY_Rom = 1                         ;Must be set BEFORE the player is included.
 
         ;Includes here the Player Configuration source of the songs (you can generate them with AT2 while exporting the songs).
         ;If you don't have any, the player will use a default Configuration (full code used), which may not be optimal.
@@ -112,9 +41,4 @@ Music_Start:
         ;include "MusicBoulesEtBits.asm"
 
 Music_End:
-
-
-
-
-
 

@@ -7,44 +7,6 @@ sizeBlocChar equ 8*2 ;8*2
 
 
 
-;call changeMode
-
-;call test
-;ret
-
-; ld hl,Palette
-; call loadPalette
-; 	ld hl,&0000;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
-; 	ld (adrPrint),hl ; save la position
-
-; 	ld hl,texte ; hl l'adresse du texte
-; 	ld b,32
-; loopMain
-
-	
-; 	push bc
-; 	push hl
-; 	ld de,(adrPrint)
-; 	push de
-; 	call printText
-
-; 	pop hl
-; 	ld bc,8
-; 	add hl,bc
-; 	ld (adrPrint),hl
-
-; 	pop hl
-; 	ld bc,33
-; 	add hl,bc
-; 	pop bc
-; 	djnz loopMain	
-
-	ret
-
-
-	ret
-
-
 PrintChar:
 	push bc
 	ldi:ldi
@@ -225,46 +187,8 @@ ret
 
 
 timerTexte: db 0
-font: incbin "font3.bin"
-;palette : db 1,22,10,26
-;texte: db "La fabuleuse histoire de cuisine",0
-;texte2: db "solitaire de DEADSYSTEM",0
-;texte: db "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
-;texte2: db "abcdefghijklmnopqrstuvwxyz",0
-;org #5000
+
 texte:
-;	db "                                ",0
-	db "Lorem ipsum dolor sit amet. Qui ",0
-	db "numquam minima aut perspiciatis ",0
-	db "quisquam eos consequuntur       ",0
-	db "necessitatibus et ipsa rerum est",0
-	db "voluptatem mollitia et iste     ",0
-	db "quidem id saepe harum. Ea nihil ",0
-	db "aliquam non neque voluptatem et ",0
-	db "illum illo. Qui illo velit ex   ",0
-	db "voluptatem rerum non neque      ",0
-	db "repudiandae cum officiis        ",0
-	db "consequuntur. Rem aspernatur    ",0
-	db "perferendis aut similique       ",0
-	db "laborum ut debitis eius sit     ",0
-	db "dignissimos provident ut        ",0
-	db "sapiente soluta sit accusamus   ",0
-	db "Quis et nobis tempore.          ",0
-	db "Lorem ipsum dolor sit amet. Qui ",0
-	db "numquam minima aut perspiciatis ",0
-	db "quisquam eos consequuntur       ",0
-	db "necessitatibus et ipsa rerum est",0
-	db "voluptatem mollitia et iste     ",0
-	db "quidem id saepe harum. Ea nihil ",0
-	db "aliquam non neque voluptatem et ",0
-	db "illum illo. Qui illo velit ex   ",0
-	db "voluptatem rerum non neque      ",0
-	db "repudiandae cum officiis        ",0
-	db "consequuntur. Rem aspernatur    ",0
-	db "perferendis aut similique       ",0
-	db "laborum ut debitis eius sit     ",0
-	db "dignissimos provident ut        ",0
-	db "sapiente soluta sit accusamus   ",0
 	db "Quis et nobis tempore.          ",0
 
 adrPrint: dw 1 ; pour stocker les coordonnees du caractere

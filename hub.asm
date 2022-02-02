@@ -272,52 +272,6 @@ clearHud:
 
 
 
-; clearHud1:
-
-;    ; premiere ligne
-;   call clearLine
-
-;    ; efface le Hud
-;    ; ligne 
-;       ld a,0
-;       ld (colonne),a
-;       ld a,14
-;       ld (currentLine),a
-;       ld a,11
-;       ld (currentSprite),a
-
-
-;    ld bc,&1002
-
-;    bclRowClearHub:
-
-;       push bc
-;       ld a,(offsetX)
-;       push af
-;       xor a
-;       ld (offsetX),a
-
-;          ;call drawHub
-;       call drawcells
-;       pop af
-;       ld (offsetX),a
-;       ld a,(colonne)
-;       add 4
-;       ld (colonne),a
-;       pop bc
-;       dec B
-;       jp nz,bclRowClearHub
-  
-;       xor A
-;       ld (colonne),a
-;       ld a,(currentLine)
-;       inc a
-;       ld (currentLine),a
-;       ld b,15
-;       dec C
-;       jp nz,bclRowClearHub
-      
-;    ret
 
 clearLine:
     ; premiere ligne
@@ -329,18 +283,6 @@ clearLine:
       djnz bclClear
       ret
 
-; clearLastCell:
-  
-  
-;    ld hl,&FF7C
-;    ld b,8
-;    c1
-;    ld (hl),255
-;    inc hl
-;    dec b
-;    djnz c1
-;    ret
-
 currentCaractere : db 0
-; org #9000
+
 offsetHub: db 0

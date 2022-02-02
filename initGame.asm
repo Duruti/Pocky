@@ -2,18 +2,14 @@ initGame:
 
 init:
 
+ ; border 0
+  LD BC,#7F10:OUT (C),C:LD C,&54:OUT (C),C
 
-ld a,1
-;call &BB96
-ld a,2
-;call &bb90
-
-;call cls
 call clearHud
 ld hl,&C000
-   ld bc,&40E0-1
-   ld a,&30
-   call FillRect
+ld bc,&40E0-1
+ld a,&30
+call FillRect
 
 
 call loadLevel
@@ -183,5 +179,7 @@ loopLine:
  	; ld (adrPrint),hl ; save la position
  	; ld hl,texte ; hl l'adresse du texte
    ; call printText
-   
+  
+ 
+
    jp touche

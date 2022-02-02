@@ -4,9 +4,6 @@ overcanVertical:
 
    ; passage en overcan vertical 32 caractere et 32 lignes
 
-   ld bc,&0
-   call &bc38
-
 
    ld bc,&bc00+1 : out (c),c
    ld bc,&bd00+32 : out (c),c
