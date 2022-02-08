@@ -1,3 +1,3 @@
 IsMusic = 0
-Debug = 1
+Debug = 0
 cheat = 1

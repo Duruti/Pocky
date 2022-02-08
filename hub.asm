@@ -97,8 +97,18 @@ drawCursor:
    ld (offsetX),a
    ret
 
+resetCursor2:
+   ld hl,&c614
+   ld bc,&180f
+   ld a,%11000000 ;&30
+   call FillRect
+ret
+
+
 resetCursor:
-    
+   jp resetCursor2
+
+
    ld a,12 ; positionne le hub sur la 14 eme lignes
    ld (currentLine),a
 

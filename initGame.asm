@@ -3,12 +3,12 @@ initGame:
 init:
 
  ; border 0
-  LD BC,#7F10:OUT (C),C:LD C,&54:OUT (C),C
+  LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
 
 call clearHud
 ld hl,&C000
 ld bc,&40E0-1
-ld a,&30
+ld a,%11000000 ;&30
 call FillRect
 
 
@@ -70,6 +70,8 @@ call nz,initWalls
 ; ld (ix+5),a
 ld a,1
 ld (isOffsetY),a
+
+call drawBorder
 
 ld de,grid ; pointeur sur la grille du jeu
 ld a,(nbLines)

@@ -2,7 +2,7 @@ BUILDSNA
 SNASET CPC_TYPE,0
 BANKset 0
 
-SAVE "pocky.bin",start,end-start,DSK,"pocky.dsk"
+SAVE "pocky.bin",start,end-start,DSK,"DSKA0000.dsk"
 
 run #1000
 org #1000
@@ -153,7 +153,7 @@ include "interruption.asm"
 include "keyManager.asm"
 include "initGame.asm"
 include "print.asm"
-
+include "border.asm"
 
 textWin : db " WIN yeah ",0
 textGameover : db "GAME OVER",0
@@ -161,7 +161,8 @@ textHub : db "Reste:   /15",0
 textLevel : db "Lvl:  ",0
 
 palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
-paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
+;paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
+paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
 ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
 ;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15
 Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
@@ -233,33 +234,54 @@ pileCouleur : ds 255,#FA
 ; data des sprites
 dataSprite: 
 
-INCbin	"spriteRoutine/tl1.bin",&80
-INCbin	"spriteRoutine/tl2.bin",&80
-INCbin	"spriteRoutine/tl3.bin",&80
-INCbin	"spriteRoutine/tl4.bin",&80
-INCbin	"spriteRoutine/tl5.bin",&80
-INCbin	"spriteRoutine/tl6.bin",&80
-INCbin	"spriteRoutine/tl6.bin",&80
+; INCbin	"spriteRoutine/tl1.bin",&80
+; INCbin	"spriteRoutine/tl2.bin",&80
+; INCbin	"spriteRoutine/tl3.bin",&80
+; INCbin	"spriteRoutine/tl4.bin",&80
+; INCbin	"spriteRoutine/tl5.bin",&80
+; INCbin	"spriteRoutine/tl6.bin",&80
+; INCbin	"spriteRoutine/tl6.bin",&80
+
+INCbin	"img/cell1bd.win",&80
+INCbin	"img/cell2bd.win",&80
+INCbin	"img/cell3bd.win",&80
+INCbin	"img/cell4bd.win",&80
+INCbin	"img/cell5bd.win",&80
+INCbin	"img/cell6bd.win",&80
+INCbin	"img/cell1bd.win",&80
 
 INCbin	"spriteRoutine/cell7.bin",&80
-INCbin	"spriteRoutine/curs2.bin",&80
-INCbin	"spriteRoutine/void3.bin",&80
-INCbin	"spriteRoutine/padl3.bin",&80
+;INCbin	"spriteRoutine/curs2.bin",&80
+INCbin	"img/cursbd.win",&80
+;INCbin	"spriteRoutine/void3.bin",&80
+INCbin	"img/voidBD.win",&80
+;INCbin	"spriteRoutine/padl3.bin",&80
+INCbin	"img/padlbd.win",&80
 ;voidMode1: ds 68,&0
 
 mkey: 
-INCbin "spriteRoutine/mkey3.bin",&80
+;INCbin "spriteRoutine/mkey3.bin",&80
+INCbin "img/keymbd.win",&80
 endMkey:
 key: 
-INCbin	"spriteRoutine/key3.bin",&80
+;INCbin	"spriteRoutine/key3.bin",&80
+INCbin	"img/keybd.win",&80
 endKey:
+INCbin	"img/border1.win",&80
+INCbin	"img/border2.win",&80
+INCbin	"img/border3.win",&80
+INCbin	"img/border4.win",&80
+INCbin	"img/border5.win",&80
+INCbin	"img/border6.win",&80
+INCbin	"img/border7.win",&80
+
 
 font: incbin "font3.bin",&80
 
 lenghtLevel equ 29 ; taille en octet d'un level
 maxLevel equ 10
 nbInt: db 0
-initCurrentLevel equ 9
+initCurrentLevel equ 5
 levels :
  ;colors,maxTry,Line,Colums,seed*2,key,nbBlock,10*dataBlock,nbVoid,10*dataVoid
  
@@ -275,7 +297,7 @@ levels :
    ;db 3,25,5,10,&FF,0,&30,&31,&32,&42,00
    ; key
    ;db 4,13,8,8,&77,4,&33,&34,&43,&44,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-   db 4,14,11,14,&00,&00,&FF,0,&33,&34,&43,&44,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   db 4,14,10,14,&00,&00,&FF,0,&33,&34,&43,&44,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
    
    db 5,13,10,4,&00,&00,&39,8,&12,&13,&22,&23,&18,&19,&28,&29,0,0,0,0,0,0,0,0,0,0,0,0,0
 
