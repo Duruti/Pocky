@@ -1,0 +1,19 @@
+ManageDsk v0.20g by Demoniak, a win9x tool
+(french, english, spanish) :
+
+- create an empty .DSK file (DATA format),
+- add files in a .DSK file,
+- extract files from an .DSK file,
+- rename files in a .DSK file
+- delete files in a .DSK file,
+
+http://demoniak-contrib.forumactif.com/
+
+ManageDsk v0.20g par Demoniak, un utilitaire
+win9x (espagnol, français et anglais) pour :
+
+- créer un fichier .DSK vide (format data)
+- ajouter des fichiers à un .DSK
+- extraire des fichier d'un .DSK
+- renommer des fichiers d'un .DSK
+- effacer des fichiers d'un .DSK

@@ -224,6 +224,8 @@ currentPosition : db 0
 cursorPosition: db 0
 tempPosition: db 0
 isWin : db 0
+isFoundKey: db 0
+positionStart: db &00 ; position de départ de la grille
 
 ; fait commencer la pile en poids faible a 00 pour avoir un index sur 1 octect
 align 256
@@ -276,15 +278,25 @@ INCbin	"img/border6.win",&80
 INCbin	"img/border7.win",&80
 
 
+mShow: 
+;INCbin "spriteRoutine/mkey3.bin",&80
+INCbin "img/showm.win",&80
+endmShow:
+show: 
+;INCbin	"spriteRoutine/key3.bin",&80
+INCbin	"img/show.win",&80
+endshow:
+
+
 font: incbin "font3.bin",&80
 
 lenghtLevel equ 29 ; taille en octet d'un level
 maxLevel equ 10
 nbInt: db 0
-initCurrentLevel equ 5
+
 levels :
  ;colors,maxTry,Line,Colums,seed*2,key,nbBlock,10*dataBlock,nbVoid,10*dataVoid
- 
+   db 3,4,12,12,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
    db 3,4,4,4,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
    db 3,5,5,5,&a1,&A2,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
    db 4,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

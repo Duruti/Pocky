@@ -278,6 +278,8 @@ ChangeColorCursor:
   ; DEFB #ED,#FF
    ld a,(cursorPosition)
    call floodFill
+   call drawIndicator
+
   ; DEFB #ED,#FF
    ret
 

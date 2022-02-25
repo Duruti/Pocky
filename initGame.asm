@@ -190,8 +190,7 @@ loopLine:
  	; ld (adrPrint),hl ; save la position
  	; ld hl,texte ; hl l'adresse du texte
    ; call printText
-  
- 
+  call drawIndicator
 
    jp touche
 
@@ -204,3 +203,28 @@ loopLine:
     srl a
     ld (offsetY),a
     ret
+
+drawIndicator:
+
+  ld a,1
+  ld (isOffsetY),a
+
+  ld a,(positionStart)
+  and %00001111
+  ld (currentLine),a
+  ld a,(positionStart)
+  and %11110000
+  srl a : srl a 
+  ld (colonne),a
+
+  call getAdrScreen
+  ld hl,mshow
+  call drawMask
+
+
+  call getAdrScreen
+  ld hl,show
+  call drawSpriteOr
+
+  ret
+  

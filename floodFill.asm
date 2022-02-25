@@ -28,8 +28,14 @@ floodFill:
 
    ld (couleurRemplissage),a 
    ld b,a
-   ld a,(grid)
+   push bc
+
+   ld a,(positionStart) ; recupere la couleur cible
+   DEFB #ED,#FF
+   call getColor
+   DEFB #ED,#FF
    ld (couleurCible),a
+   pop bc
 
    cp B ; si couleur(pixel) ≠ colcible alors sortir finsi
    ret z
@@ -41,11 +47,10 @@ floodFill:
    ;xor A
    ;ld (controlKey),a
 
-   ld a,&00
+   ld a,(positionStart)
    ld (pileCouleur),a
-   
-   xor a
-   inc a
+  ; DEFB #ED,#FF
+   ld a,1
    ld (indexPile),a ; Empile la position de la cellule de départ (0,0)
    ;ld (indexPilePositionKey),a ; mets a zero
 
@@ -67,6 +72,7 @@ floodFill:
   
 
       call setColor
+   ;DEFB #ED,#FF
 
       call checkNorth
       call checkSouth
@@ -75,7 +81,7 @@ floodFill:
 
 
       ld a,(indexPile)
-     ; DEFB #ED,#FF
+    ;  DEFB #ED,#FF
       cp 0
       jp z,endLoopFill
       jp loopFloodFill
@@ -103,7 +109,7 @@ floodFill:
       ld a,&FF
       ld (couleurRemplissage),a
 
-      ld a,&00
+      ld a,(positionStart)
       ld (pileCouleur),a
    
       ld a,1
@@ -322,7 +328,7 @@ getColor:
    ret
 
 checkNorth:
-   ;DEFB #ED,#FF
+  
    ; regarde si on ne sort pas de la grille en haut
    ld a,(currentPosition)
    ld c,a
@@ -420,7 +426,7 @@ controlColor:
    ret
 
 unblock:
-;DEFB #ED,#FF
+   ;DEFB #ED,#FF
    ld a,(nbBlocks)
 
    ld b,a
@@ -449,4 +455,7 @@ unblock:
 
       ret
 
-isFoundKey: db 0
+
+
+
+

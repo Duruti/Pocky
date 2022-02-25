@@ -129,7 +129,7 @@ randData dw &5000
 random:
         push    hl
         push    de
-        DEFB #ED,#FF
+        ;DEFB #ED,#FF
         rndseed:
                 ld  hl,&1111   ; yw -> zt
                 ld  de,&C0DE   ; xz -> yw
