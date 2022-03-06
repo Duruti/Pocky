@@ -41,7 +41,9 @@ getKeys:
 	;ld e,a
 	
 	call vbl
-	
+	;call getJoystick
+	;ret
+
 	ld e,&0
 	;ld e,a ; save dans e
 
@@ -85,8 +87,68 @@ getKeys:
 	or e
 	ld e,a
 
-	ld (newKey),a	
+	ld (newKey),a	; save le clavier
+
+	call getJoystick
 	
+	ret
+getJoystick:
+	;xor a
+	;ld e,a
+	ld e,&0
+	;ld e,a ; save dans e
+
+	; bit 7
+
+	ld d,9 ; espace
+   call TestKeyboard ; a contient le test
+	and %00010000 ; ne garde que le bit 4    	
+	sla a : sla a : sla a ; reposition en bit 7 
+	or e 
+	ld e,a
+
+
+	;bit 0 
+	ld d,9 ; left
+    	call TestKeyboard ; a contient le test
+	and %00000100 ; ne garde que le bit 2
+	srl a : srl a ; repositionne en bit 0    	
+	or e
+	ld e,a
+
+	;Right 
+	ld d,9 
+    	call TestKeyboard ; a contient le test
+	and %00001000 ; ne garde que le bit 3 
+	srl a : srl a ; repositionne en bit 1    	
+	or e
+	ld e,a
+
+	;Up 
+	ld d,9 
+    	call TestKeyboard ; a contient le test
+	and %00000001 ; ne garde que le bit 1    	
+	sla a : sla a:sla a: sla a ; repositionne en bit 4
+	
+	or e
+	ld e,a
+
+	;down 
+	ld d,9 
+    	call TestKeyboard ; a contient le test
+	and %00000010 ; ne garde que le bit 1    	
+	sla a : sla a; repositionne en bit 3
+
+	or e
+	cpl ; inverse a
+	ld e,a
+	; on est obligé d'inverser les registres pour faire le or car il sont a 1 si pas d'action
+	ld a,(newKey); recupere le test du clavier précedent	
+	cpl 
+	or e
+	cpl ; reprend la convention initial pas d'action alors 1
+	ld (newKey),a	
+
 	ret
 
 updateKeys:
