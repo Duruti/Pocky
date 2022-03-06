@@ -88,4 +88,4 @@ getAdrScreen:
    ret 
 
 
-include "spriteRoutine/transparence.asm"
+include "transparence.asm"

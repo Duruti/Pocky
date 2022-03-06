@@ -1,8 +1,19 @@
+
+; ______          _            _____                      
+; | ___ \        | |          |  __ \                     
+; | |_/ /__   ___| | ___   _  | |  \/ __ _ _ __ ___   ___ 
+; |  __/ _ \ / __| |/ / | | | | | __ / _` | '_ ` _ \ / _ \
+; | | | (_) | (__|   <| |_| | | |_\ \ (_| | | | | | |  __/
+; \_|  \___/ \___|_|\_\\__, |  \____/\__,_|_| |_| |_|\___|
+;                       __/ |                             
+;                      |___/                              
+
+
 BUILDSNA
 SNASET CPC_TYPE,0
 BANKset 0
 
-SAVE "pocky.bin",start,end-start,DSK,"DSKA0000.dsk"
+SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0000.dsk"
 
 run #1000
 org #1000
@@ -60,11 +71,9 @@ ENDIF
 jp initGame
 
 touche:
-;jp touche
 
-   ;call vbl
-   ;call Main_Player_Start + 3
 
+   ; check is win
    call checkIsWin
    ld a,(isWin)
    cp 1
@@ -76,84 +85,38 @@ touche:
    ld a,(currentTry)
    cp b
    jp z,gameover 
-
-	;call #bb06 ; vecteur clavier attends l'appuis d'une touche
-;	DEFB #ED,#FF
-   xor a
-   cp 'Q'
-	jp z,fin
-	cp 'q'
-	jp z,fin
-   cp 'R'
-	jp z,init
-	cp 'r'
-	jp z,init
-   ; cp 'U'
-	; jp z,addLevel
-	; cp 'u'
-	; jp z,addLevel
-   ; cp 'C'
-	; jp z,addColor
-	; cp 'c'
-	; jp z,addColor
-
-   cp &F3 ;'z' fleche droite
-	jp z,incCursor
- ;  cp &F3 ;'Z'
-	;jp z,incCursor
-   
-   cp &F2 ;'a' fleche gauche
-	jp z,decCursor
-  ; cp 'A'
-;	jp z,decCursor
-
-   cp &F0 ; fleche haut
-;	jp z,addLevel1
-   cp &F1 ;'a' fleche bas
-	jp z,decLevel
-
-   cp ' '
-   call z,ChangeColorCursor
   
-   
-
-   call getKeys
-   call updateKeys
+   call getKeys   ; controls keys and Joystick
+   call updateKeys ; update actions/keys
 
  	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
  	ld (oldKey),a
 
- 	;ld a,(exit)    	; test si on quitte le programme
-  	;cp 1
   	jr touche
 
 
-  ; jp touche
 
 fin:	ret
 
 
 
+include "sources/utils.asm"
+include "sources/initGrid.asm"
+include "sources/hub.asm"
+include "sources/changeColors.asm"
+include "sources/floodFill.asm"
+include "sources/drawCell2.asm"
+include "sources/drawKey.asm"
+include "sources/levelManager.asm"
+include "sources/counter.asm"
+include "sources/victory.asm"
+include "sources/overscan.asm"
+include "sources/interruption.asm"
+include "sources/keyManager.asm"
+include "sources/initGame.asm"
+include "sources/print.asm"
+include "sources/border.asm"
 
-
-
-
-include "utils.asm"
-include "initGrid.asm"
-include "hub.asm"
-include "changeColors.asm"
-include "floodFill.asm"
-include "drawCell2.asm"
-include "drawKey.asm"
-include "levelManager.asm"
-include "counter.asm"
-include "victory.asm"
-include "overscan.asm"
-include "interruption.asm"
-include "keyManager.asm"
-include "initGame.asm"
-include "print.asm"
-include "border.asm"
 
 textWin : db " WIN yeah ",0
 textGameover : db "GAME OVER",0
@@ -167,9 +130,8 @@ paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
 ;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15
 Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
 align 256
-;org #6000
-grid : ds 255,0
-gridCopy : ds 255,0
+grid : ds 255,0   ; grille du jeu
+gridCopy : ds 255,0 ; grille tampon
 
 
 align 256
@@ -230,19 +192,10 @@ positionStart: db &00 ; position de départ de la grille
 ; fait commencer la pile en poids faible a 00 pour avoir un index sur 1 octect
 align 256
 pileCouleur : ds 255,#FA
-;org #7100
-;pilePositionKey : ds 255,0
 
 ; data des sprites
 dataSprite: 
 
-; INCbin	"spriteRoutine/tl1.bin",&80
-; INCbin	"spriteRoutine/tl2.bin",&80
-; INCbin	"spriteRoutine/tl3.bin",&80
-; INCbin	"spriteRoutine/tl4.bin",&80
-; INCbin	"spriteRoutine/tl5.bin",&80
-; INCbin	"spriteRoutine/tl6.bin",&80
-; INCbin	"spriteRoutine/tl6.bin",&80
 
 INCbin	"img/cell1bd.win",&80
 INCbin	"img/cell2bd.win",&80
@@ -253,20 +206,14 @@ INCbin	"img/cell6bd.win",&80
 INCbin	"img/cell1bd.win",&80
 
 INCbin	"spriteRoutine/cell7.bin",&80
-;INCbin	"spriteRoutine/curs2.bin",&80
 INCbin	"img/cursbd.win",&80
-;INCbin	"spriteRoutine/void3.bin",&80
 INCbin	"img/voidBD.win",&80
-;INCbin	"spriteRoutine/padl3.bin",&80
 INCbin	"img/padlbd.win",&80
-;voidMode1: ds 68,&0
 
 mkey: 
-;INCbin "spriteRoutine/mkey3.bin",&80
 INCbin "img/keymbd.win",&80
 endMkey:
 key: 
-;INCbin	"spriteRoutine/key3.bin",&80
 INCbin	"img/keybd.win",&80
 endKey:
 INCbin	"img/border1.win",&80
@@ -279,16 +226,14 @@ INCbin	"img/border7.win",&80
 
 
 mShow: 
-;INCbin "spriteRoutine/mkey3.bin",&80
 INCbin "img/showm.win",&80
 endmShow:
 show: 
-;INCbin	"spriteRoutine/key3.bin",&80
 INCbin	"img/show.win",&80
 endshow:
 
 
-font: incbin "font3.bin",&80
+font: incbin "fonts/font3.bin",&80
 
 lenghtLevel equ 29 ; taille en octet d'un level
 maxLevel equ 10
@@ -319,6 +264,7 @@ levels :
    db 4,28,7,12,&FF,0,&30,&31,&32,&42,&06
    db 6,32,9,9,&55,5,&40,&11,&12,&42,&88
 
-include "music.asm" 
+
+include "sources/music.asm" 
 
 end:

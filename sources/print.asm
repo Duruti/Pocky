@@ -208,5 +208,5 @@ tableChar ; table pour parser le code ascii en fonction de la font
 
 align 256
 LIGNES: 
-incbin "table64.bin"
+incbin "../tables/table64.bin"
 
