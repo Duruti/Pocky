@@ -1,1 +1,1 @@
-rasm.exe -eo -m -amper main.asm -oi  builds/pocky.sna
+rasm.exe -eo -m -amper sources/main.asm -oi  builds/pocky.sna

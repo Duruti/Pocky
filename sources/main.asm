@@ -20,6 +20,7 @@ org #1000
 
 start:
 
+; fichier de configuration du jeu
 include "conf.asm"
 
 
@@ -100,22 +101,22 @@ fin:	ret
 
 
 
-include "sources/utils.asm"
-include "sources/initGrid.asm"
-include "sources/hub.asm"
-include "sources/changeColors.asm"
-include "sources/floodFill.asm"
-include "sources/drawCell2.asm"
-include "sources/drawKey.asm"
-include "sources/levelManager.asm"
-include "sources/counter.asm"
-include "sources/victory.asm"
-include "sources/overscan.asm"
-include "sources/interruption.asm"
-include "sources/keyManager.asm"
-include "sources/initGame.asm"
-include "sources/print.asm"
-include "sources/border.asm"
+include "utils.asm"
+include "initGrid.asm"
+include "hub.asm"
+include "changeColors.asm"
+include "floodFill.asm"
+include "drawCell2.asm"
+include "drawKey.asm"
+include "levelManager.asm"
+include "counter.asm"
+include "victory.asm"
+include "overscan.asm"
+include "interruption.asm"
+include "keyManager.asm"
+include "initGame.asm"
+include "print.asm"
+include "border.asm"
 
 
 textWin : db " WIN yeah ",0
@@ -197,43 +198,43 @@ pileCouleur : ds 255,#FA
 dataSprite: 
 
 
-INCbin	"img/cell1bd.win",&80
-INCbin	"img/cell2bd.win",&80
-INCbin	"img/cell3bd.win",&80
-INCbin	"img/cell4bd.win",&80
-INCbin	"img/cell5bd.win",&80
-INCbin	"img/cell6bd.win",&80
-INCbin	"img/cell1bd.win",&80
+INCbin	"../img/cell1bd.win",&80
+INCbin	"../img/cell2bd.win",&80
+INCbin	"../img/cell3bd.win",&80
+INCbin	"../img/cell4bd.win",&80
+INCbin	"../img/cell5bd.win",&80
+INCbin	"../img/cell6bd.win",&80
+INCbin	"../img/cell1bd.win",&80
 
-INCbin	"spriteRoutine/cell7.bin",&80
-INCbin	"img/cursbd.win",&80
-INCbin	"img/voidBD.win",&80
-INCbin	"img/padlbd.win",&80
+INCbin	"../spriteRoutine/cell7.bin",&80
+INCbin	"../img/cursbd.win",&80
+INCbin	"../img/voidBD.win",&80
+INCbin	"../img/padlbd.win",&80
 
 mkey: 
-INCbin "img/keymbd.win",&80
+INCbin "../img/keymbd.win",&80
 endMkey:
 key: 
-INCbin	"img/keybd.win",&80
+INCbin	"../img/keybd.win",&80
 endKey:
-INCbin	"img/border1.win",&80
-INCbin	"img/border2.win",&80
-INCbin	"img/border3.win",&80
-INCbin	"img/border4.win",&80
-INCbin	"img/border5.win",&80
-INCbin	"img/border6.win",&80
-INCbin	"img/border7.win",&80
+INCbin	"../img/border1.win",&80
+INCbin	"../img/border2.win",&80
+INCbin	"../img/border3.win",&80
+INCbin	"../img/border4.win",&80
+INCbin	"../img/border5.win",&80
+INCbin	"../img/border6.win",&80
+INCbin	"../img/border7.win",&80
 
 
 mShow: 
-INCbin "img/showm.win",&80
+INCbin "../img/showm.win",&80
 endmShow:
 show: 
-INCbin	"img/show.win",&80
+INCbin	"../img/show.win",&80
 endshow:
 
 
-font: incbin "fonts/font3.bin",&80
+font: incbin "../fonts/font3.bin",&80
 
 lenghtLevel equ 29 ; taille en octet d'un level
 maxLevel equ 10
@@ -265,6 +266,6 @@ levels :
    db 6,32,9,9,&55,5,&40,&11,&12,&42,&88
 
 
-include "sources/music.asm" 
+include "music.asm" 
 
 end:
