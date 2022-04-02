@@ -2,8 +2,6 @@ initGame:
 
 init:
 
- ; border 0
-  LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
 
 call clearHud
 ld hl,&C000
@@ -51,8 +49,6 @@ call CalcOffsetY
 ld (offsetX),a
 
 
-ld hl,paletteMode0
-call loadPaletteGA
 
 
 ld a,(nbBlocks)
@@ -192,7 +188,20 @@ loopLine:
    ; call printText
   call drawIndicator
 
-   jp touche
+ ; border 0
+  LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+
+  ld hl,paletteMode0
+  call loadPaletteGA
+  ret
+
+
+; ****************************************************
+; ****************************************************
+; ****************************************************
+; ****************************************************
+
+  ; jp touche
 
    CalcOffsetY:
     ld a,(nbLines)

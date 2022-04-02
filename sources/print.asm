@@ -90,6 +90,8 @@ calcAdrPrint:
 	ex hl,de
 	
 	ld hl,lignes
+	ld bc,&4000
+	
 	add hl,de
 	ld e,(hl)
 	inc hl
@@ -185,7 +187,7 @@ ld bc,&bd00+34 : out (c),c
 ret
 
 
-
+correctionAdresse dw &4000
 timerTexte: db 0
 
 texte:

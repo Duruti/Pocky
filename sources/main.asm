@@ -40,60 +40,76 @@ colorPaperHub equ 1
 
 ; redirige les interruptions
 ;save interruption pointer
-	ld hl,(&39)
-	ld (restorInt+1),hl
- 
+;DEFB #ED,#FF
+   ;di
+	;ld hl,(&39)
+	;ld (restorInt+1),hl
+   ;ei
 	; change le pointeur d'interruption
 
 
 ; align 256 positionne le code a une adresse multiple de 256
 ;nop
 ;align #FF ;marche pas
-call overcanVertical
 
+;call overcanVertical
+;xor A
+;ld (compteurAffichage),A
 
-xor A
-ld (compteurAffichage),A
+; call initEditor
+; call updateEditor
 
-  
-
-
-
-; init
+;call initScene
 ld a,initCurrentLevel
 ld (currentLevel),a
- call loadInterruption 
 
-if IsMusic
-   call initMusic
-ENDIF
+; change la scene:
 
-
-jp initGame
-
-touche:
+ld e,sceneMenu
+call changeScene
 
 
-   ; check is win
-   call checkIsWin
-   ld a,(isWin)
-   cp 1
-   jp z,drawVictory
 
-   ; check is lose
-   ld a,(nbTry)
-   ld b,a
-   ld a,(currentTry)
-   cp b
-   jp z,gameover 
+;call loadGame
+
+
+
   
-   call getKeys   ; controls keys and Joystick
-   call updateKeys ; update actions/keys
 
- 	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
- 	ld (oldKey),a
 
-  	jr touche
+;DEFB #ED,#FF
+
+gameloop:
+   
+   updateCurrentScene:   call $ ; automodifié
+
+   jp gameloop
+
+
+
+; touche:
+
+
+;    ; check is win
+;    call checkIsWin
+;    ld a,(isWin)
+;    cp 1
+;    jp z,drawVictory
+
+;    ; check is lose
+;    ld a,(nbTry)
+;    ld b,a
+;    ld a,(currentTry)
+;    cp b
+;    jp z,gameover 
+  
+;    call getKeys   ; controls keys and Joystick
+;    call updateKeys ; update actions/keys
+
+;  	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
+;  	ld (oldKey),a
+
+;   	jr touche
 
 
 
@@ -117,7 +133,12 @@ include "keyManager.asm"
 include "initGame.asm"
 include "print.asm"
 include "border.asm"
+include "gameState/gameState.asm"
+include "sceneManager/sceneManager.asm"
 
+endCode:
+
+startVariable:
 
 textWin : db " WIN yeah ",0
 textGameover : db "GAME OVER",0
@@ -127,6 +148,8 @@ textLevel : db "Lvl:  ",0
 palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
 ;paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
 paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
+paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
+
 ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
 ;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15
 Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
@@ -194,6 +217,8 @@ positionStart: db &00 ; position de départ de la grille
 align 256
 pileCouleur : ds 255,#FA
 
+endVariable:
+startGFX:
 ; data des sprites
 dataSprite: 
 
@@ -235,7 +260,9 @@ endshow:
 
 
 font: incbin "../fonts/font3.bin",&80
-
+titleScreen: incbin "../img/title.scr",&80
+endGFX:
+startLevel:
 lenghtLevel equ 29 ; taille en octet d'un level
 maxLevel equ 10
 nbInt: db 0
@@ -264,8 +291,12 @@ levels :
 
    db 4,28,7,12,&FF,0,&30,&31,&32,&42,&06
    db 6,32,9,9,&55,5,&40,&11,&12,&42,&88
+endLevel 
 
+org &8000
+adrMusic:
 
 include "music.asm" 
-
+endAdrMusic:
 end:
+include "../logs/log.asm"

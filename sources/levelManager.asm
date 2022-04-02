@@ -169,19 +169,27 @@ loadBlocks:
 
    ret
 addLevel1:
+    ld e,sceneMenu
+    call changeScene
+    ret
+
    ld a,(currentLevel)
    cp maxLevel ; maxlevel
    jr z,endAddLevel
    ;DEFB #ED,#FF
    inc A
    ld (currentLevel),A
-   jp init
+   ;jp init
+   call init
+   ret
 
    endAddLevel:
    ld a,1
    ld (currentLevel),A
-   jp init
-
+   ;jp init
+   call init
+   ret
+   
 decLevel
    ld a,(currentLevel)
    cp 1 ; maxlevel
@@ -189,13 +197,17 @@ decLevel
  ;  DEFB #ED,#FF
    dec A
    ld (currentLevel),A
-   jp init
-
+   ;jp init
+   call init
+   ret
+   
    endDecLevel:
    ld a,maxLevel
    ld (currentLevel),A
-   jp init
-
+   ;jp init
+   call init
+   ret
+   
 
 getAdresseCell:
       ; retourne l'adresse dans la grille (hl) en fonction de la position de la cellule dans A

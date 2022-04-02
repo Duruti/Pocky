@@ -95,7 +95,7 @@ getKeys:
 getJoystick:
 	;xor a
 	;ld e,a
-	ld e,&0
+	ld e,&ff
 	;ld e,a ; save dans e
 
 	; bit 7
@@ -207,7 +207,7 @@ upAction:
 	bit bitUp,a
 	ret nz
 	if cheat
-   	jp addLevel1
+   	call addLevel1
 	ENDIF
    ; action a faire
 	ret

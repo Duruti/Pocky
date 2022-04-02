@@ -212,7 +212,7 @@ incCursor:
       call drawCursor
 
       ret
-      jp touche
+      jp gameloop
 
 decCursor:
    
@@ -236,7 +236,7 @@ decCursor:
    call drawCursor
    ret
 
-   jp touche
+   jp gameloop
 
    initCursorHigh:
       ld a,(maxColor)
@@ -253,7 +253,7 @@ decCursor:
 
       call drawCursor
       ret
-      jp touche
+      jp gameloop
 
 updateTextHub:
    
