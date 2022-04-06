@@ -32,6 +32,11 @@ changeScene:
    ; on appelle le load de la scene
 
    ; chargement palette
+   ;di
+   ;ld hl,palInter+1
+   ;ld (hl),paletteBlack  
+   ;ei
+   
    ld hl,paletteBlack
    call loadPaletteGA
    LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C

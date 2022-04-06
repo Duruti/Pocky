@@ -47,7 +47,7 @@ out (c),c
    	LD BC,#7F10:OUT (C),C:LD C,70:OUT (C),C
    ENDIF
 
-   ld hl,paletteMode0
+palInter:   ld hl,paletteMode0
    call loadPaletteGA
    ret
 changeColor:

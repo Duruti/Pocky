@@ -67,6 +67,62 @@ calcul64
 	pop bc
 	ret
 
+FillRect80:
+        ; hl = adresse destination
+        ; a = valeur a remplir
+        ; bc = colonne, ligne
+	ld d,b
+		
+	push af
+	fillRowRight80
+		ld (hl),a
+		inc hl 
+		djnz fillRowRight80
+
+	dec c
+	jp z,endFill80
+ 	      
+	dec hl
+	call calcul80
+	
+	
+	ld b,d
+	pop af
+	push af
+	
+	fillRowLeft80
+		ld (hl),a
+		dec hl 
+		djnz fillRowLeft80
+
+	dec c
+	jp z,endFill80
+	inc hl
+	call calcul80
+
+	ld b,d
+	pop af
+	push af
+	
+
+	jp fillRowRight80
+	
+endFill80
+	pop af
+	ret
+calcul80
+	ld a,h
+	add 8
+	ld h,a
+
+	ret nc
+	push bc
+	ld bc,#C050
+	add hl,bc
+	pop bc
+	ret
+
+
 
 TestKeyboard :
  	ld bc,#f40e  ; Valeur 14 sur le port A
@@ -197,4 +253,26 @@ cls:
 	nop
 ret
 
+drawWindows
+; source = hl
+; dest = de
+; lines = c
+; colums = b
+	vert
+		push bc
+		push de
+		hori 
+			ld a,(hl) : inc hl
+			ld (de),a : inc de
+			djnz hori
+			pop de
+			ex hl,de
+			call calcul64
+			ex hl,de
+			pop bc
+			dec c
+			ld a,c
+			cp 0
+			jr nz,vert
+	ret
 

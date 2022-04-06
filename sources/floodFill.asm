@@ -31,9 +31,9 @@ floodFill:
    push bc
 
    ld a,(positionStart) ; recupere la couleur cible
-   DEFB #ED,#FF
+   ;DEFB #ED,#FF
    call getColor
-   DEFB #ED,#FF
+   ;DEFB #ED,#FF
    ld (couleurCible),a
    pop bc
 

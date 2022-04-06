@@ -7,6 +7,7 @@ bitLeft equ 0 ; d=1
 bitRight equ 1 ; d=0
 bitUp equ 4 ; d=0
 bitDown equ 3 ; d=0
+bitEscape equ 2
 
 initKeyboard:
 	xor a
@@ -15,7 +16,7 @@ initKeyboard:
 	ld (oldKey),a
    ret
 
-    	di ; coupe les interruptions pour pas avoir de conflit
+   ; 	di ; coupe les interruptions pour pas avoir de conflit
 ;;bcl:
 
 ; FRAME  	LD B,#F5
@@ -50,16 +51,16 @@ getKeys:
 	; bit 7
 
 	ld d,5 ; espace
-    	call TestKeyboard ; a contient le test
+   call TestKeyboard ; a contient le test
 	and %10000000 ; ne garde que le bit 7    	
 	or e 
 	ld e,a
 
 
 	;bit 0 
-	ld d,1 ; espace
-    	call TestKeyboard ; a contient le test
-	and %00000001 ; ne garde que le bit 7    	
+	ld d,1 ; left
+   call TestKeyboard ; a contient le test
+	and %00000001 ; ne garde que le bit 0    	
 	or e
 	ld e,a
 
@@ -83,7 +84,13 @@ getKeys:
     	call TestKeyboard ; a contient le test
 	and %00000100 ; ne garde que le bit 7    	
 	sla a 
+	or e
+	ld e,a
 
+	;esc 
+	ld d,8 
+   call TestKeyboard ; a contient le test
+	and %00000100 ; ne garde que le bit 2    	
 	or e
 	ld e,a
 
@@ -95,10 +102,11 @@ getKeys:
 getJoystick:
 	;xor a
 	;ld e,a
-	ld e,&ff
+	ld e,&0
 	;ld e,a ; save dans e
 
 	; bit 7
+	
 
 	ld d,9 ; espace
    call TestKeyboard ; a contient le test
@@ -110,7 +118,7 @@ getJoystick:
 
 	;bit 0 
 	ld d,9 ; left
-    	call TestKeyboard ; a contient le test
+   call TestKeyboard ; a contient le test
 	and %00000100 ; ne garde que le bit 2
 	srl a : srl a ; repositionne en bit 0    	
 	or e
@@ -138,6 +146,16 @@ getJoystick:
     	call TestKeyboard ; a contient le test
 	and %00000010 ; ne garde que le bit 1    	
 	sla a : sla a; repositionne en bit 3
+	or e
+	ld e,a
+
+
+;fire 2
+	ld d,9 
+   call TestKeyboard ; a contient le test
+	and %00100000 ; ne garde que le bit 5    	
+	srl a : srl a : srl a ; repositionne en bit 2
+
 
 	or e
 	cpl ; inverse a
@@ -173,9 +191,20 @@ updateKeys:
 	bit bitDown,a
 	call nz,downAction
 
+	ld a,(oldKey)
+	bit bitEscape,a
+	call nz,escapeAction
 
 	ret
+escapeAction
 
+	ld a,(newKey)
+	bit bitEscape,a
+	ret nz
+
+	ld e,sceneMenu
+   call changeScene
+	ret
 espaceAction:
 	ld a,(newKey)
 	bit bitEspace,a

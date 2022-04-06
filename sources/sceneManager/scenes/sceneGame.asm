@@ -9,12 +9,13 @@ loadGame:
 
 
    call initGame
-   call overcanVertical
+   ;call overcanVertical
    xor A
    ld (compteurAffichage),A
 
-   call loadInterruption 
+  ; call loadInterruption 
 
+  
    ret
 
 

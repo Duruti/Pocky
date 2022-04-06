@@ -4,6 +4,7 @@ overcanVertical:
 
    ; passage en overcan vertical 32 caractere et 32 lignes
 
+  
 
    ld bc,&bc00+1 : out (c),c
    ld bc,&bd00+32 : out (c),c
@@ -23,6 +24,9 @@ overcanVertical:
 ret
 
 modeStandart:
+
+   
+
    ; 40 colonne et 25 ligne
     ld bc,&bc00+1 : out (c),c
    ld bc,&bd00+40 : out (c),c

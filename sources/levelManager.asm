@@ -64,7 +64,8 @@ loadKey:
    call drawKey 
 
    ret
-loadLevel:
+getAddressLevel
+   ; retourne l'adresse du level courant dans ix
    ld hl,levels
    ld de,lenghtLevel
    ld a,(currentLevel)
@@ -77,7 +78,11 @@ loadLevel:
    suite:
    push hl ;transfert hl dans ix
    pop ix
+   ret
 
+
+loadLevel:
+   call getAddressLevel
   ; ld ix,levels
 
    ld a,(ix)      ;max color
@@ -169,9 +174,7 @@ loadBlocks:
 
    ret
 addLevel1:
-    ld e,sceneMenu
-    call changeScene
-    ret
+    
 
    ld a,(currentLevel)
    cp maxLevel ; maxlevel
