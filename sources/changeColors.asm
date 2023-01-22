@@ -17,19 +17,16 @@ changeColors:
    ld (colonne),A ; multiple de 4 colonne 1 => 4
 
    call drawcells
-
-ret
+   ret
 
 getLine : 
    ld a,(currentPosition)
    ; recupere y
    and %00001111
-  
    ret
 
 getColonne:
    ld a,(currentPosition)
    and %11110000
    srl a : srl a 
-      
    ret

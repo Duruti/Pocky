@@ -21,14 +21,14 @@ overcanVertical:
    ld bc,&bc00+7 : out (c),c
    ld bc,&bd00+34 : out (c),c
 
-ret
+   ret
 
 modeStandart:
 
    
 
    ; 40 colonne et 25 ligne
-    ld bc,&bc00+1 : out (c),c
+   ld bc,&bc00+1 : out (c),c
    ld bc,&bd00+40 : out (c),c
 
 

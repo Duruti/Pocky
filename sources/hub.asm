@@ -197,7 +197,7 @@ incCursor:
    ret
 ;   jp touche
 
-   initCursor:
+initCursor:
       xor a
       ld (cursorPosition),a
       ld a,(offsetX)

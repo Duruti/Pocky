@@ -2,6 +2,7 @@
 
 heightFont equ 8
 sizeBlocChar equ 8*2 ;8*2
+paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
 
 
 
@@ -20,7 +21,7 @@ printText:
 	; hl adresse du texte
 
 	; affiche en mode RPG
-;	jr speed
+	;	jr speed
    call vbl
 	ld a,(timerTexte)
 	inc a
@@ -30,7 +31,7 @@ printText:
 	xor a
 	ld (timerTexte),a
 
-speed	
+	speed	
    	ld a,(hl)
    	cp 0
    	ret z
@@ -111,18 +112,18 @@ calcAdrPrint:
 
 calcul:  
 	ld a,d                    ;on recopie D dans A
-        add a,#08                  ;on ajoute #08 à A
-        ld d,a                    ;on recopie A dans D
-                        ;DE contient la nouvelle adresse
-        ret nc
-                ;si débordement on continue donc ici et cela signifie qu'on doit ajouter #C050 à notre adresse
-        ex hl,de                  ;on a besoin que notre adresse soit dans HL pour pouvoir lui additionner quelque chose
-                ;l'adresse est maintenant dans HL
-        ld bc,#C040               ;on met #C050 dans BC
-        add hl,bc                  ;on additionne HL et BC
-                ;HL contient maintenant l'adresse de la ligne inférieure mais on la veut dans DE
-        ex hl,de                  ;on refait l'échange et DE contient donc l'adr
- 	       
+	add a,#08                  ;on ajoute #08 à A
+	ld d,a                    ;on recopie A dans D
+						;DE contient la nouvelle adresse
+	ret nc
+				;si débordement on continue donc ici et cela signifie qu'on doit ajouter #C050 à notre adresse
+	ex hl,de                  ;on a besoin que notre adresse soit dans HL pour pouvoir lui additionner quelque chose
+				;l'adresse est maintenant dans HL
+	ld bc,#C040               ;on met #C050 dans BC
+	add hl,bc                  ;on additionne HL et BC
+				;HL contient maintenant l'adresse de la ligne inférieure mais on la veut dans DE
+	ex hl,de                  ;on refait l'échange et DE contient donc l'adr
+		
 	ret                      
 
 multiSize: ; 26 = 13*2
@@ -150,42 +151,44 @@ test
 		djnz loop
 	ret
 
-paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
 
 loadPaletteGA:
 
-; Charge la palette de couleur	
-; mettre dans HL l'adresse de la palette
-     ;   ld hl,palette
-        ld bc,&7F00
-        bclPalGA:
-               
-                ld d,(hl) : inc hl
-                out (c),c : out (c),d
-                inc c
-                ld a,c
-                cp 16
-                jr nz,bclPalGA
-        ret
+	; Charge la palette de couleur	
+	; mettre dans HL l'adresse de la palette
+	;   ld hl,palette
+	ld bc,&7F00
+	bclPalGA:
+			
+				ld d,(hl) : inc hl
+				out (c),c : out (c),d
+				inc c
+				ld a,c
+				cp 16
+				jr nz,bclPalGA
+	ret
 
 changeMode:
 
-ld bc,&bc00+1 : out (c),c ; R1 = Nombre de caracteres affichables sur une ligne .
-ld bc,&bd00+32 : out (c),c ; 
+	ld bc,&bc00+1 : out (c),c ; R1 = Nombre de caracteres affichables sur une ligne .
+	ld bc,&bd00+32 : out (c),c ; 
 
 
-ld bc,&bc00+2 : out (c),c ; R2 = Synchronisation de l'affichage horizontal
-ld bc,&bd00+42 : out (c),c
+	ld bc,&bc00+2 : out (c),c ; R2 = Synchronisation de l'affichage horizontal
+	ld bc,&bd00+42 : out (c),c
 
 
-ld bc,&bc00+6 : out (c),c ; R6 = Nombre de lignes caracteres affichables
-ld bc,&bd00+32 : out (c),c
+	ld bc,&bc00+6 : out (c),c ; R6 = Nombre de lignes caracteres affichables
+	ld bc,&bd00+32 : out (c),c
 
 
-ld bc,&bc00+7 : out (c),c ; R7 = Synchronisation de l'affichage vertical
-ld bc,&bd00+34 : out (c),c
-ret
+	ld bc,&bc00+7 : out (c),c ; R7 = Synchronisation de l'affichage vertical
+	ld bc,&bd00+34 : out (c),c
+	ret
 
+;
+; ---------------------------------
+;
 
 correctionAdresse dw &4000
 timerTexte: db 0

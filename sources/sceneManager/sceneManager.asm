@@ -14,10 +14,10 @@ changeScene:
    ld a,e
    ld (currentScene),a
    
-   ; on change le update 
+   ; on change le update en recuperant l'adresse de la nouvelle scene 
    ld d,0
    sla e
-   ld hl,adrUpdateScene
+   ld hl,adrUpdateScene  ;gameState.asm
    add hl,de
    ex hl,de
 
@@ -29,7 +29,9 @@ changeScene:
    ld a,(de)
    ld (hl),a
 
+   
    ; on appelle le load de la scene
+
 
    ; chargement palette
    ;di
@@ -41,16 +43,16 @@ changeScene:
    call loadPaletteGA
    LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
 
+
    ld a,(currentScene)
    ld e,a
-   
    ld d,0
    sla e
-   ld hl,adrLoadScene
+   ld hl,adrLoadScene ;gameState.asm
    add hl,de
    ex hl,de
 
-   ; automodif du update dans le main
+   ; automodif du load
    ld hl,loadCurrentScene+1
    ld a,(de)
    ld (hl),a

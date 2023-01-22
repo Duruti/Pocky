@@ -1,3 +1,4 @@
+print ""
 print "############################"
 print "        address POCKY"
 print "############################\n\n"
@@ -16,5 +17,5 @@ print "address Level: ",{hex}startLevel,{hex}endLevel," size :", {hex}sizeLevel
 totalSize = sizeCode + sizeMusic + sizeVariable + sizeGFX + sizeLevel
 
 print "\nsize projet : ",{hex}totalSize
-
+print "\nMemory Free : ",{hex}(&FFFF - &4000- &100 - totalSize )," / &FFFF"
 print "\n---------------------------\n"

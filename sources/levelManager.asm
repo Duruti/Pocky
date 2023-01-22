@@ -39,8 +39,8 @@ loadKey:
    ld (nbKey),a
 
    ; range dans le tableau la coordonnées de la clef sur 1 octet   
-  ; ld a,&22
-  ; ld (keys),a
+   ; ld a,&22
+   ; ld (keys),a
 
    ; *************
    ; Rajoute une clef
@@ -59,8 +59,8 @@ loadKey:
    and %1111
    ld (currentLine),a
 
-;   ld a,4
-;   ld (colonne),a
+   ;   ld a,4
+   ;   ld (colonne),a
    call drawKey 
 
    ret
@@ -82,6 +82,7 @@ getAddressLevel
 
 
 loadLevel:
+   ; charge le level avec ses carateristiques
    call getAddressLevel
   ; ld ix,levels
 
@@ -168,7 +169,7 @@ loadBlocks:
   ; ld hl,levels
    ld de,8
    add hl,de
-;;;   inc hl : inc hl : inc hl : inc hl : inc hl : inc hl ; positionne la pile +6
+   ;;;   inc hl : inc hl : inc hl : inc hl : inc hl : inc hl ; positionne la pile +6
    ld de,blocks
    ldir   
 
@@ -197,7 +198,7 @@ decLevel
    ld a,(currentLevel)
    cp 1 ; maxlevel
    jr z,endDecLevel
- ;  DEFB #ED,#FF
+   ;  DEFB #ED,#FF
    dec A
    ld (currentLevel),A
    ;jp init

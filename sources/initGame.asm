@@ -2,86 +2,86 @@ initGame:
 
 init:
 
-
-call clearHud
-ld hl,&C000
-ld bc,&40E0-1
-ld a,%11000000 ;&30
-call FillRect
+  ; nettoyage du hub en affichant un rectangle remplis
+  call clearHud
+  ld hl,&C000
+  ld bc,&40E0-1
+  ld a,%11000000 ;&30
+  call FillRect
 
 
   call drawLevel  
   
-   ld a,0
-   ld (isOffsetY),a 
+  ld a,0
+  ld (isOffsetY),a 
+  
+  call drawCursor ; hub.asm
+
+  ; init le compteur de clés
+
+
+  ; affiche le compteur 
+  call transferCounter
+  call drawCounter
+
+
+  ; change le paper
+  ;  ld a,colorPaperHub
+  ;  call  &BB96
+
+
+  call updateTextHub ; hub.asm
    
-   call drawCursor
-
-   ; init le compteur de clés
-
-
-   ; affiche le compteur 
-   call transferCounter
-   call drawCounter
-
-
-   ; change le paper
- ;  ld a,colorPaperHub
- ;  call  &BB96
-
-
-   call updateTextHub 
-   
-   ; draw nombre hub
-    ld hl,&11F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+  ; draw nombre hub
+  ld hl,&11F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
 
   ; ld hl,&0E19 ; 0819 centrer
   ; call locate
-   ld hl,textHub
-   call printText
+  ld hl,textHub
+  call printText
 
 
-   ; drawLevel
-   ld a,(currentLevel)
-   ld d,a
-   ld e,10
-   call div
-   ; update unité
-   add &30
-   ld ix,textLevel
-   ld (ix+5),a
-   ld a,d
-   add &30
-   ld (ix+4),a
+  ; drawLevel
+  ld a,(currentLevel)
+  ld d,a
+  ld e,10
+  call div
+  ; update unité
+  add &30
+  ld ix,textLevel
+  ld (ix+5),a
+  ld a,d
+  add &30
+  ld (ix+4),a
 
-   ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+  ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
- ;  ld hl,&0119
- ;  call locate
-   ld hl,textLevel
-   call printText
+  ;  ld hl,&0119
+  ;  call locate
+  ld hl,textLevel
+  call printText
 
-; gameloop
- ; change le paper
+  ; gameloop
+  ; change le paper
   ; ld a,5
   ; call  &BB96
    
-   ; j'ai un bug sur l'initialisation du compteur d'interruption
-   ; il me décalle de 1 unité 
-   ; alors je fais 2 initialisations pour avoir le compteur correct.
+  ; j'ai un bug sur l'initialisation du compteur d'interruption
+  ; il me décalle de 1 unité 
+  ; alors je fais 2 initialisations pour avoir le compteur correct.
 
-   ;call loadInterruption 
+  ;call loadInterruption 
   ; call loadInterruption 
-   call initKeyboard
+  call initKeyboard
 
-   ; ld hl,&00F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+  ; ld hl,&00F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	; ld (adrPrint),hl ; save la position
  	; ld hl,texte ; hl l'adresse du texte
-   ; call printText
+  ; call printText
   call drawIndicator
 
- ; border 0
+  ; border 0
   LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
 
   ld hl,paletteMode0
@@ -96,7 +96,7 @@ call FillRect
 
   ; jp touche
 
-   CalcOffsetY:
+CalcOffsetY:
     ld a,(nbLines)
     sla a: sla a: sla a: sla a ; *16
     ld b,a
@@ -107,6 +107,7 @@ call FillRect
     ret
 
 drawIndicator:
+  ; dessine l'indicateur de la zone de debut de remplissage
 
   ld a,1
   ld (isOffsetY),a
@@ -119,21 +120,25 @@ drawIndicator:
   srl a : srl a 
   ld (colonne),a
 
-  call getAdrScreen
+  call getAdrScreen ; drawKey.asm
   ld hl,mshow
-  call drawMask
+  call drawMask ; transparence.asm
 
 
   call getAdrScreen
   ld hl,show
-  call drawSpriteOr
+  call drawSpriteOr ; transparence.asm
 
   ret
   
 drawLevel
+  ; dessine le current level
+
   call loadLevel
-; ld a,3
-; ld (currentTry),a
+  ; ld a,3
+  ; ld (currentTry),a
+
+  ; initialisation des variables
 
   xor A
   ld (isWin),a
@@ -143,10 +148,7 @@ drawLevel
 
   ld a,0
   ld (isOffsetY),a
-  call drawHub
-
-
-  ; init variables
+  call drawHub ; hub.asm
 
   xor A
   ld (currentLine),A
@@ -158,6 +160,8 @@ drawLevel
 
 
   call CalcOffsetY
+
+
   ; calcule l'offset X 
   ; offset = (16-nbRows)/2 * 4
 
@@ -171,7 +175,7 @@ drawLevel
 
 
 
-
+  ; recherche la presence de mur cadenas
   ld a,(nbBlocks)
   cp 0
   call nz,loadPadlock
@@ -188,7 +192,7 @@ drawLevel
   ld a,1
   ld (isOffsetY),a
 
-  call drawBorder
+  call drawBorder ; dessine le contour du level
 
   ld de,grid ; pointeur sur la grille du jeu
   ld a,(nbLines)

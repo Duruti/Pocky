@@ -13,6 +13,8 @@ locate :
         ret
 
 FillRect:
+		; dessine un rectangle remplis
+
         ; hl = adresse destination
         ; a = valeur a remplir
         ; bc = colonne, ligne
@@ -214,33 +216,33 @@ random:
 
 loadPalette
 
-; Charge la palette de couleur	
-; mettre dans HL l'adresse de la palette
+		; Charge la palette de couleur	
+		; mettre dans HL l'adresse de la palette
 
-ld a,0
-setcol:
-	push hl
-	push af
-	ld b,(hl)
-	ld c,b
+	ld a,0
+	setcol:
+		push hl
+		push af
+		ld b,(hl)
+		ld c,b
 
-	call &bc32
-	pop af
-	pop hl
-	inc hl
-	inc a
-	cp &10
-	jr nz,setcol
-	ret
+		call &bc32
+		pop af
+		pop hl
+		inc hl
+		inc a
+		cp &10
+		jr nz,setcol
+		ret
 
 vbl:
-	push bc
-        LD    B,#F5     ;adresse du port B du PPI
-frm:    IN    A,(C)     ;On recupere l'octet contenu sur le port dans A
-        RRA             ;On fait une rotation afin de recuperer le bit 0 dans le flag carry
-        JR    NC,frm    ;tant que le flag carry n'est pas a 1 on boucle au label frm
-	pop bc
-	ret	
+		push bc
+			LD    B,#F5     ;adresse du port B du PPI
+	frm:    IN    A,(C)     ;On recupere l'octet contenu sur le port dans A
+			RRA             ;On fait une rotation afin de recuperer le bit 0 dans le flag carry
+			JR    NC,frm    ;tant que le flag carry n'est pas a 1 on boucle au label frm
+		pop bc
+		ret	
 
 cls:
 	Ld hl,#c000
@@ -251,13 +253,13 @@ cls:
 	Ldir
 	ret
 	nop
-ret
+	ret
 
 drawWindows
-; source = hl
-; dest = de
-; lines = c
-; colums = b
+	; source = hl
+	; dest = de
+	; lines = c
+	; colums = b
 	vert
 		push bc
 		push de

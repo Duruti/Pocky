@@ -1,12 +1,12 @@
 loadMenu
 
-    ;   di
- ;      LD A,#C3:LD (#38),A
- ;      ld hl,restorInt+1
- ;      ld (#39),hl
- ;      ei
+   ;   di
+   ;      LD A,#C3:LD (#38),A
+   ;      ld hl,restorInt+1
+   ;      ld (#39),hl
+   ;      ei
   
-;DEFB #ED,#FF
+   ;DEFB #ED,#FF
    ; mode standart
    ;call modeStandart
 
@@ -14,10 +14,10 @@ loadMenu
    
    ; effacer l'écran
 
-ld hl,&C000
-ld bc,&40FF
-ld a,%00000000 ;&30
-call FillRect
+   ld hl,&C000
+   ld bc,&40FF
+   ld a,%00000000 ;&30
+   call FillRect ; utils.asm
 
    ; draw logo
    ld a,11
@@ -27,7 +27,7 @@ call FillRect
    call calcAdr80
    ld hl,logotitle
    ld bc,&2a2d ; x ,y
-   call drawWindows
+   call drawWindows ; utils.asm
    
    linesDrawLogo equ 130
    ; play
@@ -39,7 +39,7 @@ call FillRect
    call calcAdr80
    ld hl,logoPlay
    ld bc,&b2a ; x ,y
-   call drawWindows
+   call drawWindows ; utils.asm
 
    ; editor
 
@@ -50,7 +50,7 @@ call FillRect
    call calcAdr80
    ld hl,logoEditor
    ld bc,&b2a ; x ,y
-   call drawWindows
+   call drawWindows ; utils.asm
    
    ; logo quit
    ld a,47
@@ -60,7 +60,7 @@ call FillRect
    call calcAdr80
    ld hl,logoQuit
    ld bc,&b2a ; x ,y
-   call drawWindows
+   call drawWindows ; utils.asm
 
    call drawCursorMenu
 
@@ -73,7 +73,7 @@ call FillRect
 
    ; chargement palette
    ld hl,paletteMode0
-   call loadPaletteGA
+   call loadPaletteGA ; print.asm
   
    ; border
      LD BC,#7F10:OUT (C),C:LD C,85:OUT (C),C
@@ -84,7 +84,7 @@ call FillRect
    
 updateMenu:
    
-   call getKeys   ; controls keys and Joystick
+   call getKeys   ; controls keys and Joystick ; keyManager.asm
    call updateKeysMenu ; update actions/keys
    ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
    ld (oldKey),a
@@ -217,6 +217,7 @@ espaceActionMenu:
    
    
 drawSprite80:
+   ; routine de sprite en 80 octets
        ld b,16
    loopDrawSprite80
       push bc

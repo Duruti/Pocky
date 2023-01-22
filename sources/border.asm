@@ -94,7 +94,7 @@ drawBorder:
       pop bc
       djnz loopRowLeft
 
-; ----------------------
+   ; ----------------------
    ; vertical Right
 
    xor a

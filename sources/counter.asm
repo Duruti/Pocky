@@ -1,4 +1,5 @@
 adrDrawCounter equ &19F0 ; &0719
+
 addCounter:
    ; j'ai fais un double compteur, un pour l'affichage et l'autre pour tester le game over
    
@@ -20,7 +21,6 @@ addCounter:
 getUnity:
    ld a,(compteurAffichage)
    and %00001111
-
    ret
 
 getDecimal:
@@ -49,25 +49,25 @@ drawCounter:
    
    ; affiche le compteur
    ; unité 
-  ; ld a,colorPaperHub
-  ; call  &BB96
+   ; ld a,colorPaperHub
+   ; call  &BB96
 
    ld hl,adrDrawCounter
-;   call &bb75 ; position
-ld (adrPrint),hl
+   ;   call &bb75 ; position
+   ld (adrPrint),hl
 
    ld a,e
    add &30
    push de
    call printA
-;   call &bb5A ; texte
+   ;   call &bb5A ; texte
 
    
   
    ; decimal
    ld hl,adrDrawCounter - &0100 ; decalage
    ld (adrPrint),hl
-  ; call &bb75
+   ; call &bb75
    pop de
    ld a,d
    cp 0 ; n'affiche le decimal que si > 0
@@ -75,7 +75,7 @@ ld (adrPrint),hl
    add &30
    call printA
  
- ;  call &bb5A
+   ;  call &bb5A
 
    ret
 

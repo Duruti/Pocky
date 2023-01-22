@@ -12,7 +12,7 @@
 
 
 IsMusic = 0
-Debug = 0
+Debug = 1
 cheat = 1
 
 initCurrentLevel equ 1

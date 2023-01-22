@@ -13,9 +13,7 @@ drawKey:
    call getAdrScreen
    ld hl,key
    call drawSpriteOr
-
-
-ret
+   ret
 
 getAdrScreen:
    ; retourne dans DE l'adresse ecran
@@ -37,7 +35,7 @@ getAdrScreen:
    ld h,a
    ; on a dans hl l'adresse ou afficher
 
-    xor A
+   xor A
    ld (AddOffsetY+1),a
 
 
