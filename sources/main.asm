@@ -72,7 +72,7 @@ start:
    call loadInterruption ; interruption.asm 
 
 
-   ld e,sceneGame
+   ld e,sceneEditor ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
 
@@ -211,7 +211,7 @@ startVariable:
    tempPosition: db 0
    isWin : db 0
    isFoundKey: db 0
-   positionStart: db &11 ; position de départ de la grille (xy)
+   positionStart: db &00 ; position de départ de la grille (xy)
 
    ; fait commencer la pile en poids faible a 00 pour avoir un index sur 1 octect
    align 256
@@ -249,7 +249,7 @@ startGFX:
    dataSprite: 
 
 
-   INCbin	"../img/cell1bd.win",&80
+   INCbin	"../img/cell1bd.win",&80 ; enleve le header 128 octets
    INCbin	"../img/cell2bd.win",&80
    INCbin	"../img/cell3bd.win",&80
    INCbin	"../img/cell4bd.win",&80
@@ -295,23 +295,23 @@ startGFX:
 endGFX:
 
 startLevel:
-   lenghtLevel equ 29 ; taille en octet d'un level
-   maxLevel equ 10
+   lenghtLevel equ 30 ; taille en octet d'un level
+   maxLevel equ 9
    nbInt: db 0
 
    levels :
       ; 1 ligne =  un level
-      ;colors,maxTry,Line,Colums,seed*2,key,nbBlock,10*dataBlock,nbVoid,10*dataVoid
+      ;startPosition,colors,maxTry,Line,Colums,seed*2,key,nbBlock,10*dataBlock,nbVoid,10*dataVoid
       
-      db 3,4,3,3,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
-      db 3,4,4,4,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
-      db 3,5,5,5,&a1,&A2,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-      db 4,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-      db 5,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-      db 6,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-      db 6,12,7,7,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-      db 4,12,4,10,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,6,&50,&51,&52,&40,&41,&42,0,0,0,0
-      db 3,5,4,8,&22,&56,&53,5,&50,&51,&52,&62,&63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      db &00,3,25,3,3,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
+      db &10,3,4,4,4,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
+      db &12,3,5,5,5,&a1,&A2,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      db &44,4,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      db &22,5,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      db &00,6,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      db &63,6,12,7,7,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      db &61,4,12,4,10,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,6,&50,&51,&52,&40,&41,&42,0,0,0,0
+      db &11,3,5,4,8,&22,&56,&53,5,&50,&51,&52,&62,&63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       
       ;db 3,25,5,10,&FF,0,&30,&31,&32,&42,00
       ; key

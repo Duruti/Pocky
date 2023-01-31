@@ -37,8 +37,11 @@ printText:
    	ret z
 
  	push hl
-	cp &20 ; si espace on affiche rien mais on decalle de 1 vers la droite
-	jr z,finPrintChar
+;	cp &20 ; si espace on affiche rien mais on decalle de 1 vers la droite
+;	jr z,finPrintChar
+;	jr nz,suitePrint
+;	ld a,32
+;	suitePrint:
 	call convertChar 
 	call calcAdrPrint
 

@@ -86,21 +86,24 @@ loadLevel:
    call getAddressLevel
   ; ld ix,levels
 
-   ld a,(ix)      ;max color
+   ld a,(ix)      ; position de depart
+   ld (positionStart),a
+
+   ld a,(ix+1)      ;max color
    ld (maxColor),a
  ; DEFB #ED,#FF
-   ld a,(ix+1)    ; nb essais
+   ld a,(ix+2)    ; nb essais
    ld (currentTry),a
    call convertTry
    ld (maxTry),a
-   ld a,(ix+2)    ; nb lignes
+   ld a,(ix+3)    ; nb lignes
    ld (nbLines),a
-   ld a,(ix+3)    ; nb colonne
+   ld a,(ix+4)    ; nb colonne
    ld (nbRows),a
-      ;seed +4,+5
+      ;seed +5,+6
    push hl
-   ld h,(ix+4)
-   ld l,(ix+5)
+   ld h,(ix+5)
+   ld l,(ix+6)
    ld  (rndseed+1),hl   ; la seed
 
    ld hl,&c0de
@@ -108,9 +111,9 @@ loadLevel:
    
    pop hl
 
-   ld a,(ix+6)          ; clef
+   ld a,(ix+7)          ; clef
    ld (keys),a
-   ld a,(ix+7)          ; nb block
+   ld a,(ix+8)          ; nb block
    ld (nbBlocks),a
    cp 0
    call nz,loadBlocks

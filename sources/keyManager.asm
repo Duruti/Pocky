@@ -1,7 +1,7 @@
 
 
 
-
+bitKeyR equ 5 ; d = 6
 bitEspace equ 7  ; d=5
 bitLeft equ 0 ; d=1
 bitRight equ 1 ; d=0
@@ -16,26 +16,26 @@ initKeyboard:
 	ld (oldKey),a
    ret
 
-   ; 	di ; coupe les interruptions pour pas avoir de conflit
-;;bcl:
+		; 	di ; coupe les interruptions pour pas avoir de conflit
+	;;bcl:
 
-; FRAME  	LD B,#F5
+	; FRAME  	LD B,#F5
 
-;; FRM     IN A,(C):RRA:JR NC,FRM 
+	;; FRM     IN A,(C):RRA:JR NC,FRM 
 
-; 	call getKeys
-; 	call updateKeys
+	; 	call getKeys
+	; 	call updateKeys
 
-; 	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
-; 	ld (oldKey),a
+	; 	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
+	; 	ld (oldKey),a
 
-; 	ld a,(exit)    	; test si on quitte le programme
-;  	cp 1
-;     	jr nz,bcl
-    
-; fin:
-; 	ei
-; 	ret
+	; 	ld a,(exit)    	; test si on quitte le programme
+	;  	cp 1
+	;     	jr nz,bcl
+		
+	; fin:
+	; 	ei
+	; 	ret
 
 getKeys:
 	;xor a
@@ -94,9 +94,18 @@ getKeys:
 	or e
 	ld e,a
 
+	;key R 
+	ld d,65 
+   call TestKeyboard ; a contient le test
+	and %00000100 ; ne garde que le bit 2    	
+	sla a : sla a : sla a
+	or e
+	ld e,a
+
+
 	ld (newKey),a	; save le clavier
 
-	call getJoystick
+	; call getJoystick
 	
 	ret
 getJoystick:
@@ -150,7 +159,7 @@ getJoystick:
 	ld e,a
 
 
-;fire 2
+  ;fire 2
 	ld d,9 
    call TestKeyboard ; a contient le test
 	and %00100000 ; ne garde que le bit 5    	
@@ -201,7 +210,7 @@ escapeAction
 	ld a,(newKey)
 	bit bitEscape,a
 	ret nz
-
+	
 	ld e,sceneMenu
    call changeScene
 	ret

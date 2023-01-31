@@ -43,25 +43,9 @@ init:
 
 
   ; drawLevel
-  ld a,(currentLevel)
-  ld d,a
-  ld e,10
-  call div
-  ; update unité
-  add &30
-  ld ix,textLevel
-  ld (ix+5),a
-  ld a,d
-  add &30
-  ld (ix+4),a
-
   ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
- 	ld (adrPrint),hl ; save la position
-  ;  ld hl,&0119
-  ;  call locate
-  ld hl,textLevel
-  call printText
-
+  call drawLevelInfoHub
+  
   ; gameloop
   ; change le paper
   ; ld a,5
@@ -242,4 +226,25 @@ drawLevel
     jp nz,loopLine 
     
     call loadKey 
+  ret
+
+drawLevelInfoHub:
+    ld a,(currentLevel)
+  ld d,a
+  ld e,10
+  call div
+  ; update unité
+  add &30
+  ld ix,textLevel
+  ld (ix+5),a
+  ld a,d
+  add &30
+  ld (ix+4),a
+
+  ;ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+ 	ld (adrPrint),hl ; save la position
+  ;  ld hl,&0119
+  ;  call locate
+  ld hl,textLevel
+  call printText
   ret
