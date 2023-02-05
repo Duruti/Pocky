@@ -1,15 +1,19 @@
 textEditorInfo db "LEVEL   EDITOR",0
-currentMode db 1
+textRandom db "SEED:     ",0
+textMaxTry db "MAXTRY:   ",0
+textColors db "COLORS:   ",0
+
+currentMode db 8
 textMode: 
 	;   12345678
-	db "SIZE   ",0
-	db "RANDOM ",0
-	db "KEY    ",0
-	db "WALL   ",0
-	db "MODE 5 ",0
-	db "MODE 6 ",0
-	db "MODE 7 ",0
-	db "MODE 8 ",0
+	db "SIZE   ",0  	; 1
+	db "RANDOM ",0		; 2 	
+	db "KEY    ",0		; 3
+	db "WALL   ",0		; 4
+	db "START  ",0		; 5
+	db "COLORS ",0		; 6
+	db "EMPTY  ",0		; 7 
+	db "MAX TRY",0		; 8
 
 newMode db 0 ; pour choisir le mode dans l'editor
 oldMode db &0
@@ -45,8 +49,9 @@ loadEditor:
   ld hl,&00E0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
 
   	call drawLevelInfoHub
-
-
+	call drawModeEditor
+	call DrawInfoRandom
+	call DrawMaxTry
 	;ei
 	;call overcanVertical
 	;call loadInterruption
@@ -159,7 +164,7 @@ getKeysEditor:
 	or e
 	ld e,a
 
-	;Right 
+	;Right bit 1
 	ld d,0 
    call TestKeyboard ; a contient le test
 	and %00000010 ; ne garde que le bit 7    	
@@ -167,29 +172,29 @@ getKeysEditor:
 	ld e,a
 
 	;Up 
-	ld d,0 
-    	call TestKeyboard ; a contient le test
-	and %00000001 ; ne garde que le bit 7    	
+	ld d,0 ; bit 4
+   call TestKeyboard ; a contient le test
+	and %00000001     	
 	sla a : sla a:sla a: sla a
 	or e
 	ld e,a
 
 	;down 
-	ld d,0 
-    	call TestKeyboard ; a contient le test
-	and %00000100 ; ne garde que le bit 7    	
+	ld d,0 ; bit 3
+   call TestKeyboard ; a contient le test
+	and %00000100   	
 	sla a 
 	or e
 	ld e,a
 
-	;esc 
+	;esc bit 2
 	ld d,8 
    call TestKeyboard ; a contient le test
 	and %00000100 ; ne garde que le bit 2    	
 	or e
 	ld e,a
 
-	;key R 
+	;key R bit 5
 	ld d,6 ; 5 
    call TestKeyboard ; a contient le test
 	and %00000100 ; ne garde que le bit 2    	
@@ -197,6 +202,13 @@ getKeysEditor:
 	or e
 	ld e,a
 
+	;key E bit 6
+	ld d,7 ;  
+   call TestKeyboard ; a contient le test
+	and %00000100 ; ne garde que le bit 2    	
+	sla a : sla a : sla a : sla a   
+	or e
+	ld e,a
 
 	ld (newKey),a	; save le clavier
 
@@ -243,35 +255,68 @@ updateKeysEditor:
 
 	; *******   KEY ***********
 	ld a,(oldKey)
-	bit bitEspace,a
-	call nz,espaceActionEditor	
-	
-	ld a,(oldKey)
 	bit bitEscape,a
 	call nz,escapeAction
 
 	ld a,(oldKey)
+	bit bitKeyR,a
+	call nz,levelUp
+
+	ld a,(oldKey)
+	bit bitKeyE,a
+	call nz,levelDown
+
+	; selectionne les update en fonction des modes
+
+	ld a,(currentMode)
+	cp 1-1 : jp z,updateSize 
+	cp 2-1 : jp z,updateRandom 
+	cp 6-1 : jp z,updateColors 
+	cp 8-1 : jp z,updateMaxTry 
+
+
+	endUpadteKeysEditor
+
+
+	ret
+
+updateSize 
+	; ld a,(oldKey)
+	; bit bitEspace,a
+	; call nz,espaceActionEditor	
+	
+
+	ld a,(oldKey)
 	bit bitLeft,a
-	call nz,leftActionEditor	
+	call nz,leftActionSize	
 
 	ld a,(oldKey)
 	bit bitRight,a
-	call nz,rightActionEditor	
+	call nz,rightActionSize	
    ;DEFB #ED,#FF
 		
 	ld a,(oldKey)
 	bit bitUp,a
-	call nz,upActionEditor
+	call nz,upActionSize
 
 	ld a,(oldKey)
 	bit bitDown,a
-	call nz,downActionEditor
+	call nz,downActionSize
+
+	jp endUpadteKeysEditor
+
+updateRandom
 
 	ld a,(oldKey)
-	bit bitKeyR,a
-	call nz,KeyRActionEditor
+	bit bitUp,a
+	call nz,upActionRandom
 
-	ret
+	ld a,(oldKey)
+	bit bitDown,a
+	call nz,downActionRandom
+
+	jp endUpadteKeysEditor
+
 modeSizeEditor:
 	ld a,(newMode)
 	bit bitMode1,a
@@ -347,12 +392,171 @@ mode8Editor:
 	call drawModeEditor
 	
 	ret
+; *****************************
+; *       	LEVEL 			 	*
+; *****************************
+
+levelDown:
+	ld a,(newKey) : bit bitKeyE,a : ret nz
+	
+	ld a,(currentLevel)
+   cp 1 ; maxlevel
+   jr z,.endSubLevel
+   ;DEFB #ED,#FF
+   dec A
+   ld (currentLevel),A
+   ;jp init
+   call loadEditor
+   ret
+
+   .endSubLevel:
+   ld a,maxLevel
+   ld (currentLevel),A
+	call loadEditor
+	ret
+
+levelUp:
+	ld a,(newKey) : bit bitKeyR,a : ret nz
+	
+	ld a,(currentLevel)
+   cp maxLevel ; maxlevel
+   jr z,.endAddLevel
+   ;DEFB #ED,#FF
+   inc A
+   ld (currentLevel),A
+   ;jp init
+   call loadEditor
+   ret
+
+   .endAddLevel:
+   ld a,1
+   ld (currentLevel),A
+	call loadEditor
+	ret
+
+; *****************************
+; *       	COLORS			 	*
+; *****************************
+updateColors
+
+	ld a,(oldKey)
+	bit bitUp,a
+	call nz,upColors
+
+	ld a,(oldKey)
+	bit bitDown,a
+	call nz,downColors
+
+	jp endUpadteKeysEditor
+
+upColors:
+	ld a,(newKey) : bit bitUp,a : ret nz
+	call getAddressLevel
+	ld a,(ix+1)
+   cp 6 ; maxlevel
+   ret z 
+   ;DEFB #ED,#FF
+   inc a
+   ld (ix+1),a
+	ld (maxColor),a
+	call loadEditor
+
+   ret
+
+downColors:
+	ld a,(newKey) : bit bitDown,a : ret nz
+	
+	call getAddressLevel
+	ld a,(ix+1)
+   cp 2 ; maxlevel
+   ret z 
+   dec a
+   ld (ix+1),a
+   ld (maxColor),a
+	call loadEditor
+	ret
+DrawColors
+	xor a
+	ld (offsetX),a
+	; nettoyage du hub en affichant un rectangle remplis
+	ld hl,&C680
+	ld bc,&4010
+	ld a,%11000000
+	call FillRect
+	call DrawHub
+
+	ret
+
+; *****************************
+; *       	NB ESSAIS		 	*
+; *****************************
+updateMaxTry
+
+	ld a,(oldKey)
+	bit bitUp,a
+	call nz,upMaxTry
+
+	ld a,(oldKey)
+	bit bitDown,a
+	call nz,downMaxTry
+
+	jp endUpadteKeysEditor
+
+upMaxTry:
+	ld a,(newKey) : bit bitUp,a : ret nz
+  ; DEFB #ED,#FF
+
+	call getAddressLevel
+	ld a,(ix+2)
+   cp 28 ; maxlevel
+   ret z 
+   inc a
+   ld (ix+2),a
+   call DrawMaxTry
+   ret
+
+downMaxTry:
+	ld a,(newKey) : bit bitDown,a : ret nz
+	
+	call getAddressLevel
+	ld a,(ix+2)
+   cp 1 ; maxlevel
+   ret z 
+   ;DEFB #ED,#FF
+   dec a
+   ld (ix+2),a
+   call DrawMaxTry
+   ret
+DrawMaxTry
+	; recupere le poids fort
+	ld iy,textMaxTry
+	call getAddressLevel ; ix = adresse du level courant
+	ld a,(ix+2)
+	ld d,a
+	ld e,10
+	call div
+	; update unité
+	add &30
+	ld (iy+8),a
+	ld a,d
+	add &30
+	ld (iy+7),a
 
 
-KeyRActionEditor
+	ld hl,&12E0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+	ld (adrPrint),hl ; save la position
+	ld hl,textMaxTry
+	call printText
+	
+	ret
+; *****************************
+; *       	RANDOM			 	*
+; *****************************
+
+upActionRandom
 	
 	ld a,(newKey)
-	bit bitKeyR,a
+	bit bitUp,a
 	ret nz
 	;DEFB #ED,#FF
 	call getAddressLevel
@@ -364,10 +568,75 @@ KeyRActionEditor
 	ld (ix+6),l
 	
 	call loadEditor 
+	call DrawInfoRandom
+	ret
+downActionRandom
+	
+	ld a,(newKey)
+	bit bitDown,a
+	ret nz
+	;DEFB #ED,#FF
+	call getAddressLevel
+	ld h,(ix+5) ; recupere poids faible de la seed
+	ld l,(ix+6) ; recupere poids faible de la seed
+	ld de,&f 
+	sbc hl,de
+	ld (ix+5),h
+	ld (ix+6),l
+	
+	call loadEditor 
+	call DrawInfoRandom
+	ret
+DrawInfoRandom
+	; recupere le poids fort
+	ld iy,textRandom
+	call getAddressLevel ; ix = adresse du level courant
 
+	; poids faible
+	ld a,(ix+6)
+	and %00001111 ; poids faible
+	call ConvertHex
+	ld (iy+8),a
+
+	ld a,(ix+6)
+	;DEFB #ED,#FF
+	and %11110000 : srl a : srl a: srl a : srl a; pods fort
+	call ConvertHex
+	ld (iy+7),a
+
+	; poids fort
+	ld a,(ix+5)
+	and %00001111 ; poids faible
+	call ConvertHex
+	ld (iy+6),a
+
+	ld a,(ix+5)
+	;DEFB #ED,#FF
+	and %11110000 : srl a : srl a: srl a : srl a; pods fort
+	call ConvertHex
+	ld (iy+5),a
+
+
+	ld hl,&08E0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+	ld (adrPrint),hl ; save la position
+	ld hl,textRandom
+	call printText
+	
+	ret
+ConvertHex:
+	cp 10 : jr nc,hex
+
+	; update unité
+	add &30 : ret
+	hex:
+	add 65-10
 	ret
 
-leftActionEditor
+; *****************************
+; *       	SIZE  			 	*
+; *****************************
+
+leftActionSize
 	ld a,(newKey)
 	bit bitLeft,a
 	ret nz
@@ -380,7 +649,7 @@ leftActionEditor
 	call loadEditor 
 
 	ret
-rightActionEditor
+rightActionSize
 	ld a,(newKey)
 	bit bitRight,a
 	ret nz
@@ -394,7 +663,7 @@ rightActionEditor
 
 	ret
 
-upActionEditor
+upActionSize
 	ld a,(newKey)
 	bit bitUp,a
 	ret nz
@@ -407,7 +676,7 @@ upActionEditor
 	call loadEditor
 
 	ret
-downActionEditor
+downActionSize
 	ld a,(newKey)
 	bit bitDown,a
 	ret nz
@@ -436,7 +705,7 @@ espaceActionEditor:
 
    ret
 drawModeEditor:
-	ld hl,&0aF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+	ld hl,&0CF8;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
 	ld a,(currentMode)
 	sla a: sla a : sla a ; *8 =  7 lettres + 0 

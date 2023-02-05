@@ -1,13 +1,14 @@
 
 
 
-bitKeyR equ 5 ; d = 6
-bitEspace equ 7  ; d=5
 bitLeft equ 0 ; d=1
 bitRight equ 1 ; d=0
-bitUp equ 4 ; d=0
-bitDown equ 3 ; d=0
 bitEscape equ 2
+bitDown equ 3 ; d=0
+bitUp equ 4 ; d=0
+bitKeyR equ 5 ; d = 6
+bitKeyE equ 6 ; d = 7
+bitEspace equ 7  ; d=5
 
 initKeyboard:
 	xor a

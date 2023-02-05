@@ -7,7 +7,7 @@ drawHub:
 
    ld a,13 ; positionne le hub sur la 14 eme lignes
    ld (currentLine),a
-
+   
    ; fait le calcul pour centrer le hub
    ld a,(maxColor)
    sla a : sla a ; *4
@@ -28,6 +28,7 @@ drawHub:
       
       ld a,(maxColor) ; permet de calculer la couleur de 0 a maxColor
       sub b
+     
       ld (currentSprite),A
       
       ;ld a,(hl)
@@ -196,6 +197,7 @@ incCursor:
    call drawCursor
    ret
 ;   jp touche
+
 
 initCursor:
       xor a

@@ -12,7 +12,7 @@ sizeGFX = endGFX-startGFX
 print "address GFX: ",{hex}startGFX,{hex}endGFX," size :", {hex}sizeGFX
 sizeLevel = endLevel-startLevel
 print "address Level: ",{hex}startLevel,{hex}endLevel," size :", {hex}sizeLevel
-
+print "address Lignes: ",{hex}LIGNES
 
 totalSize = sizeCode + sizeMusic + sizeVariable + sizeGFX + sizeLevel
 
