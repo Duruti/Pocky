@@ -208,9 +208,12 @@ startVariable:
    tempColor: db 0
    currentPosition : db 0
    cursorPosition: db 0
+   
    tempPosition: db 0
    isWin : db 0
    isFoundKey: db 0
+   oldColor db 0 ; pour sauver l'ancienne couleur
+   oldPositionStart db 0
    positionStart: db &00 ; position de départ de la grille (xy)
 
    ; fait commencer la pile en poids faible a 00 pour avoir un index sur 1 octect
@@ -303,7 +306,7 @@ startLevel:
       ; 1 ligne =  un level
       ;startPosition,colors,maxTry,Line,Colums,seed*2,key,nbBlock,10*dataBlock,nbVoid,10*dataVoid
       
-      db &00,2,25,3,3,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
+      db &24,2,25,5,3,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
       db &10,2,4,4,4,&a2,&80,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0,0 
       db &12,3,5,5,5,&a1,&A2,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       db &44,4,6,5,5,&00,&00,&FF,0,&30,&31,&32,&42,&06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

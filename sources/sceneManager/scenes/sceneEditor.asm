@@ -57,6 +57,8 @@ loadEditor:
 	;call loadInterruption
 
 	call drawLevel ; initGame.asm
+	call drawIndicator
+
 	ld hl,paletteMode0
    call loadPaletteGA ; print.asm
 
@@ -271,6 +273,7 @@ updateKeysEditor:
 	ld a,(currentMode)
 	cp 1-1 : jp z,updateSize 
 	cp 2-1 : jp z,updateRandom 
+	cp 5-1 : jp z,updateCursorStart 
 	cp 6-1 : jp z,updateColors 
 	cp 8-1 : jp z,updateMaxTry 
 
@@ -358,10 +361,12 @@ mode5Editor:
 	ld a,(newMode)
 	bit bitMode5,a
 	ret nz
+	
 	ld a,5-1
 	ld (currentMode),A
 	call drawModeEditor
-	
+
+	; affiche le cursor
 	ret
 
 mode6Editor:
@@ -391,6 +396,88 @@ mode8Editor:
 	ld (currentMode),A
 	call drawModeEditor
 	
+	ret
+; *****************************
+; *      CURSOR START		 	*
+; *****************************
+
+updateCursorStart
+	ld a,(oldKey) : bit bitUp,a : call nz,upCursorStart
+	ld a,(oldKey) : bit bitRight,a : call nz,rightCursorStart
+	ld a,(oldKey) : bit bitDown,a : call nz,downCursorStart
+	ld a,(oldKey) : bit bitLeft,a : call nz,leftCursorStart
+	
+	ret
+
+upCursorStart
+	ld a,(newKey) : bit bitUp,a :	ret nz
+	call getAddressLevel
+   ld a,(ix+3)    ; nb colonne
+   ld (nbLines),a :dec a : ld b,a
+	;DEFB #ED,#FF
+	ld a,(ix) : ld (positionStart),a : and %1111
+	cp 0 : ret z
+	call replaceCell
+   
+	ld a,(positionStart) : dec a : ld (ix),a : ld (positionStart),a ; incremente x
+	call drawIndicator
+	ret
+
+rightCursorStart
+	ld a,(newKey) : bit bitRight,a :	ret nz
+	call getAddressLevel
+   ld a,(ix+4)    ; nb colonne
+   ld (nbRows),a :dec a : ld b,a
+	ld a,(ix) : ld (positionStart),a
+	and %11110000 : srl a : srl a : srl a : srl a
+	cp b : ret nc
+	call replaceCell
+   
+	ld a,(positionStart) : add 16 : ld (ix),a : ld (positionStart),a ; incremente x
+	call drawIndicator
+	ret
+downCursorStart
+	ld a,(newKey) : bit bitDown,a :	ret nz
+	call getAddressLevel
+   ld a,(ix+3)    ; nb colonne
+   ld (nbLines),a :dec a : ld b,a
+	;DEFB #ED,#FF
+	ld a,(ix) : ld (positionStart),a
+	and %1111
+	cp b : ret nc
+
+;   ld a,(ix+3)    ; nb lignes
+;   ld (nbLines),a
+	call replaceCell
+   
+	ld a,(positionStart) : add 1 : ld (ix),a : ld (positionStart),a ; incremente x
+	call drawIndicator
+	ret
+leftCursorStart
+	ld a,(newKey) : bit bitLeft,a :	ret nz
+
+	
+	
+	call getAddressLevel
+	;DEFB #ED,#FF
+	ld a,(ix) : ld (positionStart),a
+	and %11110000 : srl a : srl a : srl a : srl a
+	cp 0 : ret z
+
+;   ld a,(ix+3)    ; nb lignes
+;   ld (nbLines),a
+
+	call replaceCell
+	ld a,(positionStart) : sub 16 : ld (ix),a : ld (positionStart),a ; incremente x
+	call drawIndicator
+	
+	ret	
+	ret
+replaceCell
+	   ld a,(positionStart) : ld (oldPositionStart),a : call getColor : ld (oldColor),a
+	ld a,(oldPositionStart) : and %11110000 : srl a : srl a : ld (colonne),a 
+	ld a,(oldPositionStart) : and %1111 : ld (currentLine),a 
+	ld a,(oldColor) : ld (currentSprite),a : call drawcells
 	ret
 ; *****************************
 ; *       	LEVEL 			 	*
@@ -439,9 +526,7 @@ levelUp:
 ; *****************************
 updateColors
 
-	ld a,(oldKey)
-	bit bitUp,a
-	call nz,upColors
+	ld a,(oldKey) : bit bitUp,a : call nz,upColors
 
 	ld a,(oldKey)
 	bit bitDown,a
@@ -645,14 +730,13 @@ leftActionSize
 	cp 1 : ret z
 	dec a
 	ld (ix+4),a
-
+	call resizeCursorStart
 	call loadEditor 
 
 	ret
 rightActionSize
-	ld a,(newKey)
-	bit bitRight,a
-	ret nz
+
+	ld a,(newKey) : bit bitRight,a :	ret nz
 	call getAddressLevel ; levelManager.asm
 	ld a,(ix+4) ; recupere nb de colonne du level
 	cp maxRows : ret z
@@ -685,10 +769,26 @@ downActionSize
 	cp 1 : ret z
 	dec a
 	ld (ix+3),a
-
+	call resizeCursorStart
 	call loadEditor
 
 	ret
+resizeCursorStart
+	call getAddressLevel
+   ld a,(ix+3) : ld b,a ; recupere maxLine
+	;DEFB #ED,#FF
+	ld a,(ix) : and %1111 :cp b : jr c,.testX
+	;DEFB #ED,#FF
+	ld a,b : and %1111 : dec a : ld b,a 
+	ld a,(ix) : and %11110000 : or b : ld (ix),a
+	.testX
+	;DEFB #ED,#FF
+   ld a,(ix+4) : ld b,a ; recupere maxRow
+	ld a,(ix) : and %11110000 : srl a : srl a : srl a : srl a :cp b : ret c
+	ld a,b : dec a : sla a : sla a: sla a: sla a: ld b,a
+	ld a,(ix) : and %1111 : or b : ld (ix),a  
+	ret
+
 escapeActionEditor
 
 	ld a,(newKey)
