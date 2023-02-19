@@ -43,7 +43,6 @@ getKeys:
 	;ld e,a
 	
 	call vbl
-	;call getJoystick
 	;ret
 
 	ld e,&0
@@ -67,7 +66,7 @@ getKeys:
 
 	;Right 
 	ld d,0 
-    	call TestKeyboard ; a contient le test
+   call TestKeyboard ; a contient le test
 	and %00000010 ; ne garde que le bit 7    	
 	or e
 	ld e,a
@@ -103,10 +102,17 @@ getKeys:
 	or e
 	ld e,a
 
+	;key E bit 6
+	ld d,7 ;  
+   call TestKeyboard ; a contient le test
+	and %00000100 ; ne garde que le bit 2    	
+	sla a : sla a : sla a : sla a   ; repositionne en bit 6
+	or e
+	ld e,a
 
 	ld (newKey),a	; save le clavier
 
-	; call getJoystick
+	call getJoystick
 	
 	ret
 getJoystick:
@@ -116,36 +122,42 @@ getJoystick:
 	;ld e,a ; save dans e
 
 	; bit 7
-	
-
-	ld d,9 ; espace
+	call vbl
+	; Fire 1
+	ld d,9  
    call TestKeyboard ; a contient le test
 	and %00010000 ; ne garde que le bit 4    	
 	sla a : sla a : sla a ; reposition en bit 7 
 	or e 
 	ld e,a
 
+	ld d,9  ;fire 2 
+   call TestKeyboard ; a contient le test
+	and %00100000 ; ne garde que le bit 5    	
+	srl a : srl a : srl a ; repositionne en bit 2
+or e 
+	ld e,a
 
 	;bit 0 
 	ld d,9 ; left
    call TestKeyboard ; a contient le test
-	and %00000100 ; ne garde que le bit 2
+	and %00000100 ; 
 	srl a : srl a ; repositionne en bit 0    	
 	or e
 	ld e,a
 
 	;Right 
 	ld d,9 
-    	call TestKeyboard ; a contient le test
-	and %00001000 ; ne garde que le bit 3 
+   call TestKeyboard ; a contient le test
+	and %00001000 ; 
 	srl a : srl a ; repositionne en bit 1    	
 	or e
 	ld e,a
 
 	;Up 
 	ld d,9 
-    	call TestKeyboard ; a contient le test
-	and %00000001 ; ne garde que le bit 1    	
+   call TestKeyboard ; a contient le test
+	and %00000001 ;     	
 	sla a : sla a:sla a: sla a ; repositionne en bit 4
 	
 	or e
@@ -153,21 +165,24 @@ getJoystick:
 
 	;down 
 	ld d,9 
-    	call TestKeyboard ; a contient le test
-	and %00000010 ; ne garde que le bit 1    	
+   call TestKeyboard ; a contient le test
+	and %00000010 ;     	
 	sla a : sla a; repositionne en bit 3
 	or e
 	ld e,a
 
 
-  ;fire 2
-	ld d,9 
+	ld d,7 ;  
    call TestKeyboard ; a contient le test
-	and %00100000 ; ne garde que le bit 5    	
-	srl a : srl a : srl a ; repositionne en bit 2
-
-
+	and %00000100 ; ne garde que le bit 2    	
+	sla a : sla a : sla a : sla a   ; repositionne en bit 6
 	or e
+	ld e,a
+ 
+
+
+	;BREAKPOINT
+	;or e
 	cpl ; inverse a
 	ld e,a
 	; on est obligé d'inverser les registres pour faire le or car il sont a 1 si pas d'action
@@ -175,35 +190,20 @@ getJoystick:
 	cpl 
 	or e
 	cpl ; reprend la convention initial pas d'action alors 1
+
+
 	ld (newKey),a	
 
 	ret
 
 updateKeys:
 
-	ld a,(oldKey)
-	bit bitEspace,a
-	call nz,espaceAction	
-	
-	ld a,(oldKey)
-	bit bitLeft,a
-	call nz,leftAction	
-
-	ld a,(oldKey)
-	bit bitRight,a
-	call nz,rightAction	
-		
-	ld a,(oldKey)
-	bit bitUp,a
-	call nz,upAction
-
-	ld a,(oldKey)
-	bit bitDown,a
-	call nz,downAction
-
-	ld a,(oldKey)
-	bit bitEscape,a
-	call nz,escapeAction
+	ld a,(oldKey) : bit bitEspace,a : call nz,espaceAction	
+	ld a,(oldKey) : bit bitLeft,a : call nz,leftAction  
+	ld a,(oldKey) : bit bitRight,a : call nz,rightAction	
+	ld a,(oldKey) : bit bitUp,a : call nz,upAction
+	ld a,(oldKey) : bit bitDown,a : call nz,downAction
+	ld a,(oldKey) : bit bitEscape,a : call nz,escapeAction
 
 	ret
 escapeAction

@@ -1,9 +1,23 @@
+posStart equ 0
+posColor equ 1
+posMaxTry equ 2
+posLine equ 3
+posRow equ 4
+posSeed equ 5
+posKey equ 7
 posNbBlocks equ 8
-maxNbBlock equ 10
+posNbWall equ posNbBlocks+maxNbBlock+1
+maxNbBlock equ 30
+maxNbWall equ 30
 
+lenghtLevel equ posNbWall+maxNbWall+1 ;40 taille en octet d'un level
+maxLevel equ 10
 
 loadPadlock:
+   if build == 0
+   
    ld a,(modeEditor) : cp 1 : ret z ; rustine pour eviter conflit avec editeur
+   ENDif 
 
    ld a,(nbBlocks)
    ;DEFB #ED,#FF 
@@ -68,6 +82,7 @@ loadKey:
    ret
 getAddressLevel
    ; retourne l'adresse du level courant dans ix
+   
    ld hl,levels
    ld de,lenghtLevel
    ld a,(currentLevel)
@@ -91,21 +106,21 @@ loadLevel:
    ld a,(ix)      ; position de depart
    ld (positionStart),a
 
-   ld a,(ix+1)      ;max color
+   ld a,(ix+posColor)      ;max color
    ld (maxColor),a
  ; DEFB #ED,#FF
-   ld a,(ix+2)    ; nb essais
+   ld a,(ix+posMaxTry)    ; nb essais
    ld (currentTry),a
    call convertTry
    ld (maxTry),a
-   ld a,(ix+3)    ; nb lignes
+   ld a,(ix+posLine)    ; nb lignes
    ld (nbLines),a
-   ld a,(ix+4)    ; nb colonne
+   ld a,(ix+posRow)    ; nb colonne
    ld (nbRows),a
       ;seed +5,+6
    push hl
-   ld h,(ix+5)
-   ld l,(ix+6)
+   ld h,(ix+posSeed)
+   ld l,(ix+posSeed+1)
    ld  (rndseed+1),hl   ; la seed
 
    ld hl,&c0de
@@ -113,14 +128,13 @@ loadLevel:
    
    pop hl
 
-   ld a,(ix+7)          ; clef
+   ld a,(ix+posKey)          ; clef
    ld (keys),a
-   ld a,(ix+8)          ; nb block
+   ld a,(ix+posNbBlocks)          ; nb block
    ld (nbBlocks),a
    cp 0
    call nz,loadBlocks
-   
-   ld bc,19 ; decalle ix de 18 
+   ld bc,posNbWall ; decalle ix de 19 
    add ix,bc
    ld a,(ix)
    ld (nbWalls),a
@@ -131,6 +145,9 @@ loadLevel:
   
    ret
 initWalls:
+   if build == 0
+      ld a,(modeEditor) : cp 1 : ret z ; rustine pour eviter conflit avec editeur
+   endif
    ld a,(nbWalls)
 
   

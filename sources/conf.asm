@@ -11,10 +11,11 @@
 ;                        |___/ 
 
 
-IsMusic = 0
-Debug = 1
-cheat = 1
+IsMusic = 1
+Debug = 0
+cheat = 0
+build = 1
 
-initCurrentLevel equ 8
+initCurrentLevel equ 1
 
 ;DEFB #ED,#FF

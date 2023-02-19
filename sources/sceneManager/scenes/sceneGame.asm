@@ -3,7 +3,7 @@ loadGame:
    ; init
 
    if IsMusic
-      call initMusic
+    ;  call initMusic
    ENDIF
 
 

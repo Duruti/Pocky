@@ -1,8 +1,9 @@
 initGame:
 
 init:
- 	ld a,0 : ld (modeEditor),a
-
+  if build == 0
+ 	  ld a,0 : ld (modeEditor),a
+  ENDIF 
   ; nettoyage du hub en affichant un rectangle remplis
   call clearHud
   ld hl,&C000
@@ -66,8 +67,8 @@ init:
   ; call printText
   call drawIndicator
 
-  ; border 0
-  LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
+  
+  LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; border 0
 
   ld hl,paletteMode0
   call loadPaletteGA

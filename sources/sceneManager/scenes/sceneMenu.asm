@@ -13,6 +13,7 @@ loadMenu
    ; mode 0
    
    ; effacer l'écran
+   LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; border 0
 
    ld hl,&C000
    ld bc,&40FF
@@ -76,7 +77,7 @@ loadMenu
    call loadPaletteGA ; print.asm
   
    ; border
-     LD BC,#7F10:OUT (C),C:LD C,85:OUT (C),C
+     ;LD BC,#7F10:OUT (C),C:LD C,85:OUT (C),C
     
 
    
@@ -91,38 +92,16 @@ updateMenu:
    ret
    
 updateKeysMenu:
-   ;DEFB #ED,#FF
-   ;xor a
-   ;ld (isValidMenu),a
 
-	ld a,(oldKey)
-	bit bitEspace,a
-	call nz,espaceActionMenu
-
-   ;ld a,(isValidMenu)
-   ;or a
-   ;ret nz 
-
-	ld a,(oldKey)
-	bit bitLeft,a
-	call nz,leftActionMenu	
-
-	ld a,(oldKey)
-	bit bitRight,a
-	call nz,rightActionMenu	
-   ;DEFB #ED,#FF
-		
-	 ;ld a,(oldKey)
-	 ;bit bitUp,a
-	 ;call nz,espaceActionEditor	
-	; call nz,upAction
-
-	; ld a,(oldKey)
-	; bit bitDown,a
-	; call nz,downAction
-   ;call drawCursorMenu
-  
+	ld a,(oldKey) : bit bitEspace,a : call nz,espaceActionMenu
+	ld a,(oldKey) : bit bitLeft,a : call nz,leftActionMenu	
+	ld a,(oldKey) : bit bitRight,a : call nz,rightActionMenu	
+	ld a,(oldKey) : bit bitKeyE,a : call nz,ChangeToEditor
 	ret
+ChangeToEditor
+	ld a,(newKey) : bit bitKeyE,a : ret nz
+   jp menuChangeSceneEditor
+   ret
 leftActionMenu
    ld a,(newKey)
 	bit bitLeft,a
@@ -185,35 +164,33 @@ drawCursorMenu
    ld (isFistDraw),a
    ret   
 espaceActionMenu:
-   ld a,(newKey)
-	bit bitEspace,a
-	ret nz
+   ld a,(newKey) : bit bitEspace,a : ret nz
    
    ; change la pile SP pour sortir directement du
    ; updateKeyMenu
    ; la validation etant prioritaire
 
    inc sp : inc sp
-
-   ;ld a,1
-   ;ld (isValidMenu),a
-
    ld a,(positionCursorMenu)
-   cp 0 ; game
-   jr z,menuChangeSceneGame
-   cp 1 ; editor
-   jr z,menuChangeSceneEditor
+   cp 0 : jr z,menuChangeSceneGame ; game
+   cp 1 : jr z,menuChangeSceneLevels ; editor
+   cp 2 : jr z,menuChangeSceneGreeting ; editor
+   
    ret
 
    menuChangeSceneGame
-   ld e,sceneGame
-   call changeScene
-   ret
+   ld e,sceneGame : call changeScene : ret
+
+   menuChangeSceneLevels
+   ld e,sceneLevels : call changeScene : ret
+   menuChangeSceneGreeting
+   ld e,sceneGreeting : call changeScene : ret
 
    menuChangeSceneEditor
-   ld e,sceneEditor
-   call changeScene
-   ret
+   if build == 1
+      ret
+   endif
+   ld e,sceneEditor : call changeScene : ret
    
    
 drawSprite80:

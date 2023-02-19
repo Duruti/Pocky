@@ -4,7 +4,7 @@ textRandom db "SEED:     ",0
 textMaxTry db "MAXTRY:   ",0
 textColors db "COLORS:   ",0
 textModeKey db "MODEKEY: ",0
-currentMode db 8
+currentMode db 0
 currentModeKey db 1
 textMode: 
 	;   12345678
@@ -262,9 +262,7 @@ updateKeysEditor:
 
 
 	; *******   KEY ***********
-	ld a,(oldKey)
-	bit bitEscape,a
-	call nz,escapeAction
+	ld a,(oldKey) : bit bitEscape,a : call nz,escapeAction
 
 	ld a,(oldKey)
 	bit bitKeyR,a
@@ -494,9 +492,49 @@ updatePositionWall
 	ld a,(oldKey) : bit bitDown,a : call nz,downPosition
 	ld a,(oldKey) : bit bitLeft,a : call nz,leftPosition
 	ret
+checkIfWallExist
+	; parcours la liste des blocks et regarde si on a un block sous le cursor
+	call getAddressLevel : 
+	ld a,(ix+posNbWall) : ld l,a : cp 0 : jp z,addWall ; si la liste est vierge alors on ajoute un block
+	;BREAKPOINT
+	ld b,a : ld de,posNbWall+1 : add ix,de : ld d,ixh : ld e,ixl: dec de : ld iyh,d : ld iyl,e; repositionne ix
+	ld a,(positionStart) : ld c,a
+	.bcl
+		ld a,(ix) : cp c : jp z,eraseWall
+		inc ix : djnz .bcl
+	call addWall	
+	ret
+eraseWall
+	
+	; ix est l'adresse a effacer , d nombre de blocks ; l-b = nombre de block a décaler 
+	
+	;;ld a,l : sub b : jp z,.eraseFirstWall 
+	ld c,b : ld b,0 : 
+	ld d,ixh : ld e,ixl : ex hl,de : ld d,h : ld e,l : inc hl: ldir ; decale les donnees
+	ld (hl),0
+	ld a,(iy) : dec a : ld (iy),a ; change le nbBlock
+	call replaceCell
+	;BREAKPOINT
+	ret
+	; .eraseFirstWall
+	; BREAKPOINT
+	; 	xor a : dec ix : ld (ix),a 
+	; 	call replaceCell ; affiche la tile
+	; ret 
+addWall
+	call getAddressLevel : ld a,(ix+posNbWall) : cp maxNbWall : ret z
+	inc a : ld (ix+posNbWall),a 
+	;BREAKPOINT
+
+	ld de,posNbWall : add e : ld e,a : add ix,de 
+	ld a,(positionStart) : ld (ix),a
+	call drawWall
+	ret
+
 switchWall
 	ld a,(newKey) : bit bitEspace,a :	ret nz
-	call drawWall
+	call checkIfWallExist
+
 	ret
 drawWall
 	;BREAKPOINT
@@ -506,8 +544,8 @@ drawWall
 
 	ret
 drawListWall
-	call getAddressLevel : ld a,(ix+19) : cp 0 : ret z
-	ld b,a : inc ix
+	call getAddressLevel : ld a,(ix+posNbWall) : cp 0 : ret z
+	ld b,a : ld de,posNbWall+1 : add ix,de
 	.draw
 		push bc
 		ld a,(ix) : and %11110000 : srl a : srl a : ld (colonne),a 
@@ -520,6 +558,7 @@ drawListWall
 ; **************************************
 checkObjet
 	call drawListPadlock
+	call drawListWall
 	; cherche s'il y a un start sous le curseur
 	call getAddressLevel : ld a,(ix) : ld b,a : ld a,(positionStart)
 	cp b : jp nz,.suite : call drawIndicator

@@ -63,7 +63,10 @@ changeScene:
    loadCurrentScene call $
    
    ret
-
-read "scenes/sceneEditor.asm"
+if build==0 
+   read "scenes/sceneEditor.asm"
+endif
 read "scenes/sceneMenu.asm"
 read "scenes/sceneGame.asm"
+read "scenes/sceneLevels.asm"
+read "scenes/sceneGreeting.asm"
