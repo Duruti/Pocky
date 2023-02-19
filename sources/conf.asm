@@ -15,4 +15,6 @@ IsMusic = 0
 Debug = 1
 cheat = 1
 
-initCurrentLevel equ 1
+initCurrentLevel equ 8
+
+;DEFB #ED,#FF

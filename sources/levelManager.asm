@@ -1,10 +1,12 @@
-
+posNbBlocks equ 8
+maxNbBlock equ 10
 
 
 loadPadlock:
+   ld a,(modeEditor) : cp 1 : ret z ; rustine pour eviter conflit avec editeur
 
    ld a,(nbBlocks)
-
+   ;DEFB #ED,#FF 
   
 
    ld e,a
@@ -118,7 +120,7 @@ loadLevel:
    cp 0
    call nz,loadBlocks
    
-   ld bc,18 ; decalle ix de 18 
+   ld bc,19 ; decalle ix de 18 
    add ix,bc
    ld a,(ix)
    ld (nbWalls),a
@@ -168,9 +170,9 @@ loadWalls:
 loadBlocks:
    ld c,a
    ld b,0
-
+  ;DEFB #ED,#FF 
   ; ld hl,levels
-   ld de,8
+   ld de,9
    add hl,de
    ;;;   inc hl : inc hl : inc hl : inc hl : inc hl : inc hl ; positionne la pile +6
    ld de,blocks

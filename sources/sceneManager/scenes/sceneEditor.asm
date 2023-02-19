@@ -1,19 +1,21 @@
+modeEditor db 0
 textEditorInfo db "LEVEL   EDITOR",0
 textRandom db "SEED:     ",0
 textMaxTry db "MAXTRY:   ",0
 textColors db "COLORS:   ",0
-
+textModeKey db "MODEKEY: ",0
 currentMode db 8
+currentModeKey db 1
 textMode: 
 	;   12345678
-	db "SIZE   ",0  	; 1
-	db "RANDOM ",0		; 2 	
+	db "SIZE   ",0  	; 1 --
+	db "RANDOM ",0		; 2 --	
 	db "KEY    ",0		; 3
-	db "WALL   ",0		; 4
-	db "START  ",0		; 5
-	db "COLORS ",0		; 6
-	db "EMPTY  ",0		; 7 
-	db "MAX TRY",0		; 8
+	db "PADLOCK",0		; 4
+	db "START  ",0		; 5 --
+	db "COLORS ",0		; 6 --
+	db "WALL   ",0		; 7 
+	db "MAX TRY",0		; 8 --
 
 newMode db 0 ; pour choisir le mode dans l'editor
 oldMode db &0
@@ -29,10 +31,13 @@ bitMode8 equ 7
 
 loadEditor:
    ;DEFB #ED,#FF
-   
+	ld a,1
+   ld (modeEditor),a
+
    call initKeyboard ; keyManager.asm
 	ld a,&ff
 	ld (oldMode),a
+	
 	;di
    call clearHud	;	hub.asm
 	ld hl,&C000
@@ -61,7 +66,8 @@ loadEditor:
 
 	ld hl,paletteMode0
    call loadPaletteGA ; print.asm
-
+	call drawListPadlock
+	call drawListWall
    ret
 
 
@@ -215,7 +221,7 @@ getKeysEditor:
 	ld (newKey),a	; save le clavier
 
 	
-;DEFB #ED,#FF
+	;DEFB #ED,#FF
 	ret
 
 
@@ -232,7 +238,7 @@ updateKeysEditor:
 
 	ld a,(oldMode)
 	bit bitMode3,a
-	call nz,mode3Editor	
+	call nz,modeKeyEditor	
 
 	ld a,(oldMode)
 	bit bitMode4,a
@@ -272,9 +278,12 @@ updateKeysEditor:
 
 	ld a,(currentMode)
 	cp 1-1 : jp z,updateSize 
-	cp 2-1 : jp z,updateRandom 
+	cp 2-1 : jp z,updateRandom
+	cp 3-1 : jp z,updateKeyPosition 
+	cp 4-1 : jp z,updatePositionPadlock 
 	cp 5-1 : jp z,updateCursorStart 
 	cp 6-1 : jp z,updateColors 
+	cp 7-1 : jp z,updatePositionWall 
 	cp 8-1 : jp z,updateMaxTry 
 
 
@@ -339,13 +348,15 @@ modeRandomEditor:
 	call drawModeEditor
 	
 	ret
-mode3Editor:
+modeKeyEditor:
 	ld a,(newMode)
 	bit bitMode3,a
 	ret nz
 	ld a,3-1
 	ld (currentMode),A
 	call drawModeEditor
+	call drawModeKey
+	call showKeyPosition
 	
 	ret
 mode4Editor:
@@ -397,6 +408,291 @@ mode8Editor:
 	call drawModeEditor
 	
 	ret
+
+; *****************************
+; *   POSITION PADLOCK  			*
+; *****************************
+
+updatePositionPadlock
+	ld a,(oldKey) : bit bitEspace,a : call nz,switchPadlock
+	;ld a,(currentModeKey) : cp 0 : ret z
+	ld a,(oldKey) : bit bitUp,a : call nz,upPosition
+	ld a,(oldKey) : bit bitRight,a : call nz,rightPosition
+	ld a,(oldKey) : bit bitDown,a : call nz,downPosition
+	ld a,(oldKey) : bit bitLeft,a : call nz,leftPosition
+	ret
+switchPadlock
+	ld a,(newKey) : bit bitEspace,a :	ret nz
+	call checkIfPadlockExist
+	
+	ret
+checkIfPadlockExist
+	; parcours la liste des blocks et regarde si on a un block sous le cursor
+	call getAddressLevel : 
+	ld a,(ix+posNbBlocks) : ld l,a : cp 0 : jp z,addPadlock ; si la liste est vierge alors on ajoute un block
+	;BREAKPOINT
+	ld b,a : ld de,posNbBlocks+1 : add ix,de : ld d,ixh : ld e,ixl: dec de : ld iyh,d : ld iyl,e; repositionne ix
+	ld a,(positionStart) : ld c,a
+	.bcl
+		ld a,(ix) : cp c : jp z,erasePadlock
+		inc ix : djnz .bcl
+	call addPadlock	
+	ret
+erasePadlock
+	
+	; ix est l'adresse a effacer , d nombre de blocks ; l-b = nombre de block a décaler 
+	
+	;;ld a,l : sub b : jp z,.eraseFirstWall 
+	ld c,b : ld b,0 : 
+	ld d,ixh : ld e,ixl : ex hl,de : ld d,h : ld e,l : inc hl: ldir ; decale les donnees
+	ld (hl),0
+	ld a,(iy) : dec a : ld (iy),a ; change le nbBlock
+	call replaceCell
+	;BREAKPOINT
+	ret
+	; .eraseFirstWall
+	; BREAKPOINT
+	; 	xor a : dec ix : ld (ix),a 
+	; 	call replaceCell ; affiche la tile
+	; ret 
+addPadlock
+	call getAddressLevel : ld a,(ix+posNbBlocks) : cp maxNbBlock : ret z
+	inc a : ld (ix+posNbBlocks),a 
+	;BREAKPOINT
+
+	ld de,posNbBlocks : add e : ld e,a : add ix,de 
+	ld a,(positionStart) : ld (ix),a
+	call drawPadlockEditor
+	ret
+drawPadlockEditor
+	;BREAKPOINT
+	ld a,(positionStart) : and %11110000 : srl a : srl a : ld (colonne),a 
+	ld a,(positionStart) : and %1111 : ld (currentLine),a 
+	ld a,10 : ld (currentSprite),a : call drawcells
+
+	ret
+drawListPadlock
+	call getAddressLevel : ld a,(ix+posNbBlocks) : cp 0 : ret z ; recupere le nb de block
+	ld b,a : ld de,posNbBlocks+1 : add ix,de : ; repositionne ix
+	.draw ; affiche chaque block
+		push bc
+		ld a,(ix) : and %11110000 : srl a : srl a : ld (colonne),a 
+		ld a,(ix) : and %1111 : ld (currentLine),a 
+		ld a,10 : ld (currentSprite),a : call drawcells
+		inc ix : pop bc: djnz .draw
+
+	ret
+; *****************************
+; *   POSITION WALL	 			*
+; *****************************
+
+updatePositionWall
+	ld a,(oldKey) : bit bitEspace,a : call nz,switchWall
+	;ld a,(currentModeKey) : cp 0 : ret z
+	ld a,(oldKey) : bit bitUp,a : call nz,upPosition
+	ld a,(oldKey) : bit bitRight,a : call nz,rightPosition
+	ld a,(oldKey) : bit bitDown,a : call nz,downPosition
+	ld a,(oldKey) : bit bitLeft,a : call nz,leftPosition
+	ret
+switchWall
+	ld a,(newKey) : bit bitEspace,a :	ret nz
+	call drawWall
+	ret
+drawWall
+	;BREAKPOINT
+	ld a,(positionStart) : and %11110000 : srl a : srl a : ld (colonne),a 
+	ld a,(positionStart) : and %1111 : ld (currentLine),a 
+	ld a,9 : ld (currentSprite),a : call drawcells
+
+	ret
+drawListWall
+	call getAddressLevel : ld a,(ix+19) : cp 0 : ret z
+	ld b,a : inc ix
+	.draw
+		push bc
+		ld a,(ix) : and %11110000 : srl a : srl a : ld (colonne),a 
+		ld a,(ix) : and %1111 : ld (currentLine),a 
+		ld a,9 : ld (currentSprite),a : call drawcells
+		inc ix : pop bc: djnz .draw
+	ret
+; **************************************
+; *  GESTION POSITION WALL & PADLOCK	*
+; **************************************
+checkObjet
+	call drawListPadlock
+	; cherche s'il y a un start sous le curseur
+	call getAddressLevel : ld a,(ix) : ld b,a : ld a,(positionStart)
+	cp b : jp nz,.suite : call drawIndicator
+
+	.suite ; on test s'il y a une clef sous le curseur
+	ld a,(ix+7) : ld b,a : ld a,(positionStart)
+	cp b : ret nz 
+   ld (keys),a
+   and %11110000
+   srl a : srl a;  srl a ; srl a
+   ld (colonne),a
+
+   ld a,(keys) ; recupere la position 
+   ; recupere la ligne
+   and %1111
+   ld (currentLine),a
+
+   call drawKey 
+
+   ret
+
+	ret
+
+upPosition
+	ld a,(newKey) : bit bitUp,a :	ret nz
+	;call getAddressLevel : ld a,(ix+3)    ; nb colonne
+   ;ld (nbLines),a 
+	;DEFB #ED,#FF
+	ld a,(positionStart) : and %1111
+	cp 0 : ret z
+	call replaceCell : call checkObjet
+   
+	ld a,(positionStart) : dec a : ld (positionStart),a ; incremente x
+	call drawIndicator
+	ret
+rightPosition
+	ld a,(newKey) : bit bitRight,a :	ret nz
+	call getAddressLevel : ld a,(ix+4)    ; nb colonne
+   ld (nbRows),a :dec a : ld b,a
+	ld a,(positionStart) : and %11110000 : srl a : srl a : srl a : srl a : cp b : ret nc
+	call replaceCell: call checkObjet
+   
+	ld a,(positionStart) : add 16 : ld (positionStart),a ; incremente x
+	call drawIndicator
+	ret
+downPosition
+	ld a,(newKey) : bit bitDown,a :	ret nz
+	call getAddressLevel : ld a,(ix+3) : ld (nbLines),a :dec a : ld b,a
+	ld a,(positionStart) : and %1111 : cp b : ret nc
+
+	call replaceCell : call checkObjet
+   
+	ld a,(positionStart) : add 1 : ld (positionStart),a 
+	call drawIndicator
+
+	ret
+leftPosition
+	ld a,(newKey) : bit bitLeft,a :	ret nz
+	ld a,(positionStart): and %11110000 : srl a : srl a : srl a : srl a : cp 0 : ret z
+
+	call replaceCell : call checkObjet
+	ld a,(positionStart) : sub 16 : ld (positionStart),a
+	call drawIndicator
+
+	ret
+
+
+
+; *****************************
+; *      KEY POSITION		 	*
+; *****************************
+updateKeyPosition
+	ld a,(oldKey) : bit bitEspace,a : call nz,switchModeKey
+	ld a,(currentModeKey) : cp 0 : ret z
+	ld a,(oldKey) : bit bitUp,a : call nz,upKeyPosition
+	ld a,(oldKey) : bit bitRight,a : call nz,rightKeyPosition
+	ld a,(oldKey) : bit bitDown,a : call nz,downKeyPosition
+	ld a,(oldKey) : bit bitLeft,a : call nz,leftKeyPosition
+	ret
+
+switchModeKey
+	; mode 1 cle active
+	; mode 0 pas de clef
+	
+	ld a,(newKey) : bit bitEspace,a :	ret nz
+	ld a,(currentModeKey) : cp 1 : jp z,.reset
+	inc a : ld (currentModeKey),a : call showKeyPosition : call drawModeKey : ret
+	.reset
+	xor a : ld (currentModeKey),a 
+	; enleve la clef du level
+	call getAddressLevel : ld a,&ff : ld (ix+7),a
+	call loadEditor : call drawModeKey
+	ret
+upKeyPosition
+	ld a,(newKey) : bit bitUp,a :	ret nz
+	call getAddressLevel
+   ld a,(ix+3)    ; nb colonne
+   ld (nbLines),a :dec a : ld b,a
+	;DEFB #ED,#FF
+	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a : and %1111
+	cp 0 : ret z
+	call replaceCell
+   
+	ld a,(positionStart) : dec a : ld (ix+7),a : ld (positionStart),a ; incremente x
+	call drawKeyPosition
+	ret
+rightKeyPosition
+	ld a,(newKey) : bit bitRight,a :	ret nz
+	call getAddressLevel
+   ld a,(ix+4)    ; nb colonne
+   ld (nbRows),a :dec a : ld b,a
+	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
+	and %11110000 : srl a : srl a : srl a : srl a
+	cp b : ret nc
+	call replaceCell
+   
+	ld a,(positionStart) : add 16 : ld (ix+7),a : ld (positionStart),a ; incremente x
+	call drawKeyPosition
+	ret
+downKeyPosition
+	ld a,(newKey) : bit bitDown,a :	ret nz
+	call getAddressLevel
+   ld a,(ix+3)    ; nb colonne
+   ld (nbLines),a :dec a : ld b,a
+	;DEFB #ED,#FF
+	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
+	and %1111
+	cp b : ret nc
+
+	call replaceCell
+   
+	ld a,(positionStart) : add 1 : ld (ix+7),a : ld (positionStart),a ; incremente x
+	call drawKeyPosition
+	ret
+leftKeyPosition
+	ld a,(newKey) : bit bitLeft,a :	ret nz
+	call getAddressLevel
+	;DEFB #ED,#FF
+	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
+	and %11110000 : srl a : srl a : srl a : srl a
+	cp 0 : ret z
+
+
+	call replaceCell
+	ld a,(positionStart) : sub 16 : ld (ix+7),a : ld (positionStart),a ; incremente x
+	call drawKeyPosition
+	ret
+showKeyPosition
+	ld a,(currentModeKey) : cp 0 : ret z
+	call getAddressLevel
+	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
+	call drawKeyPosition
+	ret
+checkPositionKey
+	cp &FF : ret nz : xor a
+	ret	
+drawKeyPosition
+	ld a,(positionStart) : ld (oldPositionStart),a : call getColor : ld (oldColor),a
+	ld a,(oldPositionStart) : and %11110000 : srl a : srl a : ld (colonne),a 
+	ld a,(oldPositionStart) : and %1111 : ld (currentLine),a 
+	ld a,12 : ld (currentSprite),a : call drawcells
+
+	ret
+drawModeKey
+	ld hl,&00F8;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+ 	ld (adrPrint),hl ; save la position
+	ld ix,textModeKey : ld a,(currentModeKey) : add &30 : ld (ix+8),a
+
+	ld hl,textModeKey
+   call printText ; print.asm
+	ret
+
+	ret
 ; *****************************
 ; *      CURSOR START		 	*
 ; *****************************
@@ -423,6 +719,7 @@ upCursorStart
 	call drawIndicator
 	ret
 
+
 rightCursorStart
 	ld a,(newKey) : bit bitRight,a :	ret nz
 	call getAddressLevel
@@ -446,8 +743,6 @@ downCursorStart
 	and %1111
 	cp b : ret nc
 
-;   ld a,(ix+3)    ; nb lignes
-;   ld (nbLines),a
 	call replaceCell
    
 	ld a,(positionStart) : add 1 : ld (ix),a : ld (positionStart),a ; incremente x
@@ -455,29 +750,24 @@ downCursorStart
 	ret
 leftCursorStart
 	ld a,(newKey) : bit bitLeft,a :	ret nz
-
-	
-	
 	call getAddressLevel
 	;DEFB #ED,#FF
 	ld a,(ix) : ld (positionStart),a
 	and %11110000 : srl a : srl a : srl a : srl a
 	cp 0 : ret z
 
-;   ld a,(ix+3)    ; nb lignes
-;   ld (nbLines),a
 
 	call replaceCell
 	ld a,(positionStart) : sub 16 : ld (ix),a : ld (positionStart),a ; incremente x
 	call drawIndicator
-	
-	ret	
 	ret
 replaceCell
-	   ld a,(positionStart) : ld (oldPositionStart),a : call getColor : ld (oldColor),a
+	
+	ld a,(positionStart) : ld (oldPositionStart),a : call getColor : ld (oldColor),a
 	ld a,(oldPositionStart) : and %11110000 : srl a : srl a : ld (colonne),a 
 	ld a,(oldPositionStart) : and %1111 : ld (currentLine),a 
-	ld a,(oldColor) : ld (currentSprite),a : call drawcells
+	ld a,(oldColor) 
+	ld (currentSprite),a : call drawcells
 	ret
 ; *****************************
 ; *       	LEVEL 			 	*

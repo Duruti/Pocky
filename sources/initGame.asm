@@ -1,6 +1,7 @@
 initGame:
 
 init:
+ 	ld a,0 : ld (modeEditor),a
 
   ; nettoyage du hub en affichant un rectangle remplis
   call clearHud
@@ -165,7 +166,7 @@ drawLevel
   call nz,loadPadlock
 
   ; rajoute les murs
-
+  
   ld a,(nbWalls)
   cp 0
   call nz,initWalls
