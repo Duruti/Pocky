@@ -260,7 +260,10 @@ decCursor:
 updateTextHub:
    
    ;Modifie directement la chaine de texte
-   ld ix,textHub
+   ld a,TextHub : call getAdressText 
+   ex hl,de :ld ixh,d : ld ixl,e 
+
+   ;ld ix,textHub
    ; unitée
    ld a,(maxTry)
    and %00001111

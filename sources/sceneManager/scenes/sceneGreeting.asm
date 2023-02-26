@@ -1,4 +1,4 @@
-textGreetingInfo db "GREETING",0
+;textGreetingInfo db "GREETING",0
 
 loadGreeting
    ld hl,&C000
@@ -8,7 +8,9 @@ loadGreeting
 
    ld hl,&0BF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
-   ld hl,textGreetingInfo
+   ;ld hl,textGreetingInfo
+   
+   ld a,textGreetingInfo : call getAdressText
    call printText
    ret
 updateGreeting

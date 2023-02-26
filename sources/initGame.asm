@@ -40,7 +40,8 @@ init:
 
   ; ld hl,&0E19 ; 0819 centrer
   ; call locate
-  ld hl,textHub
+  
+  ld a,TextHub : call getAdressText
   call printText
 
 
@@ -231,22 +232,23 @@ drawLevel
   ret
 
 drawLevelInfoHub:
-    ld a,(currentLevel)
+
+  ld a,TextLevel : call getAdressText : push hl
+  ex hl,de :ld ixh,d : ld ixl,e 
+
+  ld a,(currentLevel)
   ld d,a
   ld e,10
   call div
   ; update unité
   add &30
-  ld ix,textLevel
+  ;ld ix,textLevel
   ld (ix+5),a
   ld a,d
   add &30
   ld (ix+4),a
 
-  ;ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+  ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
-  ;  ld hl,&0119
-  ;  call locate
-  ld hl,textLevel
-  call printText
+  pop hl :  call printText
   ret

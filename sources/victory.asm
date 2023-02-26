@@ -8,7 +8,8 @@ gameover:
   
    ld hl,&0CF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
-   ld hl,textGameover
+   ;ld hl,textGameover
+   ld a,TextGameover : call getAdressText
    call printText
    
    jp loopGameover
@@ -65,7 +66,8 @@ drawVictory:
 
    ld hl,&0CF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
-   ld hl,textWin
+      ld a,TextVictory : call getAdressText
+
    call printText
 
 

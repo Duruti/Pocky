@@ -135,7 +135,7 @@ getJoystick:
    call TestKeyboard ; a contient le test
 	and %00100000 ; ne garde que le bit 5    	
 	srl a : srl a : srl a ; repositionne en bit 2
-or e 
+	or e 
 	ld e,a
 
 	;bit 0 

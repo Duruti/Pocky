@@ -11,9 +11,9 @@
 ;                        |___/ 
 
 
-IsMusic = 1
+IsMusic = 0
 Debug = 0
-cheat = 0
+cheat = 1
 build = 1
 
 initCurrentLevel equ 1

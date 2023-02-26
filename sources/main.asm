@@ -137,15 +137,15 @@ if IsMusic
    include "border.asm"
    include "gameState/gameState.asm"
    include "sceneManager/sceneManager.asm"
-
+   include "l10n/l10n.asm"
 endCode:
 
 startVariable:
    nbInt: db 0
-   textWin : db " WIN yeah ",0
-   textGameover : db "GAME OVER",0
-   textHub : db "Essai: 00/15",0
-   textLevel : db "Lvl:  ",0
+   ;textWin : db " WIN yeah ",0
+  ; textGameover : db "GAME OVER",0
+  ; textHub : db "Essai: 00/15",0
+   ;textLevel : db "Lvl:  ",0
 
    palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
    ;paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
