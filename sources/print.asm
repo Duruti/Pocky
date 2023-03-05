@@ -22,8 +22,9 @@ printText:
 
 	; affiche en mode RPG
 	;	jr speed
-   call vbl
+   ;call vbl
 	ld a,(timerTexte)
+	
 	inc a
 	ld (timerTexte),a
 	cp 1 ; vitesse

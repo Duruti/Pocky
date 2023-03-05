@@ -7,9 +7,9 @@ TextGameover equ 2
 TextVictory equ 3
 TextLevel equ 4
 TextHub equ 5
+textKonami equ 6
 
-
-currentLangage db fr ; 0:Fr 1 :En
+currentLangage db en ; 0:Fr 1 :En
 
 getAdressText:
    ; a contient l'index retourne dans hl l'adresse du texte
@@ -28,7 +28,8 @@ getAdressText:
 ; table de pointeur sur les textes
 
 fr_i10n: dw frTextGreetingInfo,frTextChooseLevel,frTextGameover,frTextVictory,frTextLevel,frTextHub
+         dw frTextKonami
 en_i10n: dw enTextGreetingInfo,enTextChooseLevel,enTextGameover,enTextVictory,enTextLevel,enTextHub
-
+         dw enTextKonami
 include "fr.asm"
 include "en.asm"

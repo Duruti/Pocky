@@ -21,6 +21,7 @@ org #100
 start:
 
    ; fichier de configuration du jeu
+   ld sp,&ff
    include "conf.asm"
  
 

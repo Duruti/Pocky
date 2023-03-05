@@ -4,3 +4,4 @@ enTextGameover db "Game over",0
 enTextVictory db "You Win",0
 enTextLevel : db "Lvl:  ",0
 enTextHub : db "Essai: 00/15",0
+enTextKonami : db "KONAMI CODE ACTIVED",0
