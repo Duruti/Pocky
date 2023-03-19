@@ -1,12 +1,17 @@
 idWall equ 9
+startLineBoxDialog equ 95
+countLineUp db 0
+countLineDown db 0
+isDialog db 0
 
 gameover:
-   call clearHud
+  ; call clearHud
    xor A
    ld (exit),a
+   ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
 
-  
-   ld hl,&0CF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+   call drawBoxDialog
+   ld hl,&0C5a;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
    ;ld hl,textGameover
    ld a,TextGameover : call getAdressText
@@ -61,20 +66,18 @@ drawVictory:
    
    xor A
    ld (exit),a
+   ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
 
-   call clearHud
-
-   ld hl,&0CF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+   ;call clearHud
+   call drawBoxDialog
+   ld hl,&0C5A;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
-      ld a,TextVictory : call getAdressText
+   ld a,TextVictory : call getAdressText
 
-   call printText
-
+   call printText 
 
 loopVictory:
-  ; call vbl
-
-  call getKeys
+   call getKeys
    call updateKeys
 
  	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
@@ -84,6 +87,7 @@ loopVictory:
   	cp 1
    jr nz,loopVictory
    ; passe au level suivant
+   ld a,0 : ld (isDialog),a
    jp addLevel1 
 
 loopGameover:
@@ -99,6 +103,28 @@ loopGameover:
  	ld a,(exit)    	; test si on quitte le programme
   	cp 1
    jr nz,loopGameover
-   
-   
+   ld a,0 : ld (isDialog),a
    jp init
+drawLine
+   ;DEFB #ED,#FF
+   ld l,a: ld h,0 : add hl,hl
+   ld bc,lignes : add hl,bc : ld e,(hl) : inc hl : ld d,(hl)
+   ex hl,de
+   ld b,&40
+   bcl
+      ld (hl),&0 : inc hl : djnz bcl
+   ret
+
+drawBoxDialog 
+   
+   ld a,(countLineUp) : call drawLine  
+   .loop
+      call vbl
+      ld a,(countLineUp) : dec a : ld (countLineUp),a : call drawLine  
+      ld a,(countLineDown) : inc a : ld (countLineDown),a : call drawLine
+      ld a,(countLineDown) : cp 119 : jp z,.endloop
+     jp .loop
+   .endLoop
+   call vbl
+   ld a,1 : ld (isDialog),a
+   ret

@@ -38,7 +38,7 @@ start:
    ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
    out (c),c
   
-if IsMusic
+   if IsMusic
       call initMusic
    ENDIF
 
@@ -75,7 +75,7 @@ if IsMusic
    call loadInterruption ; interruption.asm 
 
 
-   ld e,sceneMenu ;sceneGame ; sceneEditor
+   ld e,sceneGame ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
 

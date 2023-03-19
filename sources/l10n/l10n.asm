@@ -9,7 +9,7 @@ TextLevel equ 4
 TextHub equ 5
 textKonami equ 6
 
-currentLangage db en ; 0:Fr 1 :En
+currentLangage db fr ; 0:Fr 1 :En
 
 getAdressText:
    ; a contient l'index retourne dans hl l'adresse du texte

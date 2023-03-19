@@ -30,6 +30,7 @@ updateGame:
       ld a,(isWin)
       cp 1
       jp z,drawVictory ;victory.asm
+      ;jp drawVictory ;victory.asm
 
       ; check is lose
       ld a,(nbTry)

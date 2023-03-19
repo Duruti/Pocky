@@ -20,15 +20,22 @@ loadInterruption:
 
 interrupt:
 	push af : push bc : push de : push hl
-  
+   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
 	ld a,(nbInt)
 	inc a
 	ld (nbInt),a
+   ld a,(nbInt)
 	cp lineInt
 	call z,changeColor
 	call nz,Colorback
-	ld a,(nbInt)
+	
+	ld a,(nbInt) : cp 4
+ 	call z,colorText
+	;call nz,Colorback  
+	
+   ld a,(nbInt)
 	cp 6
+
 	jr nz,endInt
 	xor a
 	ld (nbInt),a
@@ -39,10 +46,25 @@ endInt
   
 	ei
 	ret
-
+colorText
+   ld a,(isDialog) : cp 0 : ret z
+   ld bc,&7f8D ; %10001100 bit 0,1 pour le mode
+   out (c),c
+   ld hl,PaletteGA
+   ld bc,&7F00
+   .bclPalGAint:
+   
+      ld d,(hl) : inc hl
+      out (c),c : out (c),d
+      inc c
+      ld a,c
+      cp 4
+      jr nz,.bclPalGAint
+   ;LD BC,#7F10:OUT (C),C:LD C,82:OUT (C),C
+   ret
 colorBack:
-ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
-out (c),c
+   ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
+   out (c),c
    if Debug
    	LD BC,#7F10:OUT (C),C:LD C,70:OUT (C),C
    ENDIF
