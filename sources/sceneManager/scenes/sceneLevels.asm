@@ -8,7 +8,9 @@ loadSceneLevels
 
    ld hl,&08F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	ld (adrPrint),hl ; save la position
-   ld a,TextChooseLevel : call getAdressText : call printText
+   ld a,TextChooseLevel : call getAdressText 
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+   call printText
    ret
 updateSceneLevels
    call getKeys   ; controls keys and Joystick ; keyManager.asm

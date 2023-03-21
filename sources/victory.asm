@@ -11,10 +11,12 @@ gameover:
    ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
 
    call drawBoxDialog
-   ld hl,&0C5a;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
- 	ld (adrPrint),hl ; save la position
+   ;   ld hl,&0C5a;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+   ; 	ld (adrPrint),hl ; save la position
    ;ld hl,textGameover
    ld a,TextGameover : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+
    call printText
    
    jp loopGameover
@@ -70,10 +72,11 @@ drawVictory:
 
    ;call clearHud
    call drawBoxDialog
-   ld hl,&0C5A;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
- 	ld (adrPrint),hl ; save la position
-   ld a,TextVictory : call getAdressText
 
+   ;   ld hl,&0C5A;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+   ; 	ld (adrPrint),hl ; save la position
+   ld a,TextVictory : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
 
 loopVictory:

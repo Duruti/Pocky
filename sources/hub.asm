@@ -260,22 +260,36 @@ decCursor:
 updateTextHub:
    
    ;Modifie directement la chaine de texte
-   ld a,TextHub : call getAdressText 
-   ex hl,de :ld ixh,d : ld ixl,e 
+   ; ecrit le nombre maximal d'essai
+   ; comme c'est à la fin de la chaine on va récuperer la longueur de celle ci
 
-   ;ld ix,textHub
+   ld a,TextHub : call getAdressText 
+   inc hl : inc hl : inc hl : push hl
+   call getLenghtText
+   
+   ld b,0 : dec c : pop hl : add hl,bc ; decremente c pour bien pointer
+   
    ; unitée
    ld a,(maxTry)
    and %00001111
    add &30
-   ld (ix+11),a
+   ld (hl),a : dec hl
    ; decimal
    ld a,(maxTry)
    and %11110000
    srl a : srl a :srl a :srl a
    add &30
-   ld (ix+10),a
+   ld (hl),a
 
+   ret
+getLenghtText 
+   ; retourne dans c la longueur de la chaine
+   ld c,-1
+   .loop
+      inc c
+      ld a,(hl) : cp 0 :
+      inc hl
+      jr nz,.loop
    ret
 
 ChangeColorCursor:

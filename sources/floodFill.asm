@@ -41,7 +41,7 @@ floodFill:
    ret z
 
    call addCounter
-   call transferCounter
+   ;call transferCounter
    call drawCounter
 
    ;xor A

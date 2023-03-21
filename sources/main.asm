@@ -75,7 +75,7 @@ start:
    call loadInterruption ; interruption.asm 
 
 
-   ld e,sceneGame ;sceneGame ; sceneEditor
+   ld e,sceneGreeting ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
 

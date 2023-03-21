@@ -10,12 +10,10 @@ loadGreeting
    ld bc,&40FF
    ld a,%00000000 ;&30
    call FillRect ; utils.asm
-
-   ld hl,&0BF0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
- 	ld (adrPrint),hl ; save la position
-   ;ld hl,textGreetingInfo
    
    ld a,textGreetingInfo : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+
    call printText
    call eraseKonamiLst
   
@@ -40,12 +38,9 @@ updateKeysGreeting:
 KonamiUpdate:
    ; Activation du code konami
    ; affiche un message
-
-      ld hl,&07F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
- 	ld (adrPrint),hl ; save la position
-   ;ld hl,textGreetingInfo
-   
+ 
    ld a,textKonami : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText
    ret
 

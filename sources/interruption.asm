@@ -30,7 +30,7 @@ interrupt:
 	call nz,Colorback
 	
 	ld a,(nbInt) : cp 4
- 	call z,colorText
+ 	call z,DialogText
 	;call nz,Colorback  
 	
    ld a,(nbInt)
@@ -46,8 +46,11 @@ endInt
   
 	ei
 	ret
-colorText
+DialogText
+   ; boite de dialogue pour informer le joueur
+
    ld a,(isDialog) : cp 0 : ret z
+   
    ld bc,&7f8D ; %10001100 bit 0,1 pour le mode
    out (c),c
    ld hl,PaletteGA

@@ -1,5 +1,3 @@
-adrDrawCounter equ &19F0 ; &0719
-
 addCounter:
    ; j'ai fais un double compteur, un pour l'affichage et l'autre pour tester le game over
    
@@ -29,11 +27,11 @@ getDecimal:
    srl a : srl a : srl a : srl a
    ret
 transferCounter:
-   call getUnity
-   ld e,a
-   call getDecimal
-   ld d,a
-   ret
+   ; call getUnity
+   ; ld e,a
+   ; call getDecimal
+   ; ld d,a
+   ; ret
 convertTry:
    ld d,a
    ld e,10
@@ -44,38 +42,32 @@ convertTry:
    ; dans a on a le compteur max a afficher
 
    ret
-
 drawCounter:
-   
-   ; affiche le compteur
-   ; unité 
-   ; ld a,colorPaperHub
-   ; call  &BB96
 
-   ld hl,adrDrawCounter
-   ;   call &bb75 ; position
-   ld (adrPrint),hl
+   ld a,TextHub : call getAdressText :
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de
+   ld c,(hl) : inc c : inc hl : ld b,0
+   push hl: add hl,bc 
 
-   ld a,e
+   call getUnity
    add &30
-   push de
-   call printA
-   ;   call &bb5A ; texte
-
-   
-  
-   ; decimal
-   ld hl,adrDrawCounter - &0100 ; decalage
-   ld (adrPrint),hl
-   ; call &bb75
-   pop de
-   ld a,d
-   cp 0 ; n'affiche le decimal que si > 0
-   ret z
+   ld (hl),a
+   call getDecimal
+   cp 0 : jr z,.draw
+   dec hl
    add &30
-   call printA
- 
-   ;  call &bb5A
+   ld (hl),a
+   .draw
+      pop hl :  call printText
+      ret
 
+initCounter
+   ; remet a zero le compteur   
+   ld a,TextHub : call getAdressText :
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de
+   ld c,(hl) : inc c : inc hl : ld b,0
+   push hl: add hl,bc 
+
+   ld (hl),&30 : dec hl : ld (hl),&30 
+   pop hl :  call printText
    ret
-
