@@ -141,7 +141,7 @@ rightActionMenu
    ret
 drawCursorMenu
    ;DEFB #ED,#FF
-   ld a,(isFistDraw)
+   ld a,(isFirstDraw)
    cp 1
    call z,eraseLastBackground
 
@@ -161,7 +161,7 @@ drawCursorMenu
    ld hl,cursor
    call drawSprite80
    ld a,1
-   ld (isFistDraw),a
+   ld (isFirstDraw),a
    ret   
 espaceActionMenu:
    ld a,(newKey) : bit bitEspace,a : ret nz
@@ -256,7 +256,7 @@ positionCursorMenu db 0
 maxPositionCursor equ 2
 refCursor db 10,30,51
 lastAdrCursor dw &c000
-isFistDraw db 0
+isFirstDraw db 0
 
 tamponCursor ds 100,0
 ; isValidMenu db 0

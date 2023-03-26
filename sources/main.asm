@@ -75,7 +75,7 @@ start:
    call loadInterruption ; interruption.asm 
 
 
-   ld e,sceneGreeting ;sceneGame ; sceneEditor
+   ld e,sceneLevels ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
 
@@ -297,7 +297,9 @@ startGFX:
    logoPlay incbin "../img/play.bin",&80
    logoEditor incbin "../img/editor.bin",&80
    logoQuit incbin "../img/quit.bin",&80
-   ;titleScreen: incbin "../img/title.scr",&80
+   worldimg incbin "../img/world.bin",&80
+   levelImg incbin "../img/number.bin",&80
+
 endGFX:
 
 startLevel:

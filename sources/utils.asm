@@ -278,3 +278,15 @@ drawWindows
 			jr nz,vert
 	ret
 
+calcAdr64
+	; b : x en octet
+	; c : y
+	; de : retour de l'adresse ecran
+	nop
+	
+	;breakpoint
+	ld l,c : ld h,0 : add hl,hl : ld de,LIGNES : add hl,de
+	ld e,(hl) : inc hl : ld d,(hl)
+	ld c,b : ld b,0 : ex hl,de : add hl,bc : ex hl,de
+	ret
+
