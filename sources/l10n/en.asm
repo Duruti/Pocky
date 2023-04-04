@@ -9,4 +9,6 @@ enTextGameover db &0c,&5a,&ff,"Game over",0            ;
 enTextVictory db &0c,&5a,&ff,"You Win",0               ;
 enTextLevel : db &01,&f0,6,"Level:  ",0
 enTextHub : db &15,&f0,5,"Try: 00/15",0
-enTextKonami : db &07,&f0,&ff,"KONAMI CODE ACTIVED",0
+enTextKonami : db &07,&f0,&ff, "KONAMI CODE ACTIVED",0
+enTextEnterCode db &09,&e1,&ff,"ENTER YOUR CODE",0
+enCodeLevelOK db &0c,&5a,&ff,"LEVEL 0 ACTIVED",0

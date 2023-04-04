@@ -4,6 +4,7 @@ initScene:
 
 
 changeScene:
+   call vbl :  ld a,0 : ld (isDialog),a
    ; e contient la nouvelle scene
    ; verifie si faut changer la scene
    ; si e = currentScene alors non
@@ -70,3 +71,4 @@ read "scenes/sceneMenu.asm"
 read "scenes/sceneGame.asm"
 read "scenes/sceneLevels.asm"
 read "scenes/sceneGreeting.asm"
+read "scenes/sceneCode.asm"

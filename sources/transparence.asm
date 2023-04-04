@@ -1,5 +1,6 @@
 drawMask:
-   
+   ; hl source
+   ; de destination
    ld c,e
    ld b,8
    bclLine:

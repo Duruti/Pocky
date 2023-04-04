@@ -4,20 +4,21 @@
 
 sceneMenu equ 0
 sceneGame equ 1
-sceneLevels equ 2
+sceneCode equ 2
 sceneGreeting equ 3
-sceneEditor equ 4
+sceneLevels equ 4
+sceneEditor equ 5
 
 maxLines equ 10
 maxRows equ 14
 
 currentScene db &FF
 if build==0
-adrUpdateScene dw updateMenu,updateGame,updateSceneLevels,updateGreeting,updateEditor
-adrLoadScene dw loadMenu,loadGame,loadSceneLevels,loadGreeting,loadEditor
+   adrUpdateScene dw updateMenu,updateGame,updateSceneCode,updateGreeting,updateSceneLevels,updateEditor
+   adrLoadScene dw loadMenu,loadGame,loadSceneCode,loadGreeting,loadSceneLevels,loadEditor,
 else 
-adrUpdateScene dw updateMenu,updateGame,updateSceneLevels,updateGreeting
-adrLoadScene dw loadMenu,loadGame,loadSceneLevels,loadGreeting
+   adrUpdateScene dw updateMenu,updateGame,updateSceneCode,updateGreeting,updateSceneLevels
+   adrLoadScene dw loadMenu,loadGame,loadSceneCode,loadGreeting,loadSceneLevels
 endif
 
 ; ------------------------------

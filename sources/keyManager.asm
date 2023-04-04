@@ -211,7 +211,7 @@ escapeAction
 	ld a,(newKey)
 	bit bitEscape,a
 	ret nz
-	
+	ld a,(isDialog) : cp 1 : ret z ; pas de sortie autorisé si Dialogue
 	ld e,sceneMenu
    call changeScene
 	ret

@@ -290,3 +290,13 @@ calcAdr64
 	ld c,b : ld b,0 : ex hl,de : add hl,bc : ex hl,de
 	ret
 
+multi64
+	; a valeur
+	; hl = a*64
+	
+	ld hl,0 : cp 0 :ret z
+	ld bc,64
+	.loop
+		add hl,bc
+		dec a : jr nz,.loop
+	ret

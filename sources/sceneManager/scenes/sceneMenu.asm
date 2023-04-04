@@ -173,20 +173,22 @@ espaceActionMenu:
    inc sp : inc sp
    ld a,(positionCursorMenu)
    cp 0 : jr z,menuChangeSceneGame ; game
-   cp 1 : jr z,menuChangeSceneLevels ; editor
+   cp 1 : jr z,menuChangeSceneCode ; editor
    cp 2 : jr z,menuChangeSceneGreeting ; editor
    
    ret
 
-   menuChangeSceneGame
+menuChangeSceneGame
    ld e,sceneGame : call changeScene : ret
 
-   menuChangeSceneLevels
+menuChangeSceneLevels
    ld e,sceneLevels : call changeScene : ret
-   menuChangeSceneGreeting
+menuChangeSceneCode
+   ld e,sceneCode : call changeScene : ret
+menuChangeSceneGreeting
    ld e,sceneGreeting : call changeScene : ret
 
-   menuChangeSceneEditor
+menuChangeSceneEditor
    if build == 1
       ret
    endif

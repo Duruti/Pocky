@@ -14,12 +14,11 @@ SNASET CPC_TYPE,0
 BANKset 0
 
 ;SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0000.dsk"
-
 run #100
 org #100
 
 start:
-
+   
    ; fichier de configuration du jeu
    ld sp,&ff
    include "conf.asm"
@@ -75,7 +74,7 @@ start:
    call loadInterruption ; interruption.asm 
 
 
-   ld e,sceneLevels ;sceneGame ; sceneEditor
+   ld e,SceneMenu ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
 
@@ -299,7 +298,9 @@ startGFX:
    logoQuit incbin "../img/quit.bin",&80
    worldimg incbin "../img/world.bin",&80
    levelImg incbin "../img/number.bin",&80
-
+   codeGfx incbin "../img/code.bin",&80
+   cursorCodeMask incbin "../img/cursmask.bin",&80
+   cursorCode incbin "../img/codecurs.bin",&80
 endGFX:
 
 startLevel:
