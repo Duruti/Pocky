@@ -68,6 +68,7 @@ init:
  	; ld (adrPrint),hl ; save la position
  	; ld hl,texte ; hl l'adresse du texte
   ; call printText
+ 
   call drawIndicator
 
   

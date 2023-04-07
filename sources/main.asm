@@ -8,21 +8,36 @@
 ;                       __/ |                             
 ;                      |___/                              
 
+DSK equ 1
+CPR equ 2
+export = CPR
 
-BUILDSNA
-SNASET CPC_TYPE,0
-BANKset 0
 
-;SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0000.dsk"
-run #100
-org #100
+if export == CPR 
+   print "Build CPR"
+   include "cpr.asm"
+else
+   print "Build DSK & SNA"
+   BUILDSNA
+   SNASET CPC_TYPE,0
+   BANKset 0
 
+   ;SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0000.dsk"
+   run &100
+ENDIF
+
+if export==CPR 
+   bank 1 
+  ; db "zone code"
+  ; print "zone code bank 1"
+   org #100
+ENDIF  
+org &100 
 start:
-   
    ; fichier de configuration du jeu
    ld sp,&ff
    include "conf.asm"
- 
+    ;DEFB #ED,#FF
 
    ; U = Changer la taille de la grille
    ; C = Changer le nombre de couleurs
@@ -74,7 +89,7 @@ start:
    call loadInterruption ; interruption.asm 
 
 
-   ld e,SceneMenu ;sceneGame ; sceneEditor
+   ld e,sceneMenu ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
 
@@ -249,10 +264,15 @@ startVariable:
          DW &C730,&CF30,&D730,&DF30,&E730,&EF30,&F730,&FF30 ; 184-191
          DW &C780,&CF80,&D780,&DF80,&E780,&EF80,&F780,&FF80 ; 192-199
 endVariable:
+if export==CPR 
+   bank 2 
+  ;  db "zone gfx"
+   org endVariable,$
+ENDIF   
 startGFX:
    ; data des sprites
    dataSprite: 
-
+ print "datasprite",{hex}dataSprite
 
    INCbin	"../img/cell1bd.win",&80 ; enleve le header 128 octets
    INCbin	"../img/cell2bd.win",&80
@@ -302,12 +322,19 @@ startGFX:
    cursorCodeMask incbin "../img/cursmask.bin",&80
    cursorCode incbin "../img/codecurs.bin",&80
 endGFX:
-
+if export==CPR 
+   bank 3 
+   ; db "zone level + music"
+   org endGFX,$
+ENDIF   
 startLevel:
-
    
    
    levels :
+   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
+   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
+   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
+   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
    INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
    ;db &24,2,25,10,10,&a2,&80,&FF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0 ,0,0,0,0,0,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0 
       ; 1 ligne =  un level
@@ -337,7 +364,7 @@ startLevel:
       ; db 6,32,9,9,&55,5,&40,&11,&12,&42,&88
 endLevel 
 
-org &8000
+;org &8000
 adrMusic:
 
 include "music.asm" 
