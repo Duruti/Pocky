@@ -10,8 +10,14 @@ bufferCode  ds 4,&30
 maxLetterCode equ 18-1
 indexBuffer db 0
 codeHex dw 0
-maxLevelCode db 10
-tableCodeHex dw &1111,&2222,&3333,&4444,&5555,&6666,&7777,&8888,&9999,&AAAA
+maxLevelCode db 50
+align 128
+tableCodeHex 
+   dw &0001,&0002,&0003,&0004,&0005,&0006,&0007,&0008,&0009,&000A
+   dw &0011,&0012,&0013,&0014,&0015,&0016,&0017,&0018,&0019,&001A
+   dw &0021,&0022,&0023,&0024,&0025,&0026,&0027,&0028,&0029,&002A
+   dw &0031,&0032,&0033,&0034,&0035,&0036,&0037,&0038,&0039,&003A
+   dw &0041,&0042,&0043,&0044,&0045,&0046,&0047,&0048,&0049,&004A
 isCodeValid db 0
 
 align 16
@@ -24,7 +30,7 @@ tableCode
    dw l3,l3+6,l3+12,l3+18,l3+24,l3+30
 
 loadSceneCode:
-   xor a : ld (indexBuffer),a : ld (currentLetterCode),a
+   xor a : ld (indexBuffer),a : ld (currentLetterCode),a : ld (isCodeValid),a
 
    ld hl,&C000
    ld bc,&40FF
@@ -100,6 +106,7 @@ updateSceneCode
 updateKeysCode   
   	ld a,(oldKey) : bit bitEscape,a : call nz,escapeActionCode 
    ld a,(oldKey) : bit bitEspace,a : call nz,validActionCode 
+   ld a,(isCodeValid) : cp 2 : ret z
  	ld a,(oldKey) : bit bitRight,a : call nz,rightActionCode 
  	ld a,(oldKey) : bit bitLeft,a : call nz,leftActionCode 
  	ld a,(oldKey) : bit bitUp,a : call nz,upActionCode 
@@ -141,9 +148,10 @@ escapeActionCode
 	ld a,(newKey):	bit bitEscape,a:ret nz
    ld a,0 : ld (isDialog),a
 	ld e,sceneMenu : call changeScene ; sceneManager
-	ret
+   	ret
 validActionCode
 	ld a,(newKey):	bit bitEspace,a:ret nz
+   ld a,(isCodeValid) : cp 2 : jp z,exitSceneCode
    ld a,(currentCursor) 
    cp 16 : jp z,backspaceCode
    cp 17 : jp z,controlCode
@@ -155,6 +163,11 @@ validActionCode
 	ld a,(indexBuffer) : inc a : ld (indexBuffer),a
 
 	ret
+exitSceneCode
+    ld a,0 : ld (isDialog),a
+	ld e,sceneMenu : call changeScene ; sceneManager
+  
+   ret
 drawCursorCode
    ld a,(currentCursor) : call calcAdrCursorCode : ld hl,cursorCodeMask : call drawMask
    ld a,(currentCursor) : call calcAdrCursorCode : ld hl,cursorCode : : call drawSpriteOr
@@ -212,17 +225,49 @@ checkCode
    ret
 codeTrue
    ;init
+   call getCurrentLevelWorld
    xor A : ld (exit),a
    ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
    call drawBoxDialog
    
    ld a,TextCodeLevelOK: call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
-   push hl : inc hl : inc hl : : inc hl : inc hl : inc hl : inc hl : inc hl
-   ld a,(currentLevel) : add &30 : ld (hl),a : pop hl
    call printText 
    
-   ret
+
+   
+  ld a,TextCodeLevel : call getAdressText :
+  ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de
+  ld c,(hl) : inc c : inc hl : ld b,0
+  push hl: add hl,bc : push hl
+
+  ld a,(currentLevelWorld)
+  ld d,a
+  ld e,10
+  call div
+  ; update unité
+  add &30
+  ;ld ix,textLevel
+  pop hl
+  ld (hl),a
+  ld a,d
+  add &30
+  dec hl
+  ld (hl),a
+
+  ;ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+ 	;ld (adrPrint),hl ; save la position
+  pop hl :  call printText
+
+  ld a,TextCodeWorld : call getAdressText 
+  ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl : push hl
+  dec hl : ld c,(hl) : inc hl : ld b,0 : add hl,bc : ld a,(currentWorld): inc a : add &30 : ld (hl),a
+  pop hl : call printText
+
+   ; ld a,(currentWorld): ld (maxCurrentWorld),a
+   ; ld a,(currentLevelWorld) : ld (maxCurrentLevelWorld),a
+   ld a,(currentLevel) : ld (maxCurrentLevel),a
+  ret
 
 convertAsciiToHex
    ;converti les 4 caracteres pour le code et le place dans un buffer

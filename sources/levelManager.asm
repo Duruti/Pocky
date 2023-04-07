@@ -11,7 +11,8 @@ maxNbBlock equ 30
 maxNbWall equ 30
 
 lenghtLevel equ posNbWall+maxNbWall+1 ;40 taille en octet d'un level
-maxLevel equ 10
+maxLevel equ 50
+
 
 loadPadlock:
    if build == 0
@@ -86,6 +87,7 @@ getAddressLevel
    ld hl,levels
    ld de,lenghtLevel
    ld a,(currentLevel)
+   ;   breakpoint
    dec a
    jr z,suite
    ld b,A

@@ -11,4 +11,7 @@ enTextLevel : db &01,&f0,6,"Level:  ",0
 enTextHub : db &15,&f0,5,"Try: 00/15",0
 enTextKonami : db &07,&f0,&ff, "KONAMI CODE ACTIVED",0
 enTextEnterCode db &09,&e1,&ff,"ENTER YOUR CODE",0
-enCodeLevelOK db &0c,&5a,&ff,"LEVEL 0 ACTIVED",0
+enCodeLevelOK db &0c,&52,&ff,"CODE VALID",0
+enTextWorld db &01,&e0,&6,"World 0",0
+enCodeLevel db &0c,&62,&6,"LEVEL 0 ",0
+enCodeWorld db &0c,&5a,&6,"WORLD 0 ",0

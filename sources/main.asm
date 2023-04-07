@@ -39,13 +39,6 @@ start:
    include "conf.asm"
     ;DEFB #ED,#FF
 
-   ; U = Changer la taille de la grille
-   ; C = Changer le nombre de couleurs
-   ; Flèche directionnelle gauche-droite déplace le curseur
-   ; Espace = Valider
-   ; R = Redemarrer le jeu
-   ; Q = Quitter le jeu
-
    colorPaperHub equ 1
 
 
@@ -56,83 +49,21 @@ start:
       call initMusic
    ENDIF
 
-
-   ; redirige les interruptions
-   ;save interruption pointer
-   ;DEFB #ED,#FF
-      ;di
-      ;ld hl,(&39)
-      ;ld (restorInt+1),hl
-      ;ei
-      ; change le pointeur d'interruption
-
-
-   ; align 256 positionne le code a une adresse multiple de 256
-   ;nop
-   ;align #FF ;marche pas
-
-   ;call overcanVertical
-   ;xor A
-   ;ld (compteurAffichage),A
-
-   ; call initEditor
-   ; call updateEditor
-
-   ;call initScene
-
-
-
-
    ld a,initCurrentLevel ; conf.asm
    ld (currentLevel),a 
+   ld a,(currentLevel) : ld (maxCurrentLevel),a
    call overcanVertical ; overscan.asm
    call loadInterruption ; interruption.asm 
 
-
-   ld e,sceneMenu ;sceneGame ; sceneEditor
+   ld e,scenegame ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
-
-
 
    ;DEFB #ED,#FF
 
    gameloop:
-      
       updateCurrentScene:   call $ ; automodifié en fonction des scènes selectionnées
-
       jp gameloop
-
-
-
-   ; touche:
-
-
-   ;    ; check is win
-   ;    call checkIsWin
-   ;    ld a,(isWin)
-   ;    cp 1
-   ;    jp z,drawVictory
-
-   ;    ; check is lose
-   ;    ld a,(nbTry)
-   ;    ld b,a
-   ;    ld a,(currentTry)
-   ;    cp b
-   ;    jp z,gameover 
-   
-   ;    call getKeys   ; controls keys and Joystick
-   ;    call updateKeys ; update actions/keys
-
-   ;  	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
-   ;  	ld (oldKey),a
-
-   ;   	jr touche
-
-
-
    fin:	ret
-
-
 
    include "utils.asm"
    include "initGrid.asm"
@@ -331,11 +262,12 @@ startLevel:
    
    
    levels :
-   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
-   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
-   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
-   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
-   INCbin	"../Levels/world1.bin",0 ; enleve le header 128 octets
+   INCbin	"../Levels/world.bin",0 ; enleve le header 128 octets
+   ;world2: INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
+   ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
+   ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
+   ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
+   
    ;db &24,2,25,10,10,&a2,&80,&FF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,&30,&31,&32,&42,&06,0,0,0,0,0 ,0 ,0,0,0,0,0,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0 
       ; 1 ligne =  un level
       ;startPosition,colors,maxTry,Line,Colums,seed*2,key,nbBlock,10*dataBlock,nbVoid,10*dataVoid

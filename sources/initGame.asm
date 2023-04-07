@@ -236,12 +236,14 @@ drawLevel
 
 drawLevelInfoHub:
 
+  call getCurrentLevelWorld
+
   ld a,TextLevel : call getAdressText :
   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de
   ld c,(hl) : inc c : inc hl : ld b,0
   push hl: add hl,bc : push hl
 
-  ld a,(currentLevel)
+  ld a,(currentLevelWorld)
   ld d,a
   ld e,10
   call div
@@ -258,4 +260,10 @@ drawLevelInfoHub:
   ;ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
  	;ld (adrPrint),hl ; save la position
   pop hl :  call printText
+
+  ld a,TextWorld : call getAdressText 
+  ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl : push hl
+  dec hl : ld c,(hl) : inc hl : ld b,0 : add hl,bc : ld a,(currentWorld): inc a : add &30 : ld (hl),a
+  pop hl : call printText
+
   ret

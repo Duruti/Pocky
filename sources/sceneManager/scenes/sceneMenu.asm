@@ -183,8 +183,8 @@ espaceActionMenu:
    inc sp : inc sp
    ld a,(positionCursorMenu)
    cp 0 : jr z,menuChangeSceneGame ; game
-   cp 1 : jr z,menuChangeSceneCode ; editor
-   cp 2 : jr z,menuChangeSceneLevels ; editor
+   cp 1 : jr z,menuChangeSceneLevels ; editor
+   cp 2 : jr z,menuChangeSceneCode ; editor
    cp 3 : jr z,menuChangeSceneGreeting ; editor
    
    ret
