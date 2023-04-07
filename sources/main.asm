@@ -10,7 +10,7 @@
 
 DSK equ 1
 CPR equ 2
-export = CPR
+export = dsk
 
 
 if export == CPR 

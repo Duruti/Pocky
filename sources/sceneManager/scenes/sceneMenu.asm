@@ -32,8 +32,9 @@ loadMenu
    
    linesDrawLogo equ 130
    ; play
-
-   ld a,7
+   offsetCursor equ 15
+   firstPositioncursor equ 5
+   ld a,firstPositioncursor
    ld (colonne),a
    ld a,linesDrawLogo
    ld (currentLine),a
@@ -44,7 +45,7 @@ loadMenu
 
    ; editor
 
-   ld a,27
+   ld a,firstPositioncursor+offsetCursor
    ld (colonne),a
    ld a,linesDrawLogo
    ld (currentLine),a
@@ -54,12 +55,21 @@ loadMenu
    call drawWindows ; utils.asm
    
    ; logo quit
-   ld a,47
+   ld a,firstPositioncursor+2*offsetCursor
    ld (colonne),a
    ld a,linesDrawLogo
    ld (currentLine),a
    call calcAdr80
    ld hl,logoQuit
+   ld bc,&b2a ; x ,y
+   call drawWindows ; utils.asm
+   
+   ld a,firstPositioncursor+3*offsetCursor
+   ld (colonne),a
+   ld a,linesDrawLogo
+   ld (currentLine),a
+   call calcAdr80
+   ld hl,logoEditor
    ld bc,&b2a ; x ,y
    call drawWindows ; utils.asm
 
@@ -174,7 +184,8 @@ espaceActionMenu:
    ld a,(positionCursorMenu)
    cp 0 : jr z,menuChangeSceneGame ; game
    cp 1 : jr z,menuChangeSceneCode ; editor
-   cp 2 : jr z,menuChangeSceneGreeting ; editor
+   cp 2 : jr z,menuChangeSceneLevels ; editor
+   cp 3 : jr z,menuChangeSceneGreeting ; editor
    
    ret
 
@@ -255,8 +266,8 @@ eraseLastBackground
    ret
 
 positionCursorMenu db 0
-maxPositionCursor equ 2
-refCursor db 10,30,51
+maxPositionCursor equ 3
+refCursor db 8,8+offsetCursor,8+2*offsetCursor,8+3*offsetCursor
 lastAdrCursor dw &c000
 isFirstDraw db 0
 
