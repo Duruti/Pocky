@@ -24,14 +24,14 @@ align 16
 tableAsciiCode db &30,&31,&32,&33,&34,&35,&36,&37,&38,&39,&41,&42,&43,&44,&45,&46
 
 align 64
-tableCode 
+tableCode ; adresse video pour le curseur
    dw l1,l1+6,l1+12,l1+18,l1+24,l1+30
    dw l2,l2+6,l2+12,l2+18,l2+24,l2+30
    dw l3,l3+6,l3+12,l3+18,l3+24,l3+30
 
 loadSceneCode:
    xor a : ld (indexBuffer),a : ld (currentLetterCode),a : ld (isCodeValid),a
-
+   call initBuffer
    ld hl,&C000
    ld bc,&40FF
    ld a,%00000000 ;&30
@@ -164,8 +164,8 @@ validActionCode
 
 	ret
 exitSceneCode
-    ld a,0 : ld (isDialog),a
-	ld e,sceneMenu : call changeScene ; sceneManager
+   ld a,0 : ld (isDialog),a
+	ld e,sceneGame : call changeScene ; sceneManager
   
    ret
 drawCursorCode
@@ -186,11 +186,12 @@ calcAdrCursorCode
    ld e,(hl) : inc l : ld d,(hl)
    ret
 backspaceCode
-   call eraseLetter
    ld a,(indexBuffer) : cp 0 : ret z
-   dec a : ld (indexBuffer),a
+   call eraseLetter
+   ld a,(indexBuffer) : dec a : ld (indexBuffer),a
    ret
 controlCode
+   ;breakpoint
    call convertAsciiToHex
    call checkCode
    ld a,(isCodeValid) : cp 2
@@ -271,7 +272,9 @@ codeTrue
 
 convertAsciiToHex
    ;converti les 4 caracteres pour le code et le place dans un buffer
-
+  ; breakpoint
+   ; init codeHex
+   ld hl,0 : ld (codeHex),hl
    ld hl,bufferCode : ld b,4 :
    
     ld de,codeHex+1
@@ -322,12 +325,17 @@ waitKey
 
 	ld a,(newKeyCode) : ld (oldKeyCode),a ; sauve l'etat de la touche
    ret
+controlKeyCode
+   breakpoint
+   ld a,(isCodeValid) : cp 2 : jp z,exitSceneCode
+   jp controlCode
+   ret
 updateKey
 	ld b,(hl) : ld a,b : ld (newKeyCode),a  ; acutalise la nouvelle touche
 	ld a,(oldKeyCode) : cp b : ret z ; la compare avec l'ancienne pour faire un keypressed
    ld a,b 
    cp 'Z' : jp z,backspaceCode
-   cp 'V' : jp z,controlCode
+   cp 'V' : jp z,controlKeyCode
    
    ld a,(indexBuffer) : cp MaxLetterBuffer : ret nc 
    ; /////  ici action a faire si touche presse
@@ -385,4 +393,4 @@ tableKey
 	db 4,bit0,'0', 8,bit0,'1', 8,bit1,'2', 7,bit1,'3', 7,bit0,'4', 6,bit1,'5'
 	db 6,bit0,'6', 5,bit1,'7', 5,bit0,'8', 4,bit1,'9', 1,bit7,'0', 1,bit5,'1'
 	db 1,bit6,'2', 0,bit5,'3', 2,bit4,'4', 1,bit4,'5', 0,bit4,'6', 1,bit2,'7'
-	db 1,bit3,'8', 0,bit3,'9' ,9,bit7,'V', 0,bit6,'V', 2,bit2,'V'
+	db 1,bit3,'8', 0,bit3,'9' ,9,bit7,'Z', 0,bit6,'V', 2,bit2,'V'

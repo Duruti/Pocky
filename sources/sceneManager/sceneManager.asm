@@ -3,11 +3,15 @@ initScene:
    ret
 
 
-changeScene:
-   call vbl :  ld a,0 : ld (isDialog),a
+changeScene
+  
+   call vbl 
+   ld a,0 : ld (isDialog),a
    ; e contient la nouvelle scene
    ; verifie si faut changer la scene
    ; si e = currentScene alors non
+   ;DEFB #ED,#FF
+   
    ld a,(currentScene)
    cp e
    ret z
@@ -44,7 +48,6 @@ changeScene:
    call loadPaletteGA
    LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
 
-
    ld a,(currentScene)
    ld e,a
    ld d,0
@@ -72,3 +75,4 @@ read "scenes/sceneGame.asm"
 read "scenes/sceneLevels.asm"
 read "scenes/sceneGreeting.asm"
 read "scenes/sceneCode.asm"
+read "scenes/sceneLangage.asm"

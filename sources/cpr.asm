@@ -51,9 +51,19 @@ rom_init
 	dec 	c
 	jr 		nz,.raz
 	;DEFB #ED,#FF
+; AsicUnlock
+; 	ld 		b,#bc
+; 	ld 		hl,unlockdata
+; 	ld 		e,17
+; 	.loop
+; 	inc 	b
+; 	outi
+; 	dec 	e
+; 	jr 		nz,.loop
+CrtcSettings
 
-	; CrtcSettings
-	ld hl,crtcdata
+	ld hl,crtcdata;
+	ld b,&bc
 	ld 			c,0
 	ld 			e,16
 	.loop
@@ -114,10 +124,11 @@ rom_init
 
 	ld sp,&100 ; met la pile en &100
  	; -------------------------------
-
-
+   
 	ld bc,#DF01+#80 : out (c),c  ; connection ROM 1 sur cartouche physique
+	LD BC,#7FC0:OUT (c),c ; connection en Ram Central avec le gateArray
 	ld bc,#7F00+%10000000 : out (c),c ; connection en ROM haute(c000) et (basse 0-3FFF)
+	
 	
 	ld de,start : ld hl,&c000 : ld bc,endVariable-start : ldir
 	;DEFB #ED,#FF
@@ -129,6 +140,7 @@ rom_init
 	ld bc,#DF03+#80 : out (c),c  ; connection ROM 1 sur cartouche physique
 	ld de,startLevel :
 	ld hl,&c000 : ld bc,end-startLevel : ldir
+
 
 	ld bc,#DF00+#80 : out (c),c  ; connection ROM 1 sur cartouche physique
 	ld bc,#7F00+%10001100 : out (c),c ; deconnecte les ROMs haute et basse

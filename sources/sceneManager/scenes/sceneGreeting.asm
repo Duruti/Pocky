@@ -17,6 +17,8 @@ loadGreeting
    call printText
    call eraseKonamiLst
   
+   call createParticle
+   call drawParticle
    ret
 updateGreeting:
    call getKeys   ; controls keys and Joystick ; keyManager.asm

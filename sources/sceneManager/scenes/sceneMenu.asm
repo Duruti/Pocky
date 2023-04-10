@@ -1,4 +1,6 @@
+
 loadMenu
+   call loadInterruption ; interruption.asm 
 
    ;   di
    ;      LD A,#C3:LD (#38),A
@@ -40,7 +42,7 @@ loadMenu
    ld (currentLine),a
    call calcAdr80
    ld hl,logoPlay
-   ld bc,&b2a ; x ,y
+   ld bc,&0b2a ; x ,y
    call drawWindows ; utils.asm
 
    ; editor
@@ -100,9 +102,16 @@ updateMenu:
    ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
    ld (oldKey),a
    ret
-   
-updateKeysMenu:
+testLangage
+      ld a,(newKey) : bit bitEscape,a : ret nz    
 
+   ld e,sceneLangage : call changeScene : ret
+   ret
+updateKeysMenu:
+      ld a,(oldKey) : bit bitEscape,a : call nz,testLangage
+	if debug
+      ld a,(oldKey) : bit bitEscape,a : call nz,Reboot
+   endif
 	ld a,(oldKey) : bit bitEspace,a : call nz,espaceActionMenu
 	ld a,(oldKey) : bit bitLeft,a : call nz,leftActionMenu	
 	ld a,(oldKey) : bit bitRight,a : call nz,rightActionMenu	
@@ -113,9 +122,7 @@ ChangeToEditor
    jp menuChangeSceneEditor
    ret
 leftActionMenu
-   ld a,(newKey)
-	bit bitLeft,a
-	ret nz
+   ld a,(newKey) : bit bitLeft,a : ret nz
 
 
    ld a,(positionCursorMenu)
@@ -172,7 +179,13 @@ drawCursorMenu
    call drawSprite80
    ld a,1
    ld (isFirstDraw),a
-   ret   
+   RET
+if debug
+   reboot
+      ld a,(newKey) : bit bitEscape,a : ret nz    
+      ld hl,REBOOTcpr : ld de,&c000 : ld bc,13 : ldir
+      jp &c000
+endif
 espaceActionMenu:
    ld a,(newKey) : bit bitEspace,a : ret nz
    

@@ -12,7 +12,6 @@ DSK equ 1
 CPR equ 2
 export = dsk
 
-
 if export == CPR 
    print "Build CPR"
    include "cpr.asm"
@@ -35,10 +34,10 @@ ENDIF
 org &100 
 start:
    ; fichier de configuration du jeu
-   ld sp,&ff
-   include "conf.asm"
-    ;DEFB #ED,#FF
+   ld sp,&100
+   
 
+   include "conf.asm"
    colorPaperHub equ 1
 
 
@@ -50,20 +49,21 @@ start:
    ENDIF
 
    ld a,initCurrentLevel ; conf.asm
-   ld (currentLevel),a 
-   ld a,(currentLevel) : ld (maxCurrentLevel),a
+   ld (currentLevel),a : ld a,(currentLevel) : ld (maxCurrentLevel),a
+   
    call overcanVertical ; overscan.asm
    call loadInterruption ; interruption.asm 
-
-   ld e,scenegame ;sceneGame ; sceneEditor
+  
+ ; DEFB #ED,#FF
+   
+   ld e,sceneLangage ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
-   ;DEFB #ED,#FF
-
-   gameloop:
-      updateCurrentScene:   call $ ; automodifié en fonction des scènes selectionnées
+   gameloop
+      updateCurrentScene   call $ ; automodifié en fonction des scènes selectionnées
       jp gameloop
    fin:	ret
+
 
    include "utils.asm"
    include "initGrid.asm"
@@ -84,6 +84,7 @@ start:
    include "gameState/gameState.asm"
    include "sceneManager/sceneManager.asm"
    include "l10n/l10n.asm"
+   include "particle/particle.asm"
 endCode:
 
 startVariable:
@@ -96,6 +97,7 @@ startVariable:
    palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
    ;paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
    paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
+   paletteFlag db 75,76,84,68,84,84,84,84,84,84,84,84,84,84,84,84
    paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
 
    ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
@@ -194,6 +196,12 @@ startVariable:
          DW &C6E0,&CEE0,&D6E0,&DEE0,&E6E0,&EEE0,&F6E0,&FEE0 ; 176-183
          DW &C730,&CF30,&D730,&DF30,&E730,&EF30,&F730,&FF30 ; 184-191
          DW &C780,&CF80,&D780,&DF80,&E780,&EF80,&F780,&FF80 ; 192-199
+   if debug
+      REBOOTcpr 
+      db 01,&80,&DF,&ED,&49
+      db 01,&88,&7f,&ed,&49
+      db &c3,00,00
+   endif
 endVariable:
 if export==CPR 
    bank 2 
@@ -208,7 +216,8 @@ startGFX:
    INCbin	"../img/cell1bd.win",&80 ; enleve le header 128 octets
    INCbin	"../img/cell2bd.win",&80
    INCbin	"../img/cell3bd.win",&80
-   INCbin	"../img/cell4bd.win",&80
+   INCbin	"../img/gris.win",&80
+ ;  INCbin	"../img/cell4bd.win",&80
    INCbin	"../img/cell5bd.win",&80
    INCbin	"../img/cell6bd.win",&80
    INCbin	"../img/cell6bd.win",&80
@@ -252,6 +261,8 @@ startGFX:
    codeGfx incbin "../img/code.bin",&80
    cursorCodeMask incbin "../img/cursmask.bin",&80
    cursorCode incbin "../img/codecurs.bin",&80
+   flagFrench incbin "../img/french.win",&80
+   flagEnglish incbin "../img/english.win",&80
 endGFX:
 if export==CPR 
    bank 3 

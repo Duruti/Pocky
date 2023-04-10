@@ -13,6 +13,7 @@ TextCodeLevelOK equ 8
 TextWorld equ 9
 TextCodeLevel equ 10
 TextCodeWorld equ 11
+TextChooseLangage equ 12
 
 currentLangage db en ; 0:Fr 1 :En
 
@@ -33,8 +34,8 @@ getAdressText:
 ; table de pointeur sur les textes
 
 fr_i10n: dw frTextGreetingInfo,frTextChooseLevel,frTextGameover,frTextVictory,frTextLevel,frTextHub
-         dw frTextKonami,frTextEnterCode,frCodeLevelOK,frTextWorld,frCodeLevel,frCodeWorld
+         dw frTextKonami,frTextEnterCode,frCodeLevelOK,frTextWorld,frCodeLevel,frCodeWorld,frChooseLangage
 en_i10n: dw enTextGreetingInfo,enTextChooseLevel,enTextGameover,enTextVictory,enTextLevel,enTextHub
-         dw enTextKonami,enTextEnterCode,enCodeLevelOK,enTextWorld,enCodeLevel,enCodeWorld
+         dw enTextKonami,enTextEnterCode,enCodeLevelOK,enTextWorld,enCodeLevel,enCodeWorld,enChooseLangage
 include "fr.asm"
 include "en.asm"
