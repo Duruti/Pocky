@@ -29,8 +29,8 @@ interrupt:
 	call z,changeColor
 	call nz,Colorback
 	
-	ld a,(nbInt) : cp 4
- 	call z,DialogText
+	ld a,(nbInt) : cp 3 : call z,playMusic
+	ld a,(nbInt) : cp 4 : call z,DialogText
 	;call nz,Colorback  
 	
    ld a,(nbInt)
@@ -47,6 +47,8 @@ endInt
 	ei
 	ret
 DialogText
+   
+   ;call playMusic
    ; boite de dialogue pour informer le joueur
 
    ld a,(isDialog) : cp 0 : ret z
@@ -75,6 +77,21 @@ colorBack:
 palInter:   ld hl,paletteMode0
    call loadPaletteGA
    ret
+playMusic
+   if Debug
+	   LD BC,#7F10:OUT (C),C:LD C,76:OUT (C),C
+   ENDIF
+   
+   if IsMusic
+      ld a,(isMusicPlaying) : cp 0 : jr z,.suite
+      call Main_Player_Start + 3
+   ENDIF
+   .suite
+  
+   if Debug
+      LD BC,#7F10:OUT (C),C:LD C,86:OUT (C),C
+   ENDIF
+   ret
 changeColor:
 	ld bc,&7f8d ; %10001100 bit 0,1 pour le mode
 	out (c),c
@@ -89,18 +106,7 @@ changeColor:
       ld a,c
       cp 4
       jr nz,bclPalGAint
-   if Debug
-	   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
-   ENDIF
-
-   if IsMusic
-      call Main_Player_Start + 3
-   ENDIF
-
-  
-   if Debug
-      LD BC,#7F10:OUT (C),C:LD C,86:OUT (C),C
-   ENDIF
+   ;call playMusic
 
 	ret
 

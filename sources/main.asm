@@ -7,7 +7,7 @@
 ; \_|  \___/ \___|_|\_\\__, |  \____/\__,_|_| |_| |_|\___|
 ;                       __/ |                             
 ;                      |___/                              
-
+include "macro.asm"
 DSK equ 1
 CPR equ 2
 export = dsk
@@ -56,7 +56,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,sceneLangage ;sceneGame ; sceneEditor
+   ld e,sceneMenu ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
@@ -97,12 +97,13 @@ startVariable:
    palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
    ;paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
    paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
-   paletteFlag db 75,76,84,68,84,84,84,84,84,84,84,84,84,84,84,84
+   paletteFlag db 84,76,75,68,84,84,84,84,84,84,84,84,84,84,84,84
    paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
 
    ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
    ;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15
    Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
+   isMusicPlaying db 0
    align 256
    grid : ds 255,0   ; grille du jeu
    gridCopy : ds 255,0 ; grille tampon
@@ -196,7 +197,7 @@ startVariable:
          DW &C6E0,&CEE0,&D6E0,&DEE0,&E6E0,&EEE0,&F6E0,&FEE0 ; 176-183
          DW &C730,&CF30,&D730,&DF30,&E730,&EF30,&F730,&FF30 ; 184-191
          DW &C780,&CF80,&D780,&DF80,&E780,&EF80,&F780,&FF80 ; 192-199
-   if debug
+   if build == 0
       REBOOTcpr 
       db 01,&80,&DF,&ED,&49
       db 01,&88,&7f,&ed,&49

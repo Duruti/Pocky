@@ -1,7 +1,14 @@
 
 loadMenu
    call loadInterruption ; interruption.asm 
+   ld a,1 : ld (isMusicPlaying),a
+   ld hl,Music1
+   call Main_Player_Start + 0
+   
+   ld hl,soundEffects
+   call PLY_AKY_InitSoundEffects
 
+   
    ;   di
    ;      LD A,#C3:LD (#38),A
    ;      ld hl,restorInt+1
@@ -108,8 +115,7 @@ testLangage
    ld e,sceneLangage : call changeScene : ret
    ret
 updateKeysMenu:
-      ld a,(oldKey) : bit bitEscape,a : call nz,testLangage
-	if debug
+	if build == 0
       ld a,(oldKey) : bit bitEscape,a : call nz,Reboot
    endif
 	ld a,(oldKey) : bit bitEspace,a : call nz,espaceActionMenu
@@ -162,6 +168,12 @@ drawCursorMenu
    cp 1
    call z,eraseLastBackground
 
+   PlaySoundEffect 2,2,0
+   ; ld a,2 ; soundEffectNumber ;(&gt;=1)
+   ; ld c,2 ; channel ;(0-2)
+   ; ld b,0 ;invertedVolume ;(0-16 (0=full volume))
+   ; call PLY_AKY_PlaySoundEffect
+
    ld a,100
    ld (currentLine),a
    ld a,(positionCursorMenu)
@@ -180,7 +192,7 @@ drawCursorMenu
    ld a,1
    ld (isFirstDraw),a
    RET
-if debug
+if build == 0
    reboot
       ld a,(newKey) : bit bitEscape,a : ret nz    
       ld hl,REBOOTcpr : ld de,&c000 : ld bc,13 : ldir

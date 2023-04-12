@@ -17,6 +17,9 @@ maxCurrentLevelWorld db 0 ; levelWorld max
 maxCurrentWorld db 0 ; world max
 maxCurrentLevel db 26
 loadSceneLevels
+   ld hl,Music2
+   call Main_Player_Start + 0
+   
    ld a,(CurrentLevel) : ld (oldCurrentLevel),a 
 
   ; ld a,24 : ld (currentLevel),a

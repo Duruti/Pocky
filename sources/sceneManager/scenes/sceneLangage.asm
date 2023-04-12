@@ -9,7 +9,7 @@ loadSceneLangage:
    out (c),c
    di
    ; cls en noir avec la couleur 3
-   ld hl,#c000 : ld de,#c001 : ld a,%00001111 : ld (hl),a : Ld bc,#4000 : ldir
+   ld hl,#c000 : ld de,#c001 : ld a,%0 : ld (hl),a : Ld bc,#4000 : ldir
 
    ;   affiche les drapeaux
    ld b,xFlagFrench : ld c,lineFlag
@@ -72,7 +72,7 @@ drawCursorLangage
    ld c,lineFlag-20
    call calcAdr64 : ex hl,de
    ld bc,&0509
-   ld a,%00000000 ;&30
+   ld a,%00001111 ;&30
    call FillRect ; utils.asm
 
    ; pour rire
@@ -86,6 +86,6 @@ eraseOldCursorLangage
    ld c,lineFlag-20
    call calcAdr64 : ex hl,de
    ld bc,&0509
-   ld a,%00001111 ;&30
+   ld a,%00000000 ;&30
    call FillRect ; utils.asm
    ret

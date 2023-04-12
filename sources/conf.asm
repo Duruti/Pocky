@@ -10,7 +10,7 @@
 ;                         __/ |
 ;                        |___/ 
 
-IsMusic = 0
+IsMusic = 1
 Debug = 0
 cheat = 1
 build = 0

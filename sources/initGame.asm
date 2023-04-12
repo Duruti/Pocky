@@ -76,6 +76,10 @@ init:
 
   ld hl,paletteMode0
   call loadPaletteGA
+
+  ld hl,MusicStart
+  call Main_Player_Start + 0
+  
   ret
 
 

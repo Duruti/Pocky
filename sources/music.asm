@@ -1,6 +1,6 @@
 initMusic:	
    
-   ld hl,Music_Start
+   ld hl,Music1
    call Main_Player_Start + 0
    
    ret
@@ -25,7 +25,8 @@ Main_Player_Start:
 
 
         ;What player to use?
-        include "PlayerAky.asm"                       ;Only this player has the ROM feature.
+        include "PlayerAkyMultiPsg.asm"                       ;Only this player has the ROM feature.
+;        include "PlayerAky.asm"                       ;Only this player has the ROM feature.
         ;include "../PlayerAkyStabilized_CPC.asm"        ;For now, this player does not take the Player Configuration in account.
         
         ;Declares the buffer for the ROM player, if you're using it. You can declare it anywhere of course.
@@ -37,8 +38,13 @@ Main_Player_End:
 
 Music_Start:
         ;What music to play?
-        include "mod.asm"
+    music1    include "../music/menu.asm"
+    music2    include "../music/code.asm"
+    musicStart    include "../music/start.asm"
+    musicGameover    include "../music/gameover.asm"
+    musicWinner    include "../music/winner.asm"
         ;include "MusicBoulesEtBits.asm"
 
 Music_End:
-
+soundEffects:
+        include "../music/effect.asm"

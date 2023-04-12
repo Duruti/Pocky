@@ -185,6 +185,9 @@ rnd:
 randData dw &5000
 
 random:
+; 8-bit Xor-Shift random number generator.
+; Created by Patrik Rak in 2008 and revised in 2011/2012.
+; https://gist.github.com/raxoft/c074743ea3f926db0037
         push    hl
         push    de
         ;DEFB #ED,#FF

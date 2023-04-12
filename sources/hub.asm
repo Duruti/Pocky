@@ -195,6 +195,8 @@ incCursor:
    ld (offsetX),a
 
    call drawCursor
+   PlaySoundEffect 2,2,0
+
    ret
 ;   jp touche
 
@@ -212,6 +214,7 @@ initCursor:
       ld (offsetX),a
 
       call drawCursor
+   PlaySoundEffect 2,2,0
 
       ret
       jp gameloop
@@ -236,6 +239,8 @@ decCursor:
    ld (offsetX),a
 
    call drawCursor
+   PlaySoundEffect 2,2,0
+
    ret
 
    jp gameloop
@@ -254,6 +259,8 @@ decCursor:
       ld (offsetX),a
 
       call drawCursor
+      PlaySoundEffect 2,2,0
+
       ret
       jp gameloop
 
@@ -295,6 +302,8 @@ getLenghtText
 ChangeColorCursor:
    ; applique le floodfill avec la couleur sous le curseur 
   ; DEFB #ED,#FF
+   PlaySoundEffect 1,2,0
+
    ld a,(cursorPosition)
    call floodFill
    call drawIndicator

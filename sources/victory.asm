@@ -9,6 +9,8 @@ gameover:
    xor A
    ld (exit),a
    ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
+   ld hl,musicGameover
+   call Main_Player_Start + 0
 
    call drawBoxDialog
    ;   ld hl,&0C5a;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
@@ -69,6 +71,9 @@ drawVictory:
    xor A
    ld (exit),a
    ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
+
+   ld hl,MusicWinner
+   call Main_Player_Start + 0
 
    ;call clearHud
    call drawBoxDialog

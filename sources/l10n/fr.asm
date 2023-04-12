@@ -8,7 +8,7 @@ frTextGameover db &0c,&5a,&ff,"Perdu",0                  ;
 frTextVictory db &08,&5a,&ff,"Bravo tu as gagne",0       ;
 frTextLevel : db &00,&f0,7,"Niveau:  ",0                 ;
 frTextHub : db &13,&f0,7,"Essai: 00/15",0
-frTextKonami : db &07,&f0,&ff, "CODE KONAMI ACTIVER",0        ;
+frTextKonami : db &07,&f0,&ff, "CODE KONAMI ACTIVE",0        ;
 frTextEnterCode db &09,&e1,&ff,"ENTRE TON CODE",0
 frCodeLevelOK db &09,&5a,&ff,"CODE VALIDE",0
 frTextWorld db &00,&e0,&6,"Monde 0",0
