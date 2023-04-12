@@ -1,33 +1,3 @@
-L1 equ &C20F
-L2 equ &c30f
-L3 equ &c40F
-MaxLetterBuffer equ 4
-currentCursor db 0
-oldCurrentCursor db 0
-currentLetterCode db 0
-align 4 
-bufferCode  ds 4,&30
-maxLetterCode equ 18-1
-indexBuffer db 0
-codeHex dw 0
-maxLevelCode db 50
-align 128
-tableCodeHex 
-   dw &0001,&0002,&0003,&0004,&0005,&0006,&0007,&0008,&0009,&000A
-   dw &0011,&0012,&0013,&0014,&0015,&0016,&0017,&0018,&0019,&001A
-   dw &0021,&0022,&0023,&0024,&0025,&0026,&0027,&0028,&0029,&002A
-   dw &0031,&0032,&0033,&0034,&0035,&0036,&0037,&0038,&0039,&003A
-   dw &0041,&0042,&0043,&0044,&0045,&0046,&0047,&0048,&0049,&004A
-isCodeValid db 0
-
-align 16
-tableAsciiCode db &30,&31,&32,&33,&34,&35,&36,&37,&38,&39,&41,&42,&43,&44,&45,&46
-
-align 64
-tableCode ; adresse video pour le curseur
-   dw l1,l1+6,l1+12,l1+18,l1+24,l1+30
-   dw l2,l2+6,l2+12,l2+18,l2+24,l2+30
-   dw l3,l3+6,l3+12,l3+18,l3+24,l3+30
 
 loadSceneCode:
    xor a : ld (indexBuffer),a : ld (currentLetterCode),a : ld (isCodeValid),a
@@ -234,7 +204,6 @@ codeTrue
    ld a,TextCodeLevelOK: call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
-   
 
    
   ld a,TextCodeLevel : call getAdressText :
@@ -326,7 +295,7 @@ waitKey
 	ld a,(newKeyCode) : ld (oldKeyCode),a ; sauve l'etat de la touche
    ret
 controlKeyCode
-   breakpoint
+  ; breakpoint
    ld a,(isCodeValid) : cp 2 : jp z,exitSceneCode
    jp controlCode
    ret

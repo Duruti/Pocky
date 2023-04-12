@@ -23,8 +23,8 @@ updateGame:
    
 
    ;touche:
-
-
+      ;call vbl
+      ld a,(isStartingGame) : cp 1 : call z,updateTimer
       ; check is win
       call checkIsWin ;victory.asm
       ld a,(isWin)
@@ -45,3 +45,20 @@ updateGame:
       ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
       ld (oldKey),a
    ret
+updateTimer
+   time equ 13
+   ld a,(timerStart) : inc a : ld (timerStart),a
+   cp time : jr z,.drawCell
+   cp time*2 : jr z,.drawIndicator
+   ret
+   .drawCell
+      call drawCellPositionStart : ret
+   .drawIndicator
+   xor a : ld (timerStart),a
+   call drawIndicator
+   ld a,(nbFlashCursor) : cp 2 : jr z,.endFlash
+   inc a : ld (nbFlashCursor),a
+   ret
+   
+   .endFlash
+   ld a,0 : ld (isStartingGame),a : ret

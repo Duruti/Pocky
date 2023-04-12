@@ -42,6 +42,7 @@ loadMenu
    linesDrawLogo equ 130
    ; play
    offsetCursor equ 15
+
    firstPositioncursor equ 5
    ld a,firstPositioncursor
    ld (colonne),a
@@ -168,7 +169,6 @@ drawCursorMenu
    cp 1
    call z,eraseLastBackground
 
-   PlaySoundEffect 2,2,0
    ; ld a,2 ; soundEffectNumber ;(&gt;=1)
    ; ld c,2 ; channel ;(0-2)
    ; ld b,0 ;invertedVolume ;(0-16 (0=full volume))
@@ -191,6 +191,8 @@ drawCursorMenu
    call drawSprite80
    ld a,1
    ld (isFirstDraw),a
+   
+   PlaySoundEffect 2,2,0
    RET
 if build == 0
    reboot
@@ -290,11 +292,7 @@ eraseLastBackground
    call FillRect
    ret
 
-positionCursorMenu db 0
-maxPositionCursor equ 3
-refCursor db 8,8+offsetCursor,8+2*offsetCursor,8+3*offsetCursor
-lastAdrCursor dw &c000
-isFirstDraw db 0
 
-tamponCursor ds 100,0
+
+
 ; isValidMenu db 0

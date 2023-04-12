@@ -299,6 +299,8 @@ setColor3:
 
 
 getColor:
+   ; recupere dans a la couleur de la tuile
+   ; donner en entre la position dans A xxxxyyyy
    ld c,A ; save a
 
    ; recupere y

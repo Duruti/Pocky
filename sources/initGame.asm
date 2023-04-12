@@ -1,3 +1,7 @@
+timerStart db 0
+isStartingGame db 0
+nbFlashCursor db 0
+
 initGame:
 
 init:
@@ -13,7 +17,7 @@ init:
 
 
   call drawLevel  
-  
+
   ld a,0
   ld (isOffsetY),a 
   
@@ -70,7 +74,7 @@ init:
   ; call printText
  
   call drawIndicator
-
+  ;call drawCellPositionStart
   
   LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; border 0
 
@@ -80,6 +84,9 @@ init:
   ld hl,MusicStart
   call Main_Player_Start + 0
   
+  ld a,1 : ld (isStartingGame),a
+  xor a :
+  ld (nbFlashCursor),a : ld (timerStart),a
   ret
 
 
@@ -124,7 +131,27 @@ drawIndicator:
   call drawSpriteOr ; transparence.asm
 
   ret
+drawCellPositionStart
+  ld a,1
+  ld (isOffsetY),a
+  ld a,(positionStart)
+  and %00001111
+  ld (currentLine),a
+  ld a,(positionStart)
+  and %11110000
+  srl a : srl a 
+  ld (colonne),a
+
+  call getAdrScreen ; drawKey.asm
+  push de
   
+  ld a,(positionStart) : call getColor
+  pop de  
+  ld hl,dataSprite
+  call calcColor ;  retourne l'adresse du sprite a afficher
+  ;pop af
+  call drawSprite
+  ret  
 drawLevel
   ; dessine le current level
 

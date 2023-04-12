@@ -25,19 +25,19 @@ printText:
    ;call vbl
 	ld a,(timerTexte)
 	
-	inc a
-	ld (timerTexte),a
-	cp 1 ; vitesse
-	jr nz,printText
-	xor a
-	ld (timerTexte),a
+	; inc a
+	; ld (timerTexte),a
+	; cp 1 ; vitesse
+	; jr nz,printText
+	; xor a
+	; ld (timerTexte),a
+	
+	; speed	
+    	ld a,(hl)
+    	cp 0
+    	ret z
 
-	speed	
-   	ld a,(hl)
-   	cp 0
-   	ret z
-
- 	push hl
+ 	 push hl
 	;	cp &20 ; si espace on affiche rien mais on decalle de 1 vers la droite
 	;	jr z,finPrintChar
 	;	jr nz,suitePrint
@@ -50,9 +50,7 @@ printText:
    call printChar
 
 finPrintChar 
-	ld hl,(adrPrint)
-	inc h
-	ld (adrPrint),hl	
+	ld hl,(adrPrint) : inc h :	ld (adrPrint),hl	
 	pop hl  	
 	inc hl
    	jp printText
