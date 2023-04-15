@@ -95,6 +95,7 @@ loopVictory:
   	cp 1
    jr nz,loopVictory
    ; passe au level suivant
+   call eraseBoxDialog
    ld a,0 : ld (isDialog),a
    jp addLevel1 
 
@@ -111,7 +112,9 @@ loopGameover:
  	ld a,(exit)    	; test si on quitte le programme
   	cp 1
    jr nz,loopGameover
+   call eraseBoxDialog
    ld a,0 : ld (isDialog),a
+
    jp init
 drawLine
    ;DEFB #ED,#FF
@@ -124,6 +127,7 @@ drawLine
    ret
 
 drawBoxDialog 
+
    
    ld a,(countLineUp) : call drawLine  
    .loop
@@ -135,4 +139,10 @@ drawBoxDialog
    .endLoop
    call vbl
    ld a,1 : ld (isDialog),a
+   ret
+eraseBoxDialog
+   ld l,(startLineBoxDialog-24): ld h,0 : add hl,hl
+   ld bc,lignes : add hl,bc : ld e,(hl) : inc hl : ld d,(hl) : ex hl,de
+   ld bc,&4031 : ld a,%0000000 ;&30
+   call FillRect ; utils.asm
    ret

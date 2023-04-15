@@ -6,6 +6,8 @@ konamiKey db 0
 konamiEmpty equ &55
 
 loadGreeting
+   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+ 
    ld hl,&C000
    ld bc,&40FF
    ld a,%00000000 ;&30

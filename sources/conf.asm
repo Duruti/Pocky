@@ -12,8 +12,8 @@
 
 IsMusic = 1
 Debug = 0
-cheat = 0
-build = 1
+cheat = 1
+build = 0
 
 initCurrentLevel equ 01
 

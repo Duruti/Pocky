@@ -1,5 +1,8 @@
 
 loadSceneCode:
+
+   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+
    xor a : ld (indexBuffer),a : ld (currentLetterCode),a : ld (isCodeValid),a
    call initBuffer
    ld hl,&C000

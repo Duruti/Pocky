@@ -1,5 +1,7 @@
 
 loadMenu
+    LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+    
    call loadInterruption ; interruption.asm 
    ld a,1 : ld (isMusicPlaying),a
    ld hl,Music1
@@ -22,7 +24,7 @@ loadMenu
    ; mode 0
    
    ; effacer l'écran
-   LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; border 0
+  ; LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; border 0
 
    ld hl,&C000
    ld bc,&40FF

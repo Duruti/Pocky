@@ -7,10 +7,13 @@ posSeed equ 5
 posKey equ 7
 posNbBlocks equ 8
 posNbWall equ posNbBlocks+maxNbBlock+1
+
 maxNbBlock equ 30
 maxNbWall equ 30
 
+
 lenghtLevel equ posNbWall+maxNbWall+1 ;40 taille en octet d'un level
+
 maxLevel equ 50
 
 

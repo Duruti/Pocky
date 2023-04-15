@@ -9,6 +9,7 @@ loadGame:
 
 
    call initGame ; initgame.asm
+   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
    ;call overcanVertical
    xor A
    ld (compteurAffichage),A

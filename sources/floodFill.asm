@@ -98,22 +98,16 @@ floodFill:
       ld de,gridCopy
       ldir
 
-      xor A
-      ld (isFoundKey),a
+      xor a :  ld (isFoundKey),a
 
-      ld a,1
-      ld (controlKey),a
+      ld a,1 : ld (controlKey),a
 
-      ld a,(couleurRemplissage)
-      ld (couleurCible),a
-      ld a,&FF
-      ld (couleurRemplissage),a
+      ld a,(couleurRemplissage) : ld (couleurCible),a
+      ld a,&FF : ld (couleurRemplissage),a
 
-      ld a,(positionStart)
-      ld (pileCouleur),a
+      ld a,(positionStart) : ld (pileCouleur),a
    
-      ld a,1
-      ld (indexPile),a ; Empile la position de la cellule de départ (0,0)
+      ld a,1 : ld (indexPile),a ; Empile la position de la cellule de départ (0,0)
       ;ld (indexPilePositionKey),a ; mets a zero
 
       call searchKey
@@ -144,7 +138,7 @@ searchKey:
       ld a,(hl)
       ld (currentPosition),a
 
-   call setColor2
+      call setColor2
 
       call checkNorth
       call checkSouth

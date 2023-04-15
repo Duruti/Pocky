@@ -21,7 +21,7 @@ else
    SNASET CPC_TYPE,0
    BANKset 0
 
-   ;SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0000.dsk"
+ ;  SAVE "pocky.bin",start,end-start,DSK,"builds/pocky.dsk"
    run &100
 ENDIF
 
@@ -262,9 +262,9 @@ startGFX:
    INCbin	"../img/cell2bd.win",&80
    INCbin	"../img/cell3bd.win",&80
    INCbin	"../img/gris.win",&80
- ;  INCbin	"../img/cell4bd.win",&80
    INCbin	"../img/cell5bd.win",&80
    INCbin	"../img/cell6bd.win",&80
+
    INCbin	"../img/cell6bd.win",&80
 
    INCbin	"../spriteRoutine/cell7.bin",&80
@@ -272,6 +272,7 @@ startGFX:
    INCbin	"../img/cursbd.win",&80
    INCbin	"../img/voidBD.win",&80
    INCbin	"../img/padlbd.win",&80
+ ;   INCbin	"../img/locker.bin",&80
 
    mkey: 
    INCbin "../img/keymbd.win",&80

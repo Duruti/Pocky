@@ -20,7 +20,7 @@ loadInterruption:
 
 interrupt:
 	push af : push bc : push de : push hl
-   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+  ; LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
 	ld a,(nbInt)
 	inc a
 	ld (nbInt),a

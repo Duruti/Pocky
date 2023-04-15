@@ -16,6 +16,7 @@ init:
   call FillRect
 
 
+
   call drawLevel  
 
   ld a,0
@@ -76,10 +77,11 @@ init:
   call drawIndicator
   ;call drawCellPositionStart
   
-  LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; border 0
+  ;LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; border 0
 
   ld hl,paletteMode0
   call loadPaletteGA
+  LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
 
   ld hl,MusicStart
   call Main_Player_Start + 0
@@ -87,6 +89,9 @@ init:
   ld a,1 : ld (isStartingGame),a
   xor a :
   ld (nbFlashCursor),a : ld (timerStart),a
+  
+
+
   ret
 
 

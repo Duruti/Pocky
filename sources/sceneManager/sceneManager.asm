@@ -46,7 +46,7 @@ changeScene
    
    ld hl,paletteBlack
    call loadPaletteGA
-   LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
+   ;LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
 
    ld a,(currentScene)
    ld e,a

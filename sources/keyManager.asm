@@ -219,12 +219,10 @@ espaceAction:
 	ld a,(newKey)
 	bit bitEspace,a
 	ret nz
-   call ChangeColorCursor
-	
-   ld a,1
-   ld (exit),a	
-	
-   ret
+	ld a,(isDialog) : cp 1 : jr z,.exitdialog
+   call ChangeColorCursor : ret
+	.exitdialog
+   ld a,1 : ld (exit),a : ret
 
 leftAction:
 	ld a,(newKey)
