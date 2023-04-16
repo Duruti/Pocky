@@ -10,7 +10,7 @@
 include "macro.asm"
 DSK equ 1
 CPR equ 2
-export = dsk
+export = CPR
 
 if export == CPR 
    print "Build CPR"
@@ -41,9 +41,14 @@ start:
    colorPaperHub equ 1
 
 
+
    ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
    out (c),c
+
+
   
+
+
    if IsMusic
       call initMusic
    ENDIF
@@ -56,7 +61,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,sceneLangage ;sceneGame ; sceneEditor
+   ld e,sceneGame ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
@@ -96,7 +101,8 @@ startVariable:
 
    palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
    ;paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
-   paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
+   ;paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
+   paletteMode0: db 84,88,91,79,75,74,71,94,92,68,85,87,90,86,69,64
    paletteFlag db 84,76,75,68,84,84,84,84,84,84,84,84,84,84,84,84
    paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
 
@@ -258,12 +264,19 @@ startGFX:
    dataSprite: 
  print "datasprite",{hex}dataSprite
 
-   INCbin	"../img/cell1bd.win",&80 ; enleve le header 128 octets
-   INCbin	"../img/cell2bd.win",&80
-   INCbin	"../img/cell3bd.win",&80
-   INCbin	"../img/gris.win",&80
-   INCbin	"../img/cell5bd.win",&80
-   INCbin	"../img/cell6bd.win",&80
+   ;  INCbin	"../img/cell1bd.win",&80 ; enleve le header 128 octets
+   ;  INCbin	"../img/cell2bd.win",&80
+   ;  INCbin	"../img/cell3bd.win",&80
+   ;  INCbin	"../img/gris.win",&80
+   ;  INCbin	"../img/cell5bd.win",&80
+   ;  INCbin	"../img/cell6bd.win",&80
+   
+   INCbin	"../img/tiles1.win",&80
+   INCbin	"../img/tiles2.win",&80
+   INCbin	"../img/tiles3.win",&80
+   INCbin	"../img/tiles4.win",&80
+   INCbin	"../img/tiles5.win",&80
+   INCbin	"../img/tiles6.win",&80
 
    INCbin	"../img/cell6bd.win",&80
 
@@ -271,7 +284,20 @@ startGFX:
    cursor
    INCbin	"../img/cursbd.win",&80
    INCbin	"../img/voidBD.win",&80
-   INCbin	"../img/padlbd.win",&80
+   INCbin	"../img/border1.win",&80
+   INCbin	"../img/border2.win",&80
+   INCbin	"../img/border3.win",&80
+   INCbin	"../img/border4.win",&80
+   INCbin	"../img/border5.win",&80
+   INCbin	"../img/border6.win",&80
+   INCbin	"../img/border7.win",&80
+;   INCbin	"../img/padlbd.win",&80
+   INCbin	"../img/pd1.win",&80
+   INCbin	"../img/pd2.win",&80
+   INCbin	"../img/pd3.win",&80
+   INCbin	"../img/pd4.win",&80
+   INCbin	"../img/pd5.win",&80
+   INCbin	"../img/pd6.win",&80
  ;   INCbin	"../img/locker.bin",&80
 
    mkey: 
@@ -280,13 +306,6 @@ startGFX:
    key: 
    INCbin	"../img/keybd.win",&80
    endKey:
-   INCbin	"../img/border1.win",&80
-   INCbin	"../img/border2.win",&80
-   INCbin	"../img/border3.win",&80
-   INCbin	"../img/border4.win",&80
-   INCbin	"../img/border5.win",&80
-   INCbin	"../img/border6.win",&80
-   INCbin	"../img/border7.win",&80
 
 
    mShow: 

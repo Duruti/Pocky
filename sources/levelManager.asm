@@ -10,7 +10,7 @@ posNbWall equ posNbBlocks+maxNbBlock+1
 
 maxNbBlock equ 30
 maxNbWall equ 30
-
+idPadlock equ 19 ; first padlock (17 - 22)
 
 lenghtLevel equ posNbWall+maxNbWall+1 ;40 taille en octet d'un level
 
@@ -45,7 +45,7 @@ loadPadlock:
 drawPadlock:
    call getAdresseCell
 
-   ld a,10
+   ld a,idPadlock
    ld (hl),a
    ret
 

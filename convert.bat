@@ -1,0 +1,2 @@
+rasm.exe convertLevel/convertLevel.asm -eo -sw -sb -sq -amper -oi convertLevel/convert.sna -os convert.sym 
+C:\Users\stephane\Documents\Programmation\ASM_CPC\WinAPE20B2\WinApe.exe /sym:convert.sym /SN:../\Pocky\convertLevel\convert.sna

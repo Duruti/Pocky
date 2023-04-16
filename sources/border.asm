@@ -1,10 +1,11 @@
-idBorderLeftUp equ 13
-idBorderLeftDown equ 15
-idBorderRightUp equ 14
-idBorderRightDown equ 16
-idBorderHorizontal equ 17
-idBorderVerticalLeft equ 18
-idBorderVerticalRight equ 19
+borderOffset equ 3
+idBorderLeftUp equ 13 - borderOffset
+idBorderLeftDown equ 15 - borderOffset
+idBorderRightUp equ 14 - borderOffset
+idBorderRightDown equ 16 - borderOffset
+idBorderHorizontal equ 17 - borderOffset
+idBorderVerticalLeft equ 18 - borderOffset
+idBorderVerticalRight equ 19 - borderOffset
 
 
 
