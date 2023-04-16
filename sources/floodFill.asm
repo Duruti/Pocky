@@ -97,9 +97,8 @@ floodFill:
       ld hl,grid
       ld de,gridCopy
       ldir
-
+      ; init variables
       xor a :  ld (isFoundKey),a
-
       ld a,1 : ld (controlKey),a
 
       ld a,(couleurRemplissage) : ld (couleurCible),a
@@ -158,28 +157,32 @@ searchKey:
    ret
 
 isKey:
-  ; push af
-  ; push bc
-   ld a,(keys) 
-   ld d,A
-   ld a,(tempPosition)
-   cp d
-   ;DEFB #ED,#FF
-   call z,foundKey
+   ; test pour chaque clef
+   push bc : push hl
 
+   ld hl,lstKeys : ld b,6
+   .bcl
+      ld a,(hl) : inc hl 
+      ld d,A
+      ld a,(tempPosition)
+      cp d
+      ;DEFB #ED,#FF
+      call z,foundKey
+
+   djnz .bcl
   
    
 
-  ; pop bc
-  ; pop af
-
-   
-   
+   pop hl : pop bc
    ret
 
 foundKey:
+   ;   breakpoint
    ld a,1
    ld (isFoundKey),a
+   ld a,6 : sub b : ld (numberKeyFound),a ; sauvergarde l'index de la clef
+   ld a,(nbKey) : dec a : ld (nbKey),a
+
    ret
 
 
@@ -193,7 +196,8 @@ drawDebugKey:
    ld (couleurRemplissage),a
 
   ; ld a,(tempPosition)
-   ld a,(keys)
+   ld a,(numberKeyFound) : ld hl,lstKeys : add l : ld l,a : 
+   ld a,(hl)
    ld (currentPosition),a
    call setColor
 
@@ -212,15 +216,17 @@ drawDebugKey:
    
    call unblock
 
-   ld a,0
-   ld (nbKey),a
+   ; ld a,0
+   ; ld (nbKey),a
   
-
+   ld a,(numberKeyFound)
+   ld hl,lstKeys : add l : ld l,a : ld (hl),&FF
+   
    ret
 
 
-; permet d'avoir la couleur dans la cellule dont les coordonnées sont dans A
-; le quartet de poids fort pour X et le faible pour Y
+   ; permet d'avoir la couleur dans la cellule dont les coordonnées sont dans A
+   ; le quartet de poids fort pour X et le faible pour Y
 
 setColor:
    ld c,A ; save a
@@ -423,10 +429,16 @@ controlColor:
 
 unblock:
    ;DEFB #ED,#FF
-   ld a,(nbBlocks)
+   ;breakpoint
+   ld a,(numberKeyFound) : sla a ; 
+   ld hl,lstIntervalBlocks : add l : ld l,a ; hl pointe sur la position start
+   ld e,(hl) ; recupere le start
+   inc hl : ld a,(hl) : sub e : ld b,a ; met dans b la longueur de la chaine
+   ld d,0 : ld hl,blocks : add hl,de
+;   ld a,(nbBlocks)
 
-   ld b,a
-   ld hl,blocks
+;   ld b,10 ; nb de block a supprimer
+;   ld hl,blocks ;  adresse depart des blocks 
    loopUnBlock:
       ld a,(hl)
       push bc

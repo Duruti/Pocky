@@ -121,7 +121,7 @@ calcColor:
    cp 0
    ret z
    push de
-   ld de,69
+   ld de,64 ;69
    bclCalc:
       add hl,de 
       dec a

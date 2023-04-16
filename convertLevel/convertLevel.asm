@@ -5,9 +5,10 @@ run &1000
 
 
 positionStart equ 8 ; position (index) où rajouter des cases
-nbCells equ 5 ; nb de cases a rajouter
+nbCells equ 5 + 12 ; nb de cases a rajouter
 nbLevel equ 50 ; nb de level
 lenghtLevel equ 70 ; longueur du level octet
+valueCell equ &FF
 
 org &1000
 
@@ -28,7 +29,7 @@ jp $
 
 
 addCell
-   ld c,nbCells : ld a,&BB
+   ld c,nbCells : ld a,valueCell
 
    .bcl
       ld (de),a : inc de : dec c : jr nz,.bcl

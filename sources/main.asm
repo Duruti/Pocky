@@ -10,7 +10,7 @@
 include "macro.asm"
 DSK equ 1
 CPR equ 2
-export = CPR
+export = dsk
 
 if export == CPR 
    print "Build CPR"
@@ -41,10 +41,12 @@ start:
    colorPaperHub equ 1
 
 
-
    ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
    out (c),c
 
+   ;ld hl,paletteMode0
+   ;call loadPaletteGA
+   ;jp $
 
   
 
@@ -142,6 +144,7 @@ startVariable:
    nbLines : db 5 ;12 nombre de ligne de la grille
    nbRows : db 5 ;12 nombre de colonnes de la grille
    ;org #6000
+   align 40
    blocks : ds maxNbBlock,0
    nbBlocks : db 4
    walls : ds maxNbWall,0
@@ -271,48 +274,51 @@ startGFX:
    ;  INCbin	"../img/cell5bd.win",&80
    ;  INCbin	"../img/cell6bd.win",&80
    
-   INCbin	"../img/tiles1.win",&80
-   INCbin	"../img/tiles2.win",&80
-   INCbin	"../img/tiles3.win",&80
-   INCbin	"../img/tiles4.win",&80
-   INCbin	"../img/tiles5.win",&80
-   INCbin	"../img/tiles6.win",&80
+   ; le format win d'ocp rajoute des octets a la fin pour definir l'image
+   ; ici je ne les prends pas en compte donc je récupere que les 64 octets apres le header de 128 octets
 
-   INCbin	"../img/cell6bd.win",&80
+   INCbin	"../img/tiles1.win",&80,64
+   INCbin	"../img/tiles2.win",&80,64
+   INCbin	"../img/tiles3.win",&80,64
+   INCbin	"../img/tiles4.win",&80,64
+   INCbin	"../img/tiles5.win",&80,64
+   INCbin	"../img/tiles6.win",&80,64
 
-   INCbin	"../spriteRoutine/cell7.bin",&80
+   INCbin	"../img/cell6bd.win",&80,64
+
+   INCbin	"../spriteRoutine/cell7.bin",&80,64
    cursor
-   INCbin	"../img/cursbd.win",&80
-   INCbin	"../img/voidBD.win",&80
-   INCbin	"../img/border1.win",&80
-   INCbin	"../img/border2.win",&80
-   INCbin	"../img/border3.win",&80
-   INCbin	"../img/border4.win",&80
-   INCbin	"../img/border5.win",&80
-   INCbin	"../img/border6.win",&80
-   INCbin	"../img/border7.win",&80
-;   INCbin	"../img/padlbd.win",&80
-   INCbin	"../img/pd1.win",&80
-   INCbin	"../img/pd2.win",&80
-   INCbin	"../img/pd3.win",&80
-   INCbin	"../img/pd4.win",&80
-   INCbin	"../img/pd5.win",&80
-   INCbin	"../img/pd6.win",&80
+   INCbin	"../img/cursbd.win",&80,64
+   INCbin	"../img/voidBD.win",&80,64
+   INCbin	"../img/border1.win",&80,64
+   INCbin	"../img/border2.win",&80,64
+   INCbin	"../img/border3.win",&80,64
+   INCbin	"../img/border4.win",&80,64
+   INCbin	"../img/border5.win",&80,64
+   INCbin	"../img/border6.win",&80,64
+   INCbin	"../img/border7.win",&80,64
+ ;   INCbin	"../img/padlbd.win",&80
+   INCbin	"../img/pd2.win",&80,64
+   INCbin	"../img/pd3.win",&80,64
+   INCbin	"../img/pd4.win",&80,64
+   INCbin	"../img/pd5.win",&80,64
+   INCbin	"../img/pd6.win",&80,64
+   INCbin	"../img/pd1.win",&80,64
  ;   INCbin	"../img/locker.bin",&80
 
    mkey: 
-   INCbin "../img/keymbd.win",&80
+   INCbin "../img/keymbd.win",&80,64
    endMkey:
    key: 
-   INCbin	"../img/keybd.win",&80
+   INCbin	"../img/keybd.win",&80,64
    endKey:
 
 
    mShow: 
-   INCbin "../img/showm.win",&80
+   INCbin "../img/showm.win",&80,64
    endmShow:
    show: 
-   INCbin	"../img/show.win",&80
+   INCbin	"../img/show.win",&80,64
    endshow:
 
 
@@ -338,7 +344,8 @@ startLevel:
    
    
    levels :
-   INCbin	"../Levels/world.bin",0 ; enleve le header 128 octets
+ ;   INCbin	"../Levels/world.bin",0 ; enleve le header 128 octets
+   INCbin	"../Levels/newworld.bin",0 ; enleve le header 128 octets
    ;world2: INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
    ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
    ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
@@ -379,3 +386,5 @@ include "music.asm"
 endAdrMusic:
 end:
 include "../logs/log.asm"
+;org &c000
+;incbin "../img/14.scr",&80

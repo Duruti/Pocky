@@ -20,7 +20,7 @@ loadInterruption:
 
 interrupt:
 	push af : push bc : push de : push hl
-  ; LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
 	ld a,(nbInt)
 	inc a
 	ld (nbInt),a
@@ -95,6 +95,7 @@ playMusic
 changeColor:
 	ld bc,&7f8d ; %10001100 bit 0,1 pour le mode
 	out (c),c
+   LD BC,#7F10:OUT (C),C:LD C,&4F:OUT (C),C
    
    ld hl,PaletteGA
    ld bc,&7F00
