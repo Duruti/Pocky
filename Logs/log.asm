@@ -19,6 +19,6 @@ totalSize = sizeCode + sizeMusic + sizeVariable + sizeGFX + sizeLevel
 print "\nsize projet : ",{hex}totalSize
 print "\nMemory Free : ",{hex}(&FFFF - &4000- &100 - totalSize )," / &FFFF"
 print "Lenght Level : ",lenghtLevel
-print "adress Level 9",{hex} (lenghtLevel*(9-1)+startLevel)
+print "adress Level ",{int} initCurrentLevel," :",{hex} (lenghtLevel*(initCurrentLevel-1)+startLevel)
 print "lstKeys ",{hex} lstKeys
 print "\n---------------------------\n"

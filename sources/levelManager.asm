@@ -150,7 +150,7 @@ getAddressLevel
       add hl,de
       djnz bclAddAdrLevel
    suite:
-   push hl ;transfert hl dans ix
+   push hl ;transfert hl dans ix et hl
    pop ix
    ret
 

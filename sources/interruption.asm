@@ -19,7 +19,7 @@ loadInterruption:
 
 
 interrupt:
-	push af : push bc : push de : push hl
+	push af : push bc : push de : push hl : push ix
    LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
 	ld a,(nbInt)
 	inc a
@@ -42,7 +42,7 @@ interrupt:
 
 endInt
  
-   pop hl : pop de : pop bc : pop af
+   pop ix :pop hl : pop de : pop bc : pop af 
   
 	ei
 	ret
@@ -93,9 +93,9 @@ playMusic
    ENDIF
    ret
 changeColor:
+   ;LD BC,#7F10:OUT (C),C:LD C,&4F:OUT (C),C
 	ld bc,&7f8d ; %10001100 bit 0,1 pour le mode
 	out (c),c
-   LD BC,#7F10:OUT (C),C:LD C,&4F:OUT (C),C
    
    ld hl,PaletteGA
    ld bc,&7F00

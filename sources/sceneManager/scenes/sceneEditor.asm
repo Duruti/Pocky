@@ -6,6 +6,11 @@ textColors db "COLORS:   ",0
 textModeKey db "MODEKEY: ",0
 currentMode db 0
 currentModeKey db 1
+currentColorPadlock db 0
+currentStartInterval db 0
+currentEndInterval db 0
+currentPointeurPadlock db 0
+intervalupdated db &ff,&ff,&ff,&ff,&ff,&ff
 textMode: 
 	;   12345678
 	db "SIZE   ",0  	; 1 --
@@ -62,12 +67,15 @@ loadEditor:
 	;call loadInterruption
 
 	call drawLevel ; initGame.asm
-	call drawIndicator
 
 	ld hl,paletteMode0
    call loadPaletteGA ; print.asm
 	call drawListPadlock
 	call drawListWall
+	
+	call drawIndicatorEditor
+	call drawIndicator
+
    ret
 
 
@@ -242,7 +250,7 @@ updateKeysEditor:
 
 	ld a,(oldMode)
 	bit bitMode4,a
-	call nz,mode4Editor	
+	call nz,modePadlockEditor	
 
 	ld a,(oldMode)
 	bit bitMode5,a
@@ -263,7 +271,7 @@ updateKeysEditor:
 
 	; *******   KEY ***********
 	ld a,(oldKey) : bit bitEscape,a : call nz,escapeAction
-
+	ld a,(currentMode) : cp 3 : jr z,.suite
 	ld a,(oldKey)
 	bit bitKeyR,a
 	call nz,levelUp
@@ -271,7 +279,7 @@ updateKeysEditor:
 	ld a,(oldKey)
 	bit bitKeyE,a
 	call nz,levelDown
-
+	.suite
 	; selectionne les update en fonction des modes
 
 	ld a,(currentMode)
@@ -357,13 +365,17 @@ modeKeyEditor:
 	call showKeyPosition
 	
 	ret
-mode4Editor:
+modePadlockEditor:
 	ld a,(newMode)
 	bit bitMode4,a
 	ret nz
+
+	; init
+	xor a : ld (currentColorPadlock),a
 	ld a,4-1
 	ld (currentMode),A
 	call drawModeEditor
+	call drawIndicatorEditor
 	
 	ret
 mode5Editor:
@@ -418,6 +430,22 @@ updatePositionPadlock
 	ld a,(oldKey) : bit bitRight,a : call nz,rightPosition
 	ld a,(oldKey) : bit bitDown,a : call nz,downPosition
 	ld a,(oldKey) : bit bitLeft,a : call nz,leftPosition
+	ld a,(oldKey) : bit bitKeyR,a : call nz,colorPadlockUp
+	ld a,(oldKey) : bit bitKeyE,a : call nz,colorPadlockDown
+	ret
+colorPadlockDown
+	ld a,(newKey) : bit bitKeyE,a :	ret nz
+
+	ld a,(currentColorPadlock) : cp 0 : ret z
+	dec a : ld (currentColorPadlock),a
+	call drawIndicatorEditor
+	ret 
+colorPadlockUp
+	ld a,(newKey) : bit bitKeyR,a :	ret nz
+	ld a,(maxColor) : ld b,a : dec b
+	ld a,(currentColorPadlock) : cp b : ret z
+	inc a : ld (currentColorPadlock),a
+	call drawIndicatorEditor
 	ret
 switchPadlock
 	ld a,(newKey) : bit bitEspace,a :	ret nz
@@ -425,61 +453,279 @@ switchPadlock
 	
 	ret
 checkIfPadlockExist
-	; parcours la liste des blocks et regarde si on a un block sous le cursor
-	call getAddressLevel : 
-	ld a,(ix+posNbBlocks) : ld l,a : cp 0 : jp z,addPadlock ; si la liste est vierge alors on ajoute un block
-	;BREAKPOINT
-	ld b,a : ld de,posNbBlocks+1 : add ix,de : ld d,ixh : ld e,ixl: dec de : ld iyh,d : ld iyl,e; repositionne ix
-	ld a,(positionStart) : ld c,a
+	call initIntervalUpdate
+	call scearchPadlock
+	ret
+
+	; ; parcours la liste des blocks et regarde si on a un block sous le cursor
+	; call getAddressLevel : 
+	; ld a,(ix+posNbBlocks) : ld l,a : cp 0 : jp z,addPadlock ; si la liste est vierge alors on ajoute un block
+	; ;BREAKPOINT
+	; ld b,a : ld de,posNbBlocks+1 : add ix,de : ld d,ixh : ld e,ixl: dec de : ld iyh,d : ld iyl,e; repositionne ix
+	; ld a,(positionStart) : ld c,a
+	; .bcl
+	; 	ld a,(ix) : cp c : jp z,erasePadlock
+	; 	inc ix : djnz .bcl
+	; ret
+initIntervalUpdate
+	ld hl,intervalupdated : ld b,6 : ld a,&ff
+	.bclInit
+		ld (hl),a : inc hl : djnz .bclInit
+	ret
+addPadlock
+	breakpoint
+	call getAddressLevel : ld a,(ix+posNbBlocks) : cp maxNbBlock : ret z
+	; Verifier si il y a deja des cadenas dans cette couleur
+	push hl
+	ld a,(currentColorPadlock) : sla a : ld c,intervalBlocks : ld b,0 : add c : ld c,a : add hl,bc 
+	ld a,(hl) : ld (currentStartInterval),a : ld b,a 
+	inc hl : ld a,(hl) : ld (currentEndInterval),a: or a : sub b : jp z,addFirstColorPadlock
+	;breakpoint
+	
+
+	
+	;breakpoint
+	; test s'il y a des cadenas a droite
+	pop hl:push hl : xor a : ld c,intervalBlocks : ld b,0 : add c : ld c,a : add hl,bc
+	ld b,(ix+posColor) : ld d,0 ; d stock le pointeur
+	ld a,(currentColorPadlock): sub b : neg : ld e,a
+	ld iy,intervalupdated
 	.bcl
-		ld a,(ix) : cp c : jp z,erasePadlock
-		inc ix : djnz .bcl
-	call addPadlock	
+		push bc
+		ld c,(hl) : inc hl  : ld a,e : cp b : jr z,.endBcl ; sort si meme couleur que la couleur courante
+		ld a,c : cp &FF : jr z,.endBcl ; si pas de données on sort
+		ld a,(currentEndInterval) 
+		cp c : jr z,.suite : jr nc,.endBcl ; si a=c on poursuite , si a>c end 
+		.suite
+			; on a bien des cadenas a droite
+			; on recupere le end
+			ld d,(hl)
+	 		ld a,(ix+posColor) : sub b 
+			ld (iy),a : inc iy
+		.endBcl
+		inc hl : pop bc
+		djnz .bcl
+	
+	
+	; dans d j'ai le pointeur fin des blocks, si d = 0 alors pas de block a droite
+	; donc le pointeur sera calculé avec d-currentEndInterval = nb d'octet a décaller
+	ld a,d : cp 0 : call nz,RotateRightList
+
+	pop hl : push hl
+	ld a,(currentEndInterval) : add b : ld c,posNbBlocks+1: add c : ld c,a : ld b,0 : ld (currentPointeurPadlock),a 
+	add hl,bc ; positionne le pointeur pour rajouter le block 
+
+	ld a,(positionStart) : ld (hl),a ; place le nouveau cadenas
+	ld a,(ix+posNbBlocks) : inc a : ld (ix+posNbBlocks),a 	; incremente nb block
+	; modifie les intervals
+	; on modifi
+	; modifie l'interval du block courant
+	pop hl
+	ld a,(currentColorPadlock): ld d,a : sla a : ld c,intervalBlocks: add c : ld c,a :  ld b,0 : add hl,bc ;  
+	inc hl : ld a,(hl) : inc a : ld (hl),a 
+	
+	ld b,6 : ld hl,intervalupdated
+	ld de,intervalBlocks
+	;breakpoint
+	
+	.bcl2
+		ld a,(hl) : cp &ff : jr z,.endBcl2
+		push ix : push de
+		sla a : add e : ld e,a : add ix,de 
+		ld a,(ix) : inc a : ld (ix),a : inc ix
+		ld a,(ix) : inc a : ld (ix),a 
+		pop de : pop ix
+		.endBcl2
+		inc hl
+		djnz .bcl2
+
+	;breakpoint
+	ret
+
+addFirstColorPadlock
+	; rajoute un padlock si c'est la premier fois
+	pop hl
+	ld a,(ix+posNbBlocks) : ld d,a : ld c,posNbBlocks+1: add c : ld c,a : ld b,0 : add hl,bc ; positionne le pointeur pour 
+
+	ld a,(positionStart) : ld (hl),a 
+	push ix : pop hl
+	ld a,(currentColorPadlock) : sla a : ld c,intervalBlocks : ld b,0 : add c : ld c,a : add hl,bc 
+	
+	ld (hl),d : inc d : inc hl : ld (hl),d
+	ld a,(ix+posNbBlocks) : inc a : ld (ix+posNbBlocks),a
+	; rajouter le block 
+	ret
+RotateRightList
+	push ix : pop hl ; récupere adresse du level
+	ld bc,posNbBlocks+1 : ld a,d : add c : ld c,a : add hl,bc 
+	ld a,(currentEndInterval) : dec a : ld e,a : ld a,d : sub e :ld e,a ;a = longueur
+	ld b,0 : ld c,a 
+	push hl : dec hl : pop de  
+	lddr
 	ret
 erasePadlock
-	
-	; ix est l'adresse a effacer , d nombre de blocks ; l-b = nombre de block a décaler 
-	
-	;;ld a,l : sub b : jp z,.eraseFirstWall 
-	ld c,b : ld b,0 : 
-	ld d,ixh : ld e,ixl : ex hl,de : ld d,h : ld e,l : inc hl: ldir ; decale les donnees
-	ld (hl),0
-	ld a,(iy) : dec a : ld (iy),a ; change le nbBlock
-	call replaceCell
-	;BREAKPOINT
-	ret
-	; .eraseFirstWall
-	; BREAKPOINT
-	; 	xor a : dec ix : ld (ix),a 
-	; 	call replaceCell ; affiche la tile
-	; ret 
-addPadlock
-	call getAddressLevel : ld a,(ix+posNbBlocks) : cp maxNbBlock : ret z
-	inc a : ld (ix+posNbBlocks),a 
-	;BREAKPOINT
 
-	ld de,posNbBlocks : add e : ld e,a : add ix,de 
-	ld a,(positionStart) : ld (ix),a
-	call drawPadlockEditor
+	; a contient l'index où se trouve la cellule
+	push af : ld b,a ; save
+	; on fait maintenant le décallage a gauche des padlocks
+	push ix : pop hl
+	ld a,(ix+posNbBlocks) : sub b : ld c,a 
+	breakpoint
+	ld de,posNbBlocks+1 : ld a,b : add e : ld e,a : add hl,de : ld d,h : ld e,l : inc hl	
+	ld b,0 : ldir 
+	ld a,(ix+posNbBlocks) : dec a : ld (ix+posNbBlocks),a
+
+	; on met a jour les intervals
+	; On cherche sur quel interval se trouve le padlock
+	push ix : pop hl : ld b,6 
+	ld de,intervalBlocks : add hl,de
+	pop af : ld c,a
+	nop
+	.bclSearchInterval
+		push hl
+		ld a,(hl) : cp &ff : jr z,.endbclSearchInterval 
+		cp c : jr z,.suite : jr nc,.endbclSearchInterval; a<=c 
+		.suite
+		inc hl : ld a,(hl): dec a : cp c : jr c,.endbclSearchInterval  
+		;on a trouvé
+		ld a,(hl) : ld (currentEndInterval),a : dec hl
+		ld a,(hl) : ld (currentStartInterval),a 
+		ld a,6 : sub b : pop hl 
+		jr .foundIntervalRight		
+		.endbclSearchInterval
+		pop hl :inc hl : inc hl
+		djnz .bclSearchInterval
+	
+
+	.foundIntervalRight
+
+
+		push ix : pop hl : push af
+		xor a : ld c,intervalBlocks : ld b,0 : add c : ld c,a : add hl,bc
+		ld b,(ix+posColor) : ld d,0 ; d stock le pointeur
+		pop af : push af : sub b : neg : ld e,a
+		ld iy,intervalupdated
+		.bcl
+			push bc
+			ld c,(hl) : inc hl  : ld a,e : cp b : jr z,.endBcl ; sort si meme couleur que la couleur courante
+			ld a,c : cp &FF : jr z,.endBcl ; si pas de données on sort
+			ld a,(currentEndInterval) 
+			cp c : jr z,.suite1 : jr nc,.endBcl ; si a=c on poursuite , si a>c end 
+			.suite1
+				; on a bien des cadenas a droite
+				; on recupere le end
+				ld d,(hl)
+				ld a,(ix+posColor) : sub b 
+				ld (iy),a : inc iy
+			.endBcl
+			inc hl : pop bc
+			djnz .bcl
+
+
+	.updateInterval
+
+		pop af : push ix : pop hl 
+		ld d,a : sla a : ld c,intervalBlocks: add c : ld c,a :  ld b,0 : add hl,bc ;  
+		inc hl : ld a,(hl) 
+		cp 1 : jr nz,.suiteRaz : 
+		ld (hl),&ff : dec hl : ld (hl),&ff : jr .endRaz 
+		.suiteRaz
+		dec a : ld (hl),a
+		ld d,a : dec hl : ld a,(hl) : cp d : jr nz,.endRaz
+		ld (hl),&ff : inc hl : ld (hl),&ff  
+		.endRaz
+		ld b,6 : ld hl,intervalupdated
+		ld de,intervalBlocks
+		
+		.bcl2
+			ld a,(hl) : cp &ff : jr z,.endBcl2
+			push ix : push de
+			sla a : add e : ld e,a : add ix,de 
+			ld a,(ix) : cp 0 : jr z,.razInterval  
+			dec a : ld (ix),a : inc ix : ld d,a
+			breakpoint
+			ld a,(ix) : dec a : ld (ix),a 
+			cp d  : jr z,.razInterval2			
+			.suiteBcl2
+			pop de : pop ix
+			.endBcl2
+			inc hl
+			djnz .bcl2
+
+	; efface le cadenas et affiche la cell dessous
+	call replaceCell
+
 	ret
+
+		.razInterval
+		ld a,&ff : ld (ix),a : ld (ix+1),a : jp .suiteBcl2
+		.razInterval2
+		breakpoint
+		ld a,&ff : ld (ix),a : ld (ix-1),a
+		jp .suiteBcl2
+scearchPadlock
+	; recherche la cellule
+	call getAddressLevel : ld b,(ix+posNbBlocks) : ld a,b : cp 0 : jp z,addPadlock
+	ld de,posNbBlocks+1 : add hl,de : ld a,(positionStart) : ld c,a
+	.bcl
+		ld a,(hl) : cp c : jr z,.padlockExist
+		inc hl : djnz .bcl
+	ld a,&ff ; pas de padlock
+	jp addPadlock
+	ret
+	.padlockExist
+		; recupere l'index
+		ld a,(ix+posNbBlocks) : sub b
+		jp erasePadlock
+		ret
 drawPadlockEditor
+	ret
+	; affiche le curseur du padlock
 	;BREAKPOINT
 	ld a,(positionStart) : and %11110000 : srl a : srl a : ld (colonne),a 
 	ld a,(positionStart) : and %1111 : ld (currentLine),a 
 	ld a,10 : ld (currentSprite),a : call drawcells
 
 	ret
+drawCellPadlockEditor:
+	ld l,a : and %11110000 : srl a : srl a : ld (colonne),a 
+	ld a,l : and %1111 : ld (currentLine),a 
+   ld a,6 : sub b : add 17 ; nb cell
+	push de
+	ld (currentSprite),a : call drawcells
+	pop de
+   ret
 drawListPadlock
 	call getAddressLevel : ld a,(ix+posNbBlocks) : cp 0 : ret z ; recupere le nb de block
-	ld b,a : ld de,posNbBlocks+1 : add ix,de : ; repositionne ix
-	.draw ; affiche chaque block
-		push bc
-		ld a,(ix) : and %11110000 : srl a : srl a : ld (colonne),a 
-		ld a,(ix) : and %1111 : ld (currentLine),a 
-		ld a,10 : ld (currentSprite),a : call drawcells
-		inc ix : pop bc: djnz .draw
+  	ld bc,intervalBlocks : add hl,bc
+	ld b,6 ; ld hl,lstIntervalBlocks
+	.bcl
+      ; prends la longueur
+      ;breakpoint
+      
+		ld e,(hl) ; recupere le start
+      inc hl : ld a,(hl) : sub e ; a = la longueur de la chaine
+      push hl
+      jp z,.endbcl
+		push ix : pop hl : push bc : ld b,0 : ld c,posNbBlocks+1 : add hl,bc : pop bc
+      ld d,0 : add hl,de ; hl pointe sur les block
+      push bc
+      ld e,a
+      .loopBlock:
+         ld a,(hl)
+			push hl : push bc
+         call drawCellPadlockEditor     
+         pop bc : pop hl
+         inc hl
+         dec e
+         jp nz,.loopBlock
+         pop bc
+      .endbcl
+      pop hl : inc hl
+   djnz .bcl
 
-	ret
+   ret
+	
 ; *****************************
 ; *   POSITION WALL	 			*
 ; *****************************
@@ -592,7 +838,8 @@ upPosition
 	call replaceCell : call checkObjet
    
 	ld a,(positionStart) : dec a : ld (positionStart),a ; incremente x
-	call drawIndicator
+	
+	call drawIndicatorEditor
 	ret
 rightPosition
 	ld a,(newKey) : bit bitRight,a :	ret nz
@@ -602,7 +849,7 @@ rightPosition
 	call replaceCell: call checkObjet
    
 	ld a,(positionStart) : add 16 : ld (positionStart),a ; incremente x
-	call drawIndicator
+	call drawIndicatorEditor
 	ret
 downPosition
 	ld a,(newKey) : bit bitDown,a :	ret nz
@@ -612,7 +859,7 @@ downPosition
 	call replaceCell : call checkObjet
    
 	ld a,(positionStart) : add 1 : ld (positionStart),a 
-	call drawIndicator
+	call drawIndicatorEditor
 
 	ret
 leftPosition
@@ -621,11 +868,29 @@ leftPosition
 
 	call replaceCell : call checkObjet
 	ld a,(positionStart) : sub 16 : ld (positionStart),a
-	call drawIndicator
+	call drawIndicatorEditor
 
 	ret
 
 
+drawIndicatorEditor:
+  ; dessine l'indicateur de la zone de debut de remplissage
+	ld a,(currentMode) : cp 3 : jp nz,drawIndicator
+
+	ld a,1
+	ld (isOffsetY),a
+
+	ld a,(positionStart)
+	and %00001111
+	ld (currentLine),a
+	ld a,(positionStart)
+	and %11110000
+	srl a : srl a 
+	ld (colonne),a
+	; affiche le cadenas de couleur
+	ld a,(currentColorPadlock) : add 17
+	ld (currentSprite),a : call drawcells
+  	ret
 
 ; *****************************
 ; *      KEY POSITION		 	*

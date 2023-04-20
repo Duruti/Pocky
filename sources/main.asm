@@ -63,7 +63,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,sceneGame ;sceneGame ; sceneEditor
+   ld e,sceneEditor ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
@@ -107,6 +107,8 @@ startVariable:
    paletteMode0: db 84,88,91,79,75,74,71,94,92,68,85,87,90,86,69,64
    paletteFlag db 84,76,75,68,84,84,84,84,84,84,84,84,84,84,84,84
    paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
+;   paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
+   paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
 
    ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
    ;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15

@@ -429,16 +429,17 @@ controlColor:
 
 unblock:
    ;DEFB #ED,#FF
-   ;breakpoint
+   breakpoint
+   
    ld a,(numberKeyFound) : sla a ; 
    ld hl,lstIntervalBlocks : add l : ld l,a ; hl pointe sur la position start
    ld e,(hl) ; recupere le start
    inc hl : ld a,(hl) : sub e : ld b,a ; met dans b la longueur de la chaine
    ld d,0 : ld hl,blocks : add hl,de
-;   ld a,(nbBlocks)
+  ;   ld a,(nbBlocks)
 
-;   ld b,10 ; nb de block a supprimer
-;   ld hl,blocks ;  adresse depart des blocks 
+  ;   ld b,10 ; nb de block a supprimer
+  ;   ld hl,blocks ;  adresse depart des blocks 
    loopUnBlock:
       ld a,(hl)
       push bc
