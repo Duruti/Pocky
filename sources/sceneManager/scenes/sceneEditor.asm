@@ -805,6 +805,7 @@ drawListWall
 checkObjet
 	call drawListPadlock
 	call drawListWall
+	call drawListKey
 	; cherche s'il y a un start sous le curseur
 	call getAddressLevel : ld a,(ix) : ld b,a : ld a,(positionStart)
 	cp b : jp nz,.suite : call drawIndicator
@@ -890,6 +891,7 @@ drawIndicatorEditor:
 	; affiche le cadenas de couleur
 	ld a,(currentColorPadlock) : add 17
 	ld (currentSprite),a : call drawcells
+	jp nz,drawIndicator
   	ret
 
 ; *****************************
@@ -897,7 +899,7 @@ drawIndicatorEditor:
 ; *****************************
 updateKeyPosition
 	ld a,(oldKey) : bit bitEspace,a : call nz,switchModeKey
-	ld a,(currentModeKey) : cp 0 : ret z
+	;ld a,(currentModeKey) : cp 0 : ret z
 	ld a,(oldKey) : bit bitUp,a : call nz,upKeyPosition
 	ld a,(oldKey) : bit bitRight,a : call nz,rightKeyPosition
 	ld a,(oldKey) : bit bitDown,a : call nz,downKeyPosition
@@ -909,73 +911,67 @@ switchModeKey
 	; mode 0 pas de clef
 	
 	ld a,(newKey) : bit bitEspace,a :	ret nz
-	ld a,(currentModeKey) : cp 1 : jp z,.reset
-	inc a : ld (currentModeKey),a : call showKeyPosition : call drawModeKey : ret
-	.reset
-	xor a : ld (currentModeKey),a 
-	; enleve la clef du level
-	call getAddressLevel : ld a,&ff : ld (ix+7),a
-	call loadEditor : call drawModeKey
-	ret
+	ld a,(positionStart) : call getColor : push af
+	call getAddressLevel : 
+	pop af : ld de,poskey : add e : ld e,a : add hl,de
+	ld a,(positionStart) : ld b,(hl) : cp b : jr nz,.addKey
+	breakpoint
+	ld (hl),&ff : call replaceCell2 :ret
+	.addKey
+		ld (hl),a : ld a,b : cp &ff : jr z,.endAddKey : call replaceCell2 
+		.endAddKey
+		call drawListKey : ret
+	; --------------------------------------------	
+	; ld a,(currentModeKey) : cp 1 : jp z,.reset
+	; inc a : ld (currentModeKey),a : call showKeyPosition : call drawModeKey : ret
+	; .reset
+	; xor a : ld (currentModeKey),a 
+	; ; enleve la clef du level
+	; call getAddressLevel : ld a,&ff : ld (ix+7),a
+	; call loadEditor : call drawModeKey
+	; ret
 upKeyPosition
 	ld a,(newKey) : bit bitUp,a :	ret nz
 	call getAddressLevel
    ld a,(ix+3)    ; nb colonne
    ld (nbLines),a :dec a : ld b,a
-	;DEFB #ED,#FF
-	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a : and %1111
-	cp 0 : ret z
+	ld a,(positionStart) : and %1111 :  cp 0 : ret z
 	call replaceCell
-   
-	ld a,(positionStart) : dec a : ld (ix+7),a : ld (positionStart),a ; incremente x
-	call drawKeyPosition
+	ld a,(positionStart) : dec a : ld (positionStart),a ; incremente x
+	call drawKeyEditor
 	ret
 rightKeyPosition
 	ld a,(newKey) : bit bitRight,a :	ret nz
 	call getAddressLevel
    ld a,(ix+4)    ; nb colonne
    ld (nbRows),a :dec a : ld b,a
-	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
-	and %11110000 : srl a : srl a : srl a : srl a
-	cp b : ret nc
+	ld a,(positionStart) : and %11110000 : srl a : srl a : srl a : srl a
+	cp b : ret nc 
 	call replaceCell
-   
-	ld a,(positionStart) : add 16 : ld (ix+7),a : ld (positionStart),a ; incremente x
-	call drawKeyPosition
+	ld a,(positionStart) : add 16 : ld (positionStart),a ; incremente x
+	call drawKeyEditor
 	ret
 downKeyPosition
 	ld a,(newKey) : bit bitDown,a :	ret nz
 	call getAddressLevel
-   ld a,(ix+3)    ; nb colonne
+	ld a,(ix+3)    ; nb colonne
    ld (nbLines),a :dec a : ld b,a
-	;DEFB #ED,#FF
-	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
-	and %1111
-	cp b : ret nc
-
+	ld a,(positionStart): and %1111 : cp b : ret nc
 	call replaceCell
-   
-	ld a,(positionStart) : add 1 : ld (ix+7),a : ld (positionStart),a ; incremente x
-	call drawKeyPosition
+	ld a,(positionStart) : add 1 : ld (positionStart),a ; incremente x
+	call drawKeyEditor
 	ret
 leftKeyPosition
 	ld a,(newKey) : bit bitLeft,a :	ret nz
 	call getAddressLevel
-	;DEFB #ED,#FF
-	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
-	and %11110000 : srl a : srl a : srl a : srl a
-	cp 0 : ret z
-
-
+	ld a,(positionStart) : and %11110000 : srl a : srl a : srl a : srl a : cp 0 : ret z
 	call replaceCell
-	ld a,(positionStart) : sub 16 : ld (ix+7),a : ld (positionStart),a ; incremente x
-	call drawKeyPosition
+	ld a,(positionStart) : sub 16 : ld (positionStart),a ; incremente x
+	call drawKeyEditor
 	ret
 showKeyPosition
-	ld a,(currentModeKey) : cp 0 : ret z
 	call getAddressLevel
-	ld a,(ix+7) : call checkPositionKey : ld (positionStart),a
-	call drawKeyPosition
+	call drawKeyEditor
 	ret
 checkPositionKey
 	cp &FF : ret nz : xor a
@@ -997,6 +993,49 @@ drawModeKey
 	ret
 
 	ret
+drawKeyEditor: 
+   
+	call drawListPadlock : call drawListWall : call drawListKey
+	
+	
+	ld a,1
+   ld (isOffsetY),a
+
+   ld a,(positionStart)
+   and %00001111
+   ld (currentLine),a
+   ld a,(positionStart)
+   and %11110000
+   srl a : srl a 
+   ld (colonne),a
+
+   call getAdrScreen
+   ld hl,mkey
+   call drawMask
+
+
+   call getAdrScreen
+   ld hl,key
+   call drawSpriteOr
+   ret
+
+drawListKey 
+	call getAddressLevel : ld a,(ix+posKey) : cp 0 : ret z
+	ld b,6 : ld de,poskey : add ix,de
+	.draw
+		push bc
+		
+		ld a,(ix) : cp &ff : jr z,.endDraw : and %11110000 : srl a : srl a : ld (colonne),a 
+		ld a,(ix) : and %1111 : ld (currentLine),a 
+		ld a,1 : ld (isOffsetY),a
+		call drawKey
+		.endDraw
+			NOP
+			;ld a,9 : ld (currentSprite),a : call drawcells
+			inc ix : pop bc: djnz .draw
+	ret
+	ret
+
 ; *****************************
 ; *      CURSOR START		 	*
 ; *****************************
@@ -1019,6 +1058,7 @@ upCursorStart
 	cp 0 : ret z
 	call replaceCell
    
+
 	ld a,(positionStart) : dec a : ld (ix),a : ld (positionStart),a ; incremente x
 	call drawIndicator
 	ret
@@ -1065,9 +1105,13 @@ leftCursorStart
 	ld a,(positionStart) : sub 16 : ld (ix),a : ld (positionStart),a ; incremente x
 	call drawIndicator
 	ret
+
 replaceCell
 	
-	ld a,(positionStart) : ld (oldPositionStart),a : call getColor : ld (oldColor),a
+	ld a,(positionStart) : call replaceCell2 
+	ret
+replaceCell2
+	ld (oldPositionStart),a : call getColor : ld (oldColor),a
 	ld a,(oldPositionStart) : and %11110000 : srl a : srl a : ld (colonne),a 
 	ld a,(oldPositionStart) : and %1111 : ld (currentLine),a 
 	ld a,(oldColor) 

@@ -450,7 +450,6 @@ unblock:
       pop bc
       dec b
       jp nz,loopUnBlock
-
    ret
 
    drawUnBlock:
