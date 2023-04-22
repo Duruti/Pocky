@@ -10,7 +10,7 @@
 include "macro.asm"
 DSK equ 1
 CPR equ 2
-export = dsk
+export = cpr
 
 if export == CPR 
    print "Build CPR"
@@ -115,9 +115,9 @@ startVariable:
    Colors : db &c0,&C,&CC,&30,&F0,&3C,&FC,&3,&C3,&F,&33,&F3,&3F,&FF
    isMusicPlaying db 0
    align 256
-   grid : ds 255,0   ; grille du jeu
-   gridCopy : ds 255,0 ; grille tampon
-
+   grid : ds 256,0   ; grille du jeu
+   gridCopy : ds 256,0 ; grille tampon
+   gridInit : ds 256,0 ; grille initiale
 
    align 256
    ; table de lignes avec l'adresse ecran

@@ -105,7 +105,11 @@ loadKey:
       ld a,(hl) : cp &FF : jr z,.endbcl  ; si pas de clé on passe le tour 
 
       ld a,(nbKey) : inc a : ld (nbKey),a ; compte les clefs
-
+      .endbcl 
+      inc hl
+      djnz .bcl
+   ret
+   
       ; range dans le tableau la coordonnées de la clef sur 1 octet   
       ; ld a,&22
       ; ld (keys),a
@@ -133,8 +137,7 @@ loadKey:
       push bc : push hl
       call drawKey 
       pop hl : pop bc :
-      .endbcl inc hl
-      djnz .bcl
+     
    ret
 getAddressLevel
    ; retourne l'adresse du level courant dans ix

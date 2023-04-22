@@ -1,4 +1,4 @@
-; dessine les clefs
+; dessine les clefs en transparance
 
 
 drawKey: 

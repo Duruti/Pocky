@@ -228,7 +228,7 @@ drawDebugKey:
    ; ld a,0
    ; ld (nbKey),a
    call updateListKey
-   
+   call drawListKeyInGame
    ret
 
 
@@ -433,6 +433,7 @@ controlColor:
    ret
 
 unblock:
+
    ;DEFB #ED,#FF
      
    ld a,(numberKeyFound) : sla a ; 
@@ -466,8 +467,41 @@ unblock:
       call setColor
 
       ret
+drawListKeyInGame
+	ld b,6 : ld hl,lstKeys
+	.draw
+		push bc
+		ld a,(hl) : cp &ff : jr z,.endDraw 
+      ld a,(hl) : call getPadlockInGrid
+      cp &ff : jr z,.endDraw
+      ;ld a,(hl) : and %11110000 : srl a : srl a : ld (colonne),a 
+	   ;ld a,(hl) : and %1111 : ld (currentLine),a 
 
-
+		ld a,1 : ld (isOffsetY),a
+      push hl:  ld a,(hl) : and %11110000 : srl a : srl a : ld (colonne),a 
+	   ld a,(hl) : and %1111 : ld (currentLine),a 
+		call drawKey : pop hl 
+		.endDraw
+			NOP
+			;ld a,9 : ld (currentSprite),a : call drawcells
+			inc hl : pop bc: djnz .draw
+	ret
+getPadlockInGrid 
+   ; retourne dans a &FF si position key=padlock
+	push hl
+   ld a,(nbRows) : ld d,0 : ld e,a 
+   ld a,(hl) : and %11110000 : srl a : srl a : srl a : srl a : ld (colonne),a 
+	ld a,(hl) : and %1111 : ld (currentLine),a 
+   call DE_Mul_A : ld a,(colonne) : add l : ld l,a 
+   ld de,grid : add hl,de : ld a,(hl)
+   ; test si on est dans l'interval des cadenas 
+   ; a>= 17  c=0 et  a< 23 c =1 
+   cp 17 : jr c,.endTest
+   cp 23 : jr nc,.endTest
+   ld a,&ff : pop hl : ret
+   .endTest
+   pop hl : ret
+   ret
 
 
 

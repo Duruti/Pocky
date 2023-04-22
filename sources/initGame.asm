@@ -184,9 +184,11 @@ drawLevel
 
   call initGrid
 
+  ; copie la grille
+  ld hl,grid : ld de,gridInit : ld bc,256 : ldir
 
   call CalcOffsetY
-
+breakpoint
 
   ; calcule l'offset X 
   ; offset = (16-nbRows)/2 * 4
@@ -268,6 +270,8 @@ drawLevel
     jp nz,loopLine 
     
     call loadKey 
+    call drawListKeyInGame
+    ret
   ret
 
 drawLevelInfoHub:

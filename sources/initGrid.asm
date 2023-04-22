@@ -1,5 +1,13 @@
 initCell:
    ld c,A ; save a
+   ; recupere la tuile
+   ;breakpoint
+   ld a,(nbRows) : ld d,0 : ld e,a 
+   ld a,c : and %11110000 : srl a : srl a : srl a : srl a : ld b,a 
+	ld a,c : and %1111 
+   push bc : call DE_Mul_A : pop bc : ld a,b : add l : ld l,a 
+   ld de,gridInit : add hl,de : ld a,(hl)
+   ret
 
    ; recupere y
    and %00001111
