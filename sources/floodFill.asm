@@ -56,6 +56,7 @@ floodFill:
 
    loopFloodFill:
       ; dépile 
+     
       ld hl,pileCouleur
       ld a,(indexPile)
       dec a ; depile
@@ -88,6 +89,8 @@ floodFill:
 
       endLoopFill
       ;DEFB #ED,#FF
+     ; ld a,(couleurRemplissage) : cp 3 : call z,debugKey
+
          ld a,(nbKey) ; faut il verifier la présence de Keys
          cp 0
          ret z ; call nz,isKey
@@ -97,6 +100,7 @@ floodFill:
       ld hl,grid
       ld de,gridCopy
       ldir
+
       ; init variables
       xor a :  ld (isFoundKey),a
       ld a,1 : ld (controlKey),a
@@ -161,10 +165,13 @@ isKey:
    push bc : push hl
 
    ld hl,lstKeys : ld b,6
+   ;breakpoint
+   nop
    .bcl
       ld a,(hl) : inc hl 
       ld d,A
       ld a,(tempPosition)
+      cp &41 : call z,debugKey
       cp d
       ;DEFB #ED,#FF
       call z,foundKey
@@ -175,9 +182,11 @@ isKey:
 
    pop hl : pop bc
    ret
-
+debugKey 
+   nop : breakpoint : ret
 foundKey:
-   ;   breakpoint
+   ;breakpoint
+   ld a,(isFoundKey) : cp 1 : ret z
    ld a,1
    ld (isFoundKey),a
    ld a,6 : sub b : ld (numberKeyFound),a ; sauvergarde l'index de la clef
@@ -218,16 +227,17 @@ drawDebugKey:
 
    ; ld a,0
    ; ld (nbKey),a
-  
-   ld a,(numberKeyFound)
-   ld hl,lstKeys : add l : ld l,a : ld (hl),&FF
+   call updateListKey
    
    ret
 
 
    ; permet d'avoir la couleur dans la cellule dont les coordonnées sont dans A
    ; le quartet de poids fort pour X et le faible pour Y
-
+updateListKey
+   ld a,(numberKeyFound)
+   ld hl,lstKeys : add l : ld l,a : ld (hl),&FF
+   ret
 setColor:
    ld c,A ; save a
 
@@ -286,16 +296,11 @@ setColor2:
    add l
    ld l,a
    ld a,(couleurRemplissage)
-   ld (currentSprite),a
+  ; ld (currentSprite),a
    ld (hl),a
 
 
    ret
-
-setColor3:
-
-   ret
-
 
 
 getColor:
@@ -429,8 +434,7 @@ controlColor:
 
 unblock:
    ;DEFB #ED,#FF
-   breakpoint
-   
+     
    ld a,(numberKeyFound) : sla a ; 
    ld hl,lstIntervalBlocks : add l : ld l,a ; hl pointe sur la position start
    ld e,(hl) ; recupere le start

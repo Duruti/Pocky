@@ -63,7 +63,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,sceneEditor ;sceneGame ; sceneEditor
+   ld e,sceneGame ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
