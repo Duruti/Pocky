@@ -353,6 +353,7 @@ read_key
         OUT         (C),C           ; Et A contient la ligne
 	RET
 
+   align 128
 tableKey
 	; le premier octet c'est le nombre de touche a tester
 	; ensuite c'est une table de 3 octets

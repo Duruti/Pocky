@@ -83,7 +83,9 @@ drawVictory:
    ld a,TextVictory : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
-
+   ld a,TextNewCode : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+   call printText 
 loopVictory:
    call getKeys
    call updateKeys

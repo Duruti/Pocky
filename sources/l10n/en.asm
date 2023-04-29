@@ -16,3 +16,4 @@ enTextWorld db &00,&e0,&6,"World 0",0
 enCodeLevel db &0c,&62,&6,"LEVEL 0 ",0
 enCodeWorld db &0c,&5a,&6,"WORLD 0 ",0
 enChooseLangage db &04,&aa,&ff,"     I love rosbeeF      ",0
+enTextNewCode db &0c,&62,&7,"NEW CODE 0 ",0

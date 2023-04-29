@@ -15,23 +15,25 @@ export = cpr
 if export == CPR 
    print "Build CPR"
    include "cpr.asm"
+   startCode equ &100
 else
    print "Build DSK & SNA"
    BUILDSNA
    SNASET CPC_TYPE,0
    BANKset 0
+   startCode equ &170
 
- ;  SAVE "pocky.bin",start,end-start,DSK,"builds/pocky.dsk"
-   run &100
+   SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0005.dsk"
+   run startCode
 ENDIF
 
 if export==CPR 
    bank 1 
   ; db "zone code"
   ; print "zone code bank 1"
-   org #100
+   org startCode
 ENDIF  
-org &100 
+org startCode
 start:
    ; fichier de configuration du jeu
    ld sp,&100
@@ -44,9 +46,9 @@ start:
    ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
    out (c),c
 
-   ;ld hl,paletteMode0
-   ;call loadPaletteGA
-   ;jp $
+   ;  ld hl,paletteMode0
+   ;  call loadPaletteGA
+   ;  jp $
 
   
 
@@ -63,7 +65,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,sceneGame ;sceneGame ; sceneEditor
+   ld e,sceneCode ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
@@ -104,10 +106,11 @@ startVariable:
    palette: db 13,2,3,10,0,9,18,6,24,8,20,11,18,14,22,23
    ;paletteMode0: db &40,&55,&5c,&46,&54,&56,&52,&4c,&4a,&4d,&53,&57,&52,&5f,&59,&5b
    ;paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
-   paletteMode0: db 84,88,91,79,75,74,71,94,92,68,85,87,90,86,69,64
+   ;paletteMode0: db 84,88,91,79,75,74,71,94,92,68,85,87,90,86,69,64
+   paletteMode0: db 84,88,68,85,87,83,75,74,90,86,94,92,69,71,79,64
    paletteFlag db 84,76,75,68,84,84,84,84,84,84,84,84,84,84,84,84
    paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
-;   paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
+   ;   paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
    paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
 
    ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
@@ -230,13 +233,13 @@ startVariable:
    indexBuffer db 0
    codeHex dw 0
    maxLevelCode db 50
-   align 128
-   tableCodeHex 
-      dw &0001,&0002,&0003,&0004,&0005,&0006,&0007,&0008,&0009,&000A
-      dw &0011,&0012,&0013,&0014,&0015,&0016,&0017,&0018,&0019,&001A
-      dw &0021,&0022,&0023,&0024,&0025,&0026,&0027,&0028,&0029,&002A
-      dw &0031,&0032,&0033,&0034,&0035,&0036,&0037,&0038,&0039,&003A
-      dw &0041,&0042,&0043,&0044,&0045,&0046,&0047,&0048,&0049,&004A
+   
+   ;tableCodeHex 
+      ; dw &0001,&0002,&0003,&0004,&0005,&0006,&0007,&0008,&0009,&000A
+      ; dw &0011,&0012,&0013,&0014,&0015,&0016,&0017,&0018,&0019,&001A
+      ; dw &0021,&0022,&0023,&0024,&0025,&0026,&0027,&0028,&0029,&002A
+      ; dw &0031,&0032,&0033,&0034,&0035,&0036,&0037,&0038,&0039,&003A
+      ; dw &0041,&0042,&0043,&0044,&0045,&0046,&0047,&0048,&0049,&004A
    isCodeValid db 0
 
    align 16
@@ -258,6 +261,13 @@ startVariable:
       db 01,&88,&7f,&ed,&49
       db &c3,00,00
    endif
+   align 128
+   tableCodeHex
+   dw &53A9,&31AE,&7F99,&5F31,&EF31,&2F7,&258C,&1533,&3775,&A105
+   dw &8A67,&7B49,&F788,&D41A,&EDBB,&3A92,&F3BC,&1B43,&D776,&5794
+   dw &D2C6,&63E3,&76D0,&CB69,&CCAD,&6386,&3A31,&5F9,&634A,&FB0D
+   dw &382D,&3A95,&B368,&7,&5F61,&A444,&DF03,&6B1B,&13B2,&1A34
+   dw &B591,&AFA7,&DE85,&46A3,&559B,&1DC8,&6A3E,&FAF8,&22BB,&5568
 endVariable:
 if export==CPR 
    bank 2 
@@ -267,61 +277,60 @@ ENDIF
 startGFX:
    ; data des sprites
    dataSprite: 
- print "datasprite",{hex}dataSprite
-
-   ;  INCbin	"../img/cell1bd.win",&80 ; enleve le header 128 octets
-   ;  INCbin	"../img/cell2bd.win",&80
-   ;  INCbin	"../img/cell3bd.win",&80
-   ;  INCbin	"../img/gris.win",&80
-   ;  INCbin	"../img/cell5bd.win",&80
-   ;  INCbin	"../img/cell6bd.win",&80
-   
+   print "datasprite",{hex}dataSprite
    ; le format win d'ocp rajoute des octets a la fin pour definir l'image
    ; ici je ne les prends pas en compte donc je récupere que les 64 octets apres le header de 128 octets
+    INCbin	"../img/allTiles.bin"
 
-   INCbin	"../img/tiles1.win",&80,64
-   INCbin	"../img/tiles2.win",&80,64
-   INCbin	"../img/tiles3.win",&80,64
-   INCbin	"../img/tiles4.win",&80,64
-   INCbin	"../img/tiles5.win",&80,64
-   INCbin	"../img/tiles6.win",&80,64
+   ;    INCbin	"../img/tiless.win",&80,64*6
 
-   INCbin	"../img/cell6bd.win",&80,64
+   ;          ; INCbin	"../img/tiles1.win",&80,64
+   ;          ; INCbin	"../img/tiles2.win",&80,64
+   ;          ; INCbin	"../img/tiles3.win",&80,64
+   ;          ; INCbin	"../img/tiles4.win",&80,64
+   ;          ; INCbin	"../img/tiles5.win",&80,64
+   ;          ; INCbin	"../img/tiles6.win",&80,64
 
-   INCbin	"../spriteRoutine/cell7.bin",&80,64
-   cursor
-   INCbin	"../img/cursbd.win",&80,64
-   INCbin	"../img/voidBD.win",&80,64
-   INCbin	"../img/border1.win",&80,64
-   INCbin	"../img/border2.win",&80,64
-   INCbin	"../img/border3.win",&80,64
-   INCbin	"../img/border4.win",&80,64
-   INCbin	"../img/border5.win",&80,64
-   INCbin	"../img/border6.win",&80,64
-   INCbin	"../img/border7.win",&80,64
- ;   INCbin	"../img/padlbd.win",&80
-   INCbin	"../img/pd2.win",&80,64
-   INCbin	"../img/pd3.win",&80,64
-   INCbin	"../img/pd4.win",&80,64
-   INCbin	"../img/pd5.win",&80,64
-   INCbin	"../img/pd6.win",&80,64
-   INCbin	"../img/pd1.win",&80,64
- ;   INCbin	"../img/locker.bin",&80
+   ;  ;  INCbin	"../img/cursor.win",&80,64 ; inutile
+   ;    ds 128,0
+   ; ;   INCbin	"../spriteRoutine/cursor.bin",&80,64 ; inutile
+      cursor equ dataSprite+64*8
+   ;    INCbin	"../img/cursor.win",&80,64
+   ;    INCbin	"../img/void.win",&80,64
+   ;    ;INCbin	"../img/borders.win",&80,448
+   ;    INCbin	"../img/borderTest.bin" ; 7
+      
+   ;       ; INCbin	"../img/border1.win",&80,64
+   ;       ; INCbin	"../img/border2.win",&80,64
+   ;       ; INCbin	"../img/border3.win",&80,64
+   ;       ; INCbin	"../img/border4.win",&80,64
+   ;       ; INCbin	"../img/border5.win",&80,64
+   ;       ; INCbin	"../img/border6.win",&80,64
+   ;       ; INCbin	"../img/border7.win",&80,64
+   ;       ;INCbin	"../img/cursor.win",&80,64
+   ;    INCbin	"../img/padlocks.win",&80,64*6
+   ;          ; INCbin	"../img/pd2.win",&80,64
+   ;          ; INCbin	"../img/pd3.win",&80,64
+   ;          ; INCbin	"../img/pd4.win",&80,64
+   ;          ; INCbin	"../img/pd5.win",&80,64
+   ;          ; INCbin	"../img/pd6.win",&80,64
+   ;          ; INCbin	"../img/pd1.win",&80,64
+   ;    ;   INCbin	"../img/locker.bin",&80
 
-   mkey: 
-   INCbin "../img/keymbd.win",&80,64
-   endMkey:
-   key: 
-   INCbin	"../img/keybd.win",&80,64
-   endKey:
+      mkey equ cursor+15*64
+   ;    INCbin "../img/keym3.win",&80,64
+   ;    ;  endMkey:
+      key equ mkey+64
+   ;    INCbin	"../img/key.win",&80,64
+   ;   ; endKey:
 
 
-   mShow: 
-   INCbin "../img/showm.win",&80,64
-   endmShow:
-   show: 
-   INCbin	"../img/show.win",&80,64
-   endshow:
+      mShow equ key+64 
+   ;    INCbin "../img/showm.win",&80,64
+   ;    ;endmShow:
+      show equ mShow+64 
+   ;    INCbin	"../img/show.win",&80,64
+   ;    ;endshow:
 
 
    font: incbin "../fonts/font3.bin",&80
@@ -388,5 +397,5 @@ include "music.asm"
 endAdrMusic:
 end:
 include "../logs/log.asm"
-;org &c000
-;incbin "../img/14.scr",&80
+; org &c000
+; incbin "../img/17duru.scr",&80

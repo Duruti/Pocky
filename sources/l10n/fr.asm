@@ -15,3 +15,4 @@ frTextWorld db &00,&e0,&6,"Monde 0",0
 frCodeLevel db &0c,&62,&7,"NIVEAU 0 ",0
 frCodeWorld db &0c,&5a,&6,"MONDE 0 ",0
 frChooseLangage db &04,&aa,&ff,"  J'aime les grenouilles ",0
+frTextNewCode db &0c,&62,&7,"NEW CODE 0 ",0

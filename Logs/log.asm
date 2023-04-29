@@ -22,3 +22,4 @@ print "Lenght Level : ",lenghtLevel
 print "adress Level ",{int} initCurrentLevel," :",{hex} (lenghtLevel*(initCurrentLevel-1)+startLevel)
 print "initGrid ",{hex} gridInit, {hex} grid
 print "\n---------------------------\n"
+print "listCode",{hex} tableCodeHex
