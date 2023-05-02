@@ -188,7 +188,7 @@ drawLevel
   ld hl,grid : ld de,gridInit : ld bc,256 : ldir
 
   call CalcOffsetY
-breakpoint
+ ; breakpoint
 
   ; calcule l'offset X 
   ; offset = (16-nbRows)/2 * 4

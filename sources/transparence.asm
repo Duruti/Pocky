@@ -64,3 +64,35 @@ drawSpriteOr:
       djnz bclLineOr2
 
    ret
+
+   drawSpriteMask:
+   ; hl source
+   ; de destination
+   ld c,e
+   ld b,8
+   .bclLine:
+      push bc
+      ;breakpoint
+      ld c,(hl): ld a,(de) : cp &ff : jr z,.suite: and c :
+      .suite ld (de),a : inc hl : inc de
+      ld c,(hl): ld a,(de) : cp &ff : jr z,.suite2: and c :
+      .suite2 ld (de),a : inc hl : inc de
+      ld c,(hl): ld a,(de) : cp &ff : jr z,.suite3: and c :
+      .suite3 ld (de),a : inc hl : inc de
+      ld c,(hl): ld a,(de) : cp &ff : jr z,.suite4: and c :
+      .suite4 ld (de),a : inc hl : inc de
+      
+      
+      ;ld c,(hl): ld a,(de) : and c : ld (de),a : inc hl : inc de
+      ;ld c,(hl): ld a,(de) : and c : ld (de),a : inc hl : inc de
+      ;ld c,(hl): ld a,(de) : and c : ld (de),a : inc hl 
+      ld a,d : add 8 : ld d,a  
+      pop bc
+      ld e,c
+      djnz .bclLine
+
+   ; ex hl,de : ld bc,&c040 : add hl,bc : ex hl,de
+
+   ; ld c,e
+   ; ld b,8
+   ret

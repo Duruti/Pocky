@@ -68,7 +68,8 @@ getLenghtGrid:
 
 drawVictory:
    
-   xor A
+   
+   xor a
    ld (exit),a
    ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
 
@@ -77,12 +78,22 @@ drawVictory:
 
    ;call clearHud
    call drawBoxDialog
-
+   call calcNewCode
+   
    ;   ld hl,&0C5A;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
    ; 	ld (adrPrint),hl ; save la position
    ld a,TextVictory : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
+
+   ld a,TextNewLevel : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+   call printText 
+
+   ld a,TextNewWorld : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+   call printText 
+   
    ld a,TextNewCode : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
@@ -143,8 +154,90 @@ drawBoxDialog
    ld a,1 : ld (isDialog),a
    ret
 eraseBoxDialog
+
    ld l,(startLineBoxDialog-24): ld h,0 : add hl,hl
    ld bc,lignes : add hl,bc : ld e,(hl) : inc hl : ld d,(hl) : ex hl,de
    ld bc,&4031 : ld a,%0000000 ;&30
    call FillRect ; utils.asm
+   ret
+
+calcNewCode
+   ; test si on est au dernier level
+   ; A finir
+   ld a,(currentLevel) : inc a : ld b,a ; : ld a,(maxLevel) : cp b : call z,finalGame
+
+   ; position le pointeur sur le texte dans ix
+   ld a,TextNewCode : call getAdressText 
+   inc hl: inc hl 
+   ld e,(hl) : ld d,0 : add hl,de : push hl : pop ix 
+   ; Sinon on récupere le code du prochaine level
+   ld a,(currentLevel)
+   ld hl,tableCodeHex : sla a : add l : ld l,a 
+   ld e,(hl) : inc hl : ld d,(hl)
+
+   ld a,d : and %11110000 : srl a : srl a : srl a :srl a
+   call adjustNumber : ld (ix),a
+   ld a,d : and %1111
+   call adjustNumber : ld (ix+1),a
+   ld a,e : and %11110000 : srl a : srl a : srl a :srl a
+   call adjustNumber : ld (ix+2),a
+   ld a,e : and %1111
+   call adjustNumber : ld (ix+3),a
+
+
+   ; pour le world
+
+   ; pour le level
+
+   call calcLevelAndWorld
+   ret
+adjustNumber
+   cp 10 : jr c,.addNumber ; si a<10 alors c'est des chiffres
+   add 7 ; sinon c'est des lettres, on décalle pour avoir &11+&30 sur les premiere lettre de l'alphabet 
+   .addNumber
+      add &30
+   ret
+calcLevelAndWorld:
+
+  call getLevelWorld
+
+  ld a,TextNewLevel : call getAdressText :
+  ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de
+  ld c,(hl) : inc c : inc hl : ld b,0
+  push hl: add hl,bc : push hl
+
+  ld a,(currentLevelWorld)
+  ld d,a
+  ld e,10
+  call div
+  ; update unité
+  add &30
+  ;ld ix,textLevel
+  pop hl
+  ld (hl),a
+  ld a,d
+  add &30
+  dec hl
+  ld (hl),a
+
+  ;ld hl,&01F0;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
+ 	;ld (adrPrint),hl ; save la position
+  pop hl :  call printText
+
+  ld a,TextNewWorld : call getAdressText 
+  ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl : push hl
+  dec hl : ld c,(hl) : inc hl : ld b,0 : add hl,bc : ld a,(currentWorld): inc a : add &30 : ld (hl),a
+  pop hl : call printText
+
+  ret
+
+getLevelWorld
+   ld a,(currentLevel) : inc a : ld d,a : ld e,10 : call div
+   ;breakpoint
+   cp 0 : jr z,.level10 : ld (currentLevelWorld),a
+   ld a,d : ld (currentWorld),a 
+   ret
+   .level10
+      ld a,10 :ld (currentLevelWorld),A
+      dec d : ld a,d : ld (currentWorld),a
    ret

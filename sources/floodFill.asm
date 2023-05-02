@@ -182,7 +182,8 @@ isKey:
 
    pop hl : pop bc
    ret
-debugKey 
+debugKey
+   ret
    nop : breakpoint : ret
 foundKey:
    ;breakpoint

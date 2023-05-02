@@ -10,7 +10,7 @@
 include "macro.asm"
 DSK equ 1
 CPR equ 2
-export = cpr
+export = dsk
 
 if export == CPR 
    print "Build CPR"
@@ -46,9 +46,7 @@ start:
    ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
    out (c),c
 
-   ;  ld hl,paletteMode0
-   ;  call loadPaletteGA
-   ;  jp $
+   ;jp testDebug
 
   
 
@@ -65,7 +63,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,sceneCode ;sceneGame ; sceneEditor
+   ld e,sceneGame ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
@@ -108,7 +106,7 @@ startVariable:
    ;paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
    ;paletteMode0: db 84,88,91,79,75,74,71,94,92,68,85,87,90,86,69,64
    paletteMode0: db 84,88,68,85,87,83,75,74,90,86,94,92,69,71,79,64
-   paletteFlag db 84,76,75,68,84,84,84,84,84,84,84,84,84,84,84,84
+   paletteFlag db 68,87,85,76,71,75,84,84,84,84,84,84,84,84,75,84 
    paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
    ;   paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
    paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
@@ -343,8 +341,12 @@ startGFX:
    codeGfx incbin "../img/code.bin",&80
    cursorCodeMask incbin "../img/cursmask.bin",&80
    cursorCode incbin "../img/codecurs.bin",&80
-   flagFrench incbin "../img/french.win",&80
-   flagEnglish incbin "../img/english.win",&80
+;   flagFrench incbin "../img/french.win",&80
+;   flagEnglish incbin "../img/english.win",&80
+   flagFrench incbin "../img/flags.bin"
+   flagEnglish equ flagFrench+480
+   keyTest incbin "../img/keyTest.bin"
+
 endGFX:
 if export==CPR 
    bank 3 
@@ -397,5 +399,19 @@ include "music.asm"
 endAdrMusic:
 end:
 include "../logs/log.asm"
-; org &c000
-; incbin "../img/17duru.scr",&80
+testDebug:
+   ld a,30
+   ld (colonne),a
+   ld a,100
+   ld (currentLine),a
+  ;call calcAdr64
+   
+   call drawKey ; utils.asm
+
+
+     ld hl,paletteMode0
+     call loadPaletteGA
+     jp $
+
+ org &c000
+ incbin "../img/17duru.scr",&80

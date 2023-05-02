@@ -166,17 +166,17 @@ div :
         ret
 
 DE_Mul_A:
-;Inputs:
-;     DE and A are factors
-;Outputs:
-;     A is not changed
-;     B is 0
-;     C is not changed
-;     DE is not changed
-;     HL is the product
-;Time:
-;     342+6x
-;
+	;Inputs:
+	;     DE and A are factors
+	;Outputs:
+	;     A is not changed
+	;     B is 0
+	;     C is not changed
+	;     DE is not changed
+	;     HL is the product
+	;Time:
+	;     342+6x
+	;
      ld b,8          ;7           7
      ld hl,0         ;10         10
        add hl,hl     ;11*8       88
@@ -204,9 +204,9 @@ rnd:
 randData dw &5000
 
 random:
-; 8-bit Xor-Shift random number generator.
-; Created by Patrik Rak in 2008 and revised in 2011/2012.
-; https://gist.github.com/raxoft/c074743ea3f926db0037
+	; 8-bit Xor-Shift random number generator.
+	; Created by Patrik Rak in 2008 and revised in 2011/2012.
+	; https://gist.github.com/raxoft/c074743ea3f926db0037
         push    hl
         push    de
         ;DEFB #ED,#FF
@@ -298,6 +298,28 @@ drawWindows
 			ld a,c
 			cp 0
 			jr nz,vert
+	ret
+drawWindows80
+	; source = hl
+	; dest = de
+	; lines = c
+	; colums = b
+	.vert
+		push bc
+		push de
+		.hori 
+			ld a,(hl) : inc hl
+			ld (de),a : inc de
+			djnz .hori
+			pop de
+			ex hl,de
+			call calcul80
+			ex hl,de
+			pop bc
+			dec c
+			ld a,c
+			cp 0
+			jr nz,.vert
 	ret
 
 calcAdr64
