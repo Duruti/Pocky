@@ -20,7 +20,7 @@ initConf
       print "Build DSK & SNA"
       BUILDSNA
       SNASET CPC_TYPE,0
-      SETCRTC 0
+      
       BANKset 0
       startCode equ &170
 
@@ -65,7 +65,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,sceneLangage ;sceneGame ; sceneEditor
+   ld e,scenegame ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
@@ -76,7 +76,7 @@ start:
 
    include "utils.asm"
    include "initGrid.asm"
-   include "hub.asm"
+   include "hud.asm"
    include "changeColors.asm"
    include "floodFill.asm"
    include "drawCell2.asm"

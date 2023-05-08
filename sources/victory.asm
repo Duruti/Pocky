@@ -73,12 +73,14 @@ drawVictory:
    ld (exit),a
    ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
 
+
    ld hl,MusicWinner
    call Main_Player_Start + 0
 
    ;call clearHud
    call drawBoxDialog
    call calcNewCode
+   call updateMaxLevel
    
    ;   ld hl,&0C5A;64 ;h=x (x=1 pour 8 pixels (soit 2 octets en mode 1) &  l=Y (ligne en pixel)
    ; 	ld (adrPrint),hl ; save la position
@@ -101,12 +103,12 @@ drawVictory:
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
 loopVictory:
- ;  LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
+   ;  LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
 
    call getKeys
-;   LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
-
-   call updateKeys
+   ;   LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
+   ld a,(oldKey) : bit bitEspace,a : call nz,espaceAction
+   ;call updateKeys
    ;LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
 
  	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
@@ -125,8 +127,8 @@ loopGameover:
    ;cp 'f'
   ; call vbl
    call getKeys
-   call updateKeys
-
+  ; call updateKeys
+   ld a,(oldKey) : bit bitEspace,a : call nz,espaceAction
  	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
  	ld (oldKey),a
 
@@ -159,6 +161,11 @@ drawBoxDialog
       ld a,(countLineUp) : dec a : ld (countLineUp),a : call drawLine  
      jp .loop
    .endLoop
+      ; ld a,(countLineUp) : dec a : ld (countLineUp),a : call drawLine  
+      ; ld a,(countLineDown) : inc a : ld (countLineDown),a : call drawLine
+      ; ld a,(countLineDown) : inc a : ld (countLineDown),a : call drawLine
+      ; ld a,(countLineDown) : inc a : ld (countLineDown),a : call drawLine
+      ; ld a,(countLineDown) : inc a : ld (countLineDown),a : call drawLine
    ; call vbl
    ; halt : halt : halt : halt :halt :
    ; ld a,(countLineUp)
@@ -257,3 +264,9 @@ getLevelWorld
       ld a,10 :ld (currentLevelWorld),A
       dec d : ld a,d : ld (currentWorld),a
    ret
+updateMaxLevel
+   breakpoint
+   ld a,(maxCurrentLevel) : ld b,a
+   ld a,(currentLevel): inc a : cp b : ret c 
+   ld (maxCurrentLevel),a
+   ret 

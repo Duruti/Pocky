@@ -46,6 +46,7 @@ KonamiUpdate:
    ld a,textKonami : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText
+   ld a,50 : ld (maxCurrentLevel),a
    ret
 
 checkKonami

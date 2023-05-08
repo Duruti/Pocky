@@ -18,7 +18,7 @@ TextNewCode equ 13
 TextNewLevel equ 14
 TextNewWorld equ 15
 
-currentLangage db en ; 0:Fr 1 :En
+currentLangage db fr ; 0:Fr 1 :En
 
 getAdressText:
    ; a contient l'index retourne dans hl l'adresse du texte

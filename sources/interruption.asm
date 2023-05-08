@@ -1,5 +1,5 @@
 lineInt equ 1 
-colorBorderHud equ 93 ; 93
+colorBorderHud equ 68; 93
 loadInterruption:
       di
       KILLSYS            LD             HL,#C9FB:LD (#38),HL
@@ -54,8 +54,8 @@ DialogText
    ld a,(isDialog) : cp 0 : ret z
   ;.DS 10
 
-  ; LD BC,#7F10:OUT (C),C:LD C,colorBorderHud:OUT (C),C
-   ds 4
+  ;ds 20
+  ; LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
    ld bc,&7f8D ; %10001100 bit 0,1 pour le mode
    out (c),c
 
@@ -69,6 +69,7 @@ DialogText
 colorBack:
   
    
+   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
    
    if Debug
    	LD BC,#7F10:OUT (C),C:LD C,70:OUT (C),C
@@ -88,7 +89,6 @@ colorBack:
    palInter:   
    ld hl,paletteMode0 : call loadPaletteGA
    ;LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
-   LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
    ret
 playMusic
    if Debug

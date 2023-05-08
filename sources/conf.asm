@@ -15,6 +15,6 @@ Debug = 0
 cheat = 1
 build = 1
 
-initCurrentLevel equ 13
+initCurrentLevel equ 1
 include "export.asm"
 ;DEFB #ED,#FF

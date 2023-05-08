@@ -69,8 +69,8 @@ changeScene
    
    ret
 initRasterGame
-   ld hl,changeColor+6 : ld (hl),93  ; border
-   ld hl,changeColor+15 : ld (hl),93 ; ink 0
+   ld hl,changeColor+6 : ld (hl),colorBorderHud  ; border
+   ld hl,changeColor+15 : ld (hl),colorBorderHud ; ink 0
    ret
 initRasterMenu
    ld hl,changeColor+6 : ld (hl),88

@@ -6,6 +6,7 @@ drawHub:
 
 
    ld a,13 ; positionne le hub sur la 14 eme lignes
+   ld a,205
    ld (currentLine),a
    
    ; fait le calcul pour centrer le hub
@@ -33,7 +34,7 @@ drawHub:
       
       ;ld a,(hl)
       ;ld (currentColor),a
-      call drawcells
+      call drawcells2
       ld a,(colonne) ; decalle la colonne d'une celulle
       add 4
       ld (colonne),a
@@ -51,6 +52,7 @@ drawHub:
 
 
 drawCursor:
+ 
    push af
    ld a,0
    ld (isOffsetY),a
@@ -83,11 +85,12 @@ drawCursor:
    add b
    
    ld (colonne),a
-   ld a,12
+   ;ld a,12
+   ld a,12*16
    ld (currentLine),a
    ld a,8
    ld (currentSprite),a
-   call drawcells
+   call drawcells2
    ;ld d,0
    ;ld e,A
    ;add hl,de
@@ -99,8 +102,9 @@ drawCursor:
    ret
 
 resetCursor2:
+
    ld hl,&c614
-   ld bc,&180f
+   ld bc,&180b
    ld a,%11000000 ;&30
    call FillRect
 ret
@@ -111,6 +115,7 @@ resetCursor:
 
 
    ld a,12 ; positionne le hub sur la 14 eme lignes
+   ld a,12*16-4
    ld (currentLine),a
 
    ; fait le calcul pour centrer le hub
@@ -130,7 +135,7 @@ resetCursor:
       
       ;ld a,(hl)
       ;ld (currentColor),a
-      call drawcells
+      call drawcells2
       ld a,(colonne) ; decalle la colonne d'une celulle
       add 4
       ld (colonne),a

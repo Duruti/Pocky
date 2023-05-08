@@ -88,6 +88,7 @@ copyData
    ret
 updateSceneLangage
    ld a,0 : ld (isDrawFunny),a
+  LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; place l'encre 4 en noir pour pas voir le trait
    
    call getKeys   ; controls keys and Joystick ; keyManager.asm
  ld hl,paletteFlag : call loadPaletteGA
@@ -135,7 +136,7 @@ valideActionLangage
    ld a,(newKey) : bit bitEspace,a : ret nz
    ; palette noir
    ld hl,paletteBlack : call loadPaletteGA
-   ;LD BC,#7F00:OUT (C),C:LD C,84:OUT (C),C ; place l'encre 4 en noir pour pas voir le trait
+  ; LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C ; place l'encre 4 en noir pour pas voir le trait
    ld hl,#c000 : ld de,#c001 : ld (hl),%00000000 : Ld bc,#4000 : ldir
    ei
 
