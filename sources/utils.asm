@@ -54,10 +54,12 @@ FillRect:
 
 	jp fillRowRight
 	
-endFill
+	endFill
 	pop af
 	ret
 calcul64
+	
+	or a
 	ld a,h
 	add 8
 	ld h,a

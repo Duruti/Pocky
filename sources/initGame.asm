@@ -9,11 +9,11 @@ init:
  	  ld a,0 : ld (modeEditor),a
   ENDIF 
   ; nettoyage du hub en affichant un rectangle remplis
-  call clearHud
   ld hl,&C000
-  ld bc,&40E0-1
+  ld bc,&40E0-1 ;-1
   ld a,%11000000 ;&30
   call FillRect
+  call clearHud
 
 
 

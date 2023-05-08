@@ -23,7 +23,7 @@ printText:
 	; affiche en mode RPG
 	;	jr speed
    ;call vbl
-	ld a,(timerTexte)
+	;	ld a,(timerTexte)
 	
 	; inc a
 	; ld (timerTexte),a
@@ -45,7 +45,7 @@ printText:
 	;	suitePrint:
 	call convertChar 
 	call calcAdrPrint
-
+	;breakpoint
 	ld b,heightFont
    call printChar
 

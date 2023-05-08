@@ -11,28 +11,29 @@ include "macro.asm"
 DSK equ 1
 CPR equ 2
 export = dsk
+initConf
+   if export == CPR 
+      print "Build CPR"
+      include "cpr.asm"
+      startCode equ &100
+   else
+      print "Build DSK & SNA"
+      BUILDSNA
+      SNASET CPC_TYPE,0
+      SETCRTC 0
+      BANKset 0
+      startCode equ &170
 
-if export == CPR 
-   print "Build CPR"
-   include "cpr.asm"
-   startCode equ &100
-else
-   print "Build DSK & SNA"
-   BUILDSNA
-   SNASET CPC_TYPE,0
-   BANKset 0
-   startCode equ &170
+      SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0005.dsk"
+      run startCode
+   ENDIF
 
-   SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0005.dsk"
-   run startCode
-ENDIF
-
-if export==CPR 
-   bank 1 
-  ; db "zone code"
-  ; print "zone code bank 1"
-   org startCode
-ENDIF  
+   if export==CPR 
+      bank 1 
+   ; db "zone code"
+   ; print "zone code bank 1"
+      org startCode
+   ENDIF  
 org startCode
 start:
    ; fichier de configuration du jeu
@@ -46,7 +47,6 @@ start:
    ld bc,&7f8c ; %10001100 bit 0,1 pour le mode
    out (c),c
 
-   ;jp testDebug
 
   
 
@@ -55,15 +55,17 @@ start:
       call initMusic
    ENDIF
 
+  
    ld a,initCurrentLevel ; conf.asm
    ld (currentLevel),a : ld a,(currentLevel) : ld (maxCurrentLevel),a
    
    call overcanVertical ; overscan.asm
    call loadInterruption ; interruption.asm 
+   ;jp testDebug
   
  ; DEFB #ED,#FF
    
-   ld e,sceneGame ;sceneGame ; sceneEditor
+   ld e,sceneLangage ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop
@@ -106,10 +108,11 @@ startVariable:
    ;paletteMode0: db 84,88,77,79,75,74,78,94,92,68,85,87,90,86,69,64
    ;paletteMode0: db 84,88,91,79,75,74,71,94,92,68,85,87,90,86,69,64
    paletteMode0: db 84,88,68,85,87,83,75,74,90,86,94,92,69,71,79,64
-   paletteFlag db 68,87,85,76,71,75,84,84,84,84,84,84,84,84,75,84 
+   paletteFlag db 84,87,85,76,71,75,84,84,84,84,84,84,84,84,84,84 
    paletteBlack: db 84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84
    ;   paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
-   paletteGA db #54,#59,#46,#49,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
+   paletteGA2 db 84,87,85,95,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59 
+   paletteGA db 93,75,79,71,95,#4B,#5C,#58,#43,#4E,#45,#44,#4C,#4F,#46,#5F,#59
 
    ;palette : db 13,0,3,6,17,26,9,24,25,15,12,16,18,14,22,23
    ;Palette: db 14, 15, 25, 9, 3, 5, 17, 26, 10, 13, 14, 20, 18, 10, 0, 15
@@ -248,7 +251,7 @@ startVariable:
       dw l1,l1+6,l1+12,l1+18,l1+24,l1+30
       dw l2,l2+6,l2+12,l2+18,l2+24,l2+30
       dw l3,l3+6,l3+12,l3+18,l3+24,l3+30
-
+   
 
 
    tamponCursor ds 100,0
@@ -354,7 +357,8 @@ if export==CPR
    org endGFX,$
 ENDIF   
 startLevel:
-   
+   bufferLangage ds 64*8*2,0
+   dataLineCopy db &c6,&ce,&d6,&de,&e6,&ee,&f6,&fe
    
    levels :
  ;   INCbin	"../Levels/world.bin",0 ; enleve le header 128 octets
@@ -400,6 +404,21 @@ endAdrMusic:
 end:
 include "../logs/log.asm"
 testDebug:
+   DI
+	LD	HL,#C9FB	;il sera remplacé par un EI RET
+	LD	(#38),HL
+	EI
+
+   .loop
+      LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
+      call vbl 
+      LD BC,#7F10:OUT (C),C:LD C,84:OUT (C),C
+      halt
+      jp .loop   
+   ret
+
+   ; ----------------------
+
    ld a,30
    ld (colonne),a
    ld a,100
@@ -413,5 +432,7 @@ testDebug:
      call loadPaletteGA
      jp $
 
- org &c000
- incbin "../img/17duru.scr",&80
+
+
+;  org &c000
+;  incbin "../img/17duru.scr",&80

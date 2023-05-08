@@ -1,0 +1,83 @@
+{
+  misc : {
+    devmode : false,
+    lcdmode : 0
+  },
+  devices : {
+
+  },
+  video : {
+    beamI : 0.07,
+    vigRnd : 0.1,
+    vigAmp : 1,
+    curvature : 0.6,
+    ghostIntensity : 0,
+    ghostOffset : 0,
+    blur : 0.25,
+    interlaced : 0.4,
+    scanlines : 0.15,
+    brightness : 0,
+    saturation : 0.9,
+    overlay : true,
+    overscan : 0.27,
+    offset : 0,
+    contrast : 1,
+    background : true,
+    maskB : 0.9,
+    overscanV : 0,
+    overscanH : 0,
+    __screen : 'Colour',
+    __preset : 'CRT - Curved',
+    ghostAngle : 0,
+    noise : 0,
+    beamSpeed : 0.2
+  },
+  class : 'rvm.machine.amstradcpc.cpc6128plus',
+  status : 0,
+  crtcType : 1,
+  media : {
+
+  },
+  audio : {
+    filter : 0.5,
+    mixer : {
+      dma : {
+        {
+          solo : false,
+          pan : 0.5,
+          volume : 0.050000000745058,
+          mute : false
+        }
+      },
+      psg : {
+
+      },
+      ay : {
+        {
+          a : {
+            solo : false,
+            pan : 0,
+            volume : 0.33000001311302,
+            mute : false
+          },
+          b : {
+            solo : false,
+            pan : 0.5,
+            volume : 0.33000001311302,
+            mute : false
+          },
+          c : {
+            solo : false,
+            pan : 1,
+            volume : 0.33000001311302,
+            mute : false
+          }
+        }
+      }
+    },
+    volume : 0.8
+  },
+  debuggerSnap : {
+    splitted : false
+  }
+}

@@ -189,7 +189,7 @@ incCursor:
    xor a
    ld (offsetX),a
 
-   call drawHub
+  ; call drawHub
    
    pop af ; restaure l'offset
    ld (offsetX),a
@@ -234,7 +234,7 @@ decCursor:
    xor a
    ld (offsetX),a
 
-   call drawHub
+ ;  call drawHub
    pop af
    ld (offsetX),a
 
@@ -312,6 +312,7 @@ ChangeColorCursor:
    ret
 
 clearHud:
+
    ld hl,&FEC0
    ld bc,&4021
    ld a,0

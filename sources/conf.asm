@@ -13,7 +13,7 @@
 IsMusic = 1
 Debug = 0
 cheat = 1
-build = 0
+build = 1
 
 initCurrentLevel equ 13
 include "export.asm"

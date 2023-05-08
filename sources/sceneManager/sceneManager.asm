@@ -18,7 +18,8 @@ changeScene
    ; on actualise le changement de scene
    ld a,e
    ld (currentScene),a
-   
+   cp sceneMenu : call z,initRasterMenu
+   ld a,(currentScene):cp sceneGame : call z,initRasterGame
    ; on change le update en recuperant l'adresse de la nouvelle scene 
    ld d,0
    sla e
@@ -67,6 +68,16 @@ changeScene
    loadCurrentScene call $
    
    ret
+initRasterGame
+   ld hl,changeColor+6 : ld (hl),93  ; border
+   ld hl,changeColor+15 : ld (hl),93 ; ink 0
+   ret
+initRasterMenu
+   ld hl,changeColor+6 : ld (hl),88
+   ld hl,changeColor+15 : ld (hl),84
+
+   ret 
+   
 if build==0 
    read "scenes/sceneEditor.asm"
 endif

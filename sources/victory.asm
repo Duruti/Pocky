@@ -1,5 +1,5 @@
 idWall equ 9
-startLineBoxDialog equ 95
+startLineBoxDialog equ 96
 countLineUp db 0
 countLineDown db 0
 isDialog db 0
@@ -85,21 +85,29 @@ drawVictory:
    ld a,TextVictory : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
+   ;LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
 
    ld a,TextNewLevel : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
+   ;LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
 
    ld a,TextNewWorld : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
+  ; LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
    
    ld a,TextNewCode : call getAdressText
    ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
    call printText 
 loopVictory:
+ ;  LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
+
    call getKeys
+;   LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
+
    call updateKeys
+   ;LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
 
  	ld a,(newKey) ; sauvegarde les etats des touches pour la prochaine boucle
  	ld (oldKey),a
@@ -136,7 +144,8 @@ drawLine
    ex hl,de
    ld b,&40
    bcl
-      ld (hl),&0 : inc hl : djnz bcl
+      ld (hl),0 : inc hl : djnz bcl
+
    ret
 
 drawBoxDialog 
@@ -145,12 +154,19 @@ drawBoxDialog
    ld a,(countLineUp) : call drawLine  
    .loop
       call vbl
-      ld a,(countLineUp) : dec a : ld (countLineUp),a : call drawLine  
       ld a,(countLineDown) : inc a : ld (countLineDown),a : call drawLine
       ld a,(countLineDown) : cp 119 : jp z,.endloop
+      ld a,(countLineUp) : dec a : ld (countLineUp),a : call drawLine  
      jp .loop
    .endLoop
-   call vbl
+   ; call vbl
+   ; halt : halt : halt : halt :halt :
+   ; ld a,(countLineUp)
+   ; ld b,0 : ld c,a : call calcAdr64 : ex hl,de
+   ; ld bc,&402D
+   ; ld a,00000000 ;&30
+   ; call FillRect ; utils.asm
+   ; LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
    ld a,1 : ld (isDialog),a
    ret
 eraseBoxDialog

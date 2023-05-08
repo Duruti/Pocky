@@ -122,7 +122,7 @@ getJoystick:
 	;ld e,a ; save dans e
 
 	; bit 7
-	call vbl
+	;call vbl
 	; Fire 1
 	ld d,9  
    call TestKeyboard ; a contient le test
