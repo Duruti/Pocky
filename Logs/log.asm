@@ -10,8 +10,8 @@ sizeVariable = endVariable-startVariable
 print "address Variable: ",{hex}startVariable,{hex}endVariable," size :", {hex}sizeVariable
 sizeGFX = endGFX-startGFX
 print "address GFX: ",{hex}startGFX,{hex}endGFX," size :", {hex}sizeGFX
-sizeLevel = endLevel-startLevel
-print "address Level: ",{hex}startLevel,{hex}endLevel," size :", {hex}sizeLevel
+sizeLevel = endLevel-Levels
+print "address Level: ",{hex}levels,{hex}endLevel," size :", {hex}sizeLevel
 print "address Lignes: ",{hex}LIGNES
 
 totalSize = sizeCode + sizeMusic + sizeVariable + sizeGFX + sizeLevel
@@ -19,7 +19,7 @@ totalSize = sizeCode + sizeMusic + sizeVariable + sizeGFX + sizeLevel
 print "\nsize projet : ",{hex}totalSize
 print "\nMemory Free : ",{hex}(&FFFF - &4000- &100 - totalSize )," / &FFFF"
 print "Lenght Level : ",lenghtLevel
-print "adress Level ",{int} initCurrentLevel," :",{hex} (lenghtLevel*(initCurrentLevel-1)+startLevel)
+print "adress Level ",{int} initCurrentLevel," :",{hex} (lenghtLevel*(initCurrentLevel-1)+levels)
 print "initGrid ",{hex} gridInit, {hex} grid
 print "\n---------------------------\n"
 print "listCode",{hex} tableCodeHex

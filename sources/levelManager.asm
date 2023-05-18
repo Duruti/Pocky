@@ -202,7 +202,7 @@ loadLevel:
    ld (nbBlocks),a
    cp 0
    call nz,loadBlocks
-
+  
    ld bc,posNbWall ; decalle ix de 19 
    add ix,bc
    ld a,(ix)
@@ -239,6 +239,7 @@ drawWalls:
    call getAdresseCell
 
    ld a,idWall
+   breakpoint
    ld (hl),a
    ret
 
@@ -326,7 +327,6 @@ getAdresseCell:
    srl a: srl a: srl a: srl a
 
    add B
-
    ld hl,grid
    add l
    ld l,a

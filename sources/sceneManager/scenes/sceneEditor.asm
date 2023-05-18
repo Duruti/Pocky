@@ -1231,7 +1231,7 @@ upMaxTry:
 
 	call getAddressLevel
 	ld a,(ix+2)
-   cp 28 ; maxlevel
+   cp 99 ; maxtry
    ret z 
    inc a
    ld (ix+2),a

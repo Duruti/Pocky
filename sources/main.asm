@@ -362,7 +362,7 @@ startLevel:
    
    levels :
  ;   INCbin	"../Levels/world.bin",0 ; enleve le header 128 octets
-   INCbin	"../Levels/newworld.bin",0 ; enleve le header 128 octets
+   INCbin	"../Levels/alllevel.bin",0 ; enleve le header 128 octets
    ;world2: INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
    ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
    ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets

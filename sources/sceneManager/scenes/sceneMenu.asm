@@ -118,7 +118,7 @@ testLangage
    ld e,sceneLangage : call changeScene : ret
    ret
 updateKeysMenu:
-	if build == 0
+	if export == cpr
       ld a,(oldKey) : bit bitEscape,a : call nz,Reboot
    endif
 	ld a,(oldKey) : bit bitEspace,a : call nz,espaceActionMenu
@@ -196,7 +196,7 @@ drawCursorMenu
    
    PlaySoundEffect 2,2,0
    RET
-if build == 0
+if export == cpr 
    reboot
       ld a,(newKey) : bit bitEscape,a : ret nz    
       ld hl,REBOOTcpr : ld de,&c000 : ld bc,13 : ldir

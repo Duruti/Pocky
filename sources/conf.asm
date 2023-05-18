@@ -13,8 +13,8 @@
 IsMusic = 1
 Debug = 0
 cheat = 1
-build = 1
+build = 0
 
-initCurrentLevel equ 1
+initCurrentLevel equ 33
 include "export.asm"
 ;DEFB #ED,#FF
