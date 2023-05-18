@@ -10,7 +10,7 @@
 include "macro.asm"
 DSK equ 1
 CPR equ 2
-export = dsk
+export = cpr
 initConf
    if export == CPR 
       print "Build CPR"

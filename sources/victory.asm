@@ -31,13 +31,17 @@ checkIsWin:
 
    xor A ; initialise a false
    ld (isWin),a
+   ld a,(positionStart)
+   call getAdresseCell
+   ld a,(hl) ; recupere le numero de la cellule 0,0
+   ld c,a
+   push bc
 
    ld hl,grid
    call getLenghtGrid ; recupere la longueur de la grille
+   pop bc
    ld b,A
-
-   ld a,(hl) ; recupere le numero de la cellule 0,0
-   ld c,a
+;breakpoint
    bclCheckGrid:
       ld a,(hl)
       cp idWall
