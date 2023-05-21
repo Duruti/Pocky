@@ -10,9 +10,8 @@
 include "macro.asm"
 DSK equ 1
 CPR equ 2
-export = cpr
-initConf
-   if export == CPR 
+export = dsk
+if export == CPR 
       print "Build CPR"
       include "cpr.asm"
       startCode equ &100
@@ -24,7 +23,7 @@ initConf
       BANKset 0
       startCode equ &170
 
-      SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0005.dsk"
+     ; SAVE "pocky.bin",start,end-start,DSK,"builds/DSKA0005.dsk"
       run startCode
    ENDIF
 
@@ -94,6 +93,7 @@ start:
    include "sceneManager/sceneManager.asm"
    include "l10n/l10n.asm"
    include "particle/particle.asm"
+   include "track.asm"
 endCode:
 
 startVariable:
@@ -255,6 +255,17 @@ startVariable:
 
 
    tamponCursor ds 100,0
+   ; stocke les differentes couleurs choisi pour compléter un niveau
+   align 64
+   maxTamponLevelTrack equ 50
+   tamponLeveltrack db 2,4,5,2,3,4,0,5,2,3,0,5
+      ds maxTamponLevelTrack,0
+   indexTamponLevelTrack db 0
+   result ds maxTamponLevelTrack,0
+   resultDecode ds maxTamponLevelTrack,&FF
+   lenght db 12
+   lenghtDecode db 4
+   lenghtCode db 0
    
    if build == 0
       REBOOTcpr 

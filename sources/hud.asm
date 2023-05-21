@@ -203,7 +203,7 @@ incCursor:
    PlaySoundEffect 2,2,0
 
    ret
-;   jp touche
+   ;   jp touche
 
 
 initCursor:
@@ -308,7 +308,7 @@ ChangeColorCursor:
    ; applique le floodfill avec la couleur sous le curseur 
   ; DEFB #ED,#FF
    PlaySoundEffect 1,2,0
-
+   
    ld a,(cursorPosition)
    call floodFill
    call drawIndicator

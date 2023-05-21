@@ -18,3 +18,6 @@ frChooseLangage db &00,&c0,&ff,"     J'aime les grenouilles     ",0
 frTextNewCode db &07,&6A,16,"Nouveau code : 0000",0
 frNewLevel db &11,&5c,&8,"Niveau: 0 ",0
 frNewWorld db &06,&5c,&7,"Monde: 0 ",0
+;frTextTrack db &00,&52,&ff,"TU ES LE PLUS RAPIDE",0
+frTextTrack db &07,&52,&ff,"Code a transmettre",0;          .
+frCodeTrack db &00,&62,&ff,"                                 ",0

@@ -8,6 +8,14 @@ init:
   if build == 0
  	  ld a,0 : ld (modeEditor),a
   ENDIF 
+
+  ; vide le tracking
+  ld a,0 : ld (indexTamponLevelTrack),a
+  ld hl,tamponLeveltrack : ld b,maxTamponLevelTrack
+  .razTampon
+  ;  ld (hl),&0 : inc hl : djnz .razTampon
+
+
   ; nettoyage du hub en affichant un rectangle remplis
   ld hl,&C000
   ld bc,&40E0-1 ;-1
@@ -91,7 +99,7 @@ init:
   ld (nbFlashCursor),a : ld (timerStart),a
   
 
-
+  
   ret
 
 

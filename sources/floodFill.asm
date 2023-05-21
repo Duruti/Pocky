@@ -40,6 +40,12 @@ floodFill:
    cp B ; si couleur(pixel) ≠ colcible alors sortir finsi
    ret z
 
+  
+   ; sauve le chemin du level
+   ld hl,tamponLeveltrack : ld a,(indexTamponLevelTrack) : add l : ld l,a
+   ld a,(cursorPosition) : ld (hl),a
+   ld a,(indexTamponLevelTrack) : inc a : ld (indexTamponLevelTrack),a
+
    call addCounter
    ;call transferCounter
    call drawCounter

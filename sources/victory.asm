@@ -41,7 +41,7 @@ checkIsWin:
    call getLenghtGrid ; recupere la longueur de la grille
    pop bc
    ld b,A
-;breakpoint
+ ;breakpoint
    bclCheckGrid:
       ld a,(hl)
       cp idWall
@@ -70,6 +70,43 @@ getLenghtGrid:
    
    ret
 
+drawBestTry
+
+   ; nettoyage
+   ld a,TextCodeTrack : call getAdressText
+   inc hl : inc hl : inc hl : ld b,32
+   .erase ; vide la chaine text sur toute la ligne
+      ld (hl),&20 : inc hl : djnz .erase
+
+   ld hl,tamponLeveltrack : call encode
+
+
+   call ConvertCodeToText
+
+   ld a,TextTrack : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+   call printText 
+
+   ld a,TextCodeTrack : call getAdressText
+   ld d,(hl) : inc hl : ld e,(hl) : inc hl : ld (adrPrint),de : inc hl
+   call printText 
+  ;  LD BC,#7F00:OUT (C),C:LD C,88:OUT (C),C
+
+   .loop
+      call getKeys
+      ld a,(oldKey) : bit bitEspace,a : call nz,espaceAction
+      ld a,(newKey) : ld (oldKey),a
+
+      ld a,(exit) : cp 1 : jr nz,.loop
+   
+   xor a : ld (exit),a 
+   ; vide la boite de dialogue
+    ld a,(countLineUp)
+    ld b,0 : ld c,a : call calcAdr64 : ex hl,de
+    ld bc,&402D
+    ld a,00000000 ;&30
+    call FillRect ; utils.asm 
+   ret
 drawVictory:
    
    
@@ -77,12 +114,19 @@ drawVictory:
    ld (exit),a
    ld a,startLineBoxDialog : ld (countLineDown),a : ld (countLineUp),a
 
+   ; test si le joueur a fait un parcours avec moins d'essais que le max
+   ld a,(maxTry) : ld b,a : ld a,(indexTamponLevelTrack)
+   ;cp b : call c,drawBestTry
 
    ld hl,MusicWinner
    call Main_Player_Start + 0
 
    ;call clearHud
    call drawBoxDialog
+    ; test si le joueur a fait un parcours avec moins d'essais que le max
+   ld a,(maxTry) : ld b,a : ld a,(indexTamponLevelTrack)
+   cp b : call c,drawBestTry
+
    call calcNewCode
    call updateMaxLevel
    
