@@ -292,7 +292,7 @@ startGFX:
    print "datasprite",{hex}dataSprite
    ; le format win d'ocp rajoute des octets a la fin pour definir l'image
    ; ici je ne les prends pas en compte donc je récupere que les 64 octets apres le header de 128 octets
-    INCbin	"../img/allTiles.bin"
+    INCbin	"../img/AllTiles.bin"
 
    ;    INCbin	"../img/tiless.win",&80,64*6
 
@@ -345,16 +345,16 @@ startGFX:
    ;    ;endshow:
 
 
-   font: incbin "../fonts/font3.bin",&80
-   logotitle incbin "../img/logot.bin",&80
-   logoPlay incbin "../img/play.bin",&80
-   logoEditor incbin "../img/editor.bin",&80
-   logoQuit incbin "../img/quit.bin",&80
-   worldimg incbin "../img/world.bin",&80
-   levelImg incbin "../img/number.bin",&80
-   codeGfx incbin "../img/code.bin",&80
-   cursorCodeMask incbin "../img/cursmask.bin",&80
-   cursorCode incbin "../img/codecurs.bin",&80
+   font: incbin "../fonts/FONT3.BIN",&80
+   logotitle incbin "../img/LOGOT.BIN",&80
+   logoPlay incbin "../img/PLAY.BIN",&80
+   logoEditor incbin "../img/EDITOR.BIN",&80
+   logoQuit incbin "../img/QUIT.BIN",&80
+   worldimg incbin "../img/WORLD.BIN",&80
+   levelImg incbin "../img/NUMBER.BIN",&80
+   codeGfx incbin "../img/CODE.BIN",&80
+   cursorCodeMask incbin "../img/CURSMASK.BIN",&80
+   cursorCode incbin "../img/CODECURS.BIN",&80
 ;   flagFrench incbin "../img/french.win",&80
 ;   flagEnglish incbin "../img/english.win",&80
    flagFrench incbin "../img/flags.bin"
@@ -373,7 +373,7 @@ startLevel:
    
    levels :
  ;   INCbin	"../Levels/world.bin",0 ; enleve le header 128 octets
-   INCbin	"../Levels/alllevel.bin",0 ; enleve le header 128 octets
+   INCbin	"../Levels/allLevel.bin",0 ; enleve le header 128 octets
    ;world2: INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
    ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
    ;INCbin	"../Levels/world2.bin",0 ; enleve le header 128 octets
@@ -413,7 +413,7 @@ adrMusic:
 include "music.asm" 
 endAdrMusic:
 end:
-include "../logs/log.asm"
+include "../Logs/log.asm"
 testDebug:
    DI
 	LD	HL,#C9FB	;il sera remplacé par un EI RET

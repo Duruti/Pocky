@@ -10,11 +10,11 @@
 ;                         __/ |
 ;                        |___/ 
 
-IsMusic = 1
+IsMusic = 0
 Debug = 0
 cheat = 1
 build = 0
 
-initCurrentLevel equ 1
+initCurrentLevel equ 25
 include "export.asm"
 ;DEFB #ED,#FF

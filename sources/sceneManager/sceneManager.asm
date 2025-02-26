@@ -79,11 +79,11 @@ initRasterMenu
    ret 
    
 if build==0 
-   read "scenes/sceneEditor.asm"
+   INCLUDE "./scenes/sceneEditor.asm"
 endif
-read "scenes/sceneMenu.asm"
-read "scenes/sceneGame.asm"
-read "scenes/sceneLevels.asm"
-read "scenes/sceneGreeting.asm"
-read "scenes/sceneCode.asm"
-read "scenes/sceneLangage.asm"
+INCLUDE "./scenes/sceneMenu.asm"
+INCLUDE "scenes/sceneGame.asm"
+INCLUDE "scenes/sceneLevels.asm"
+INCLUDE "scenes/sceneGreeting.asm"
+INCLUDE "scenes/sceneCode.asm"
+INCLUDE "scenes/sceneLangage.asm"
