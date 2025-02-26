@@ -10,8 +10,8 @@
 include "macro.asm"
 DSK equ 1
 CPR equ 2
-export = dsk
-if export == CPR 
+export = cpr
+if export == cpr  ; cpr : cpr.bat ou c4cpc.bat et dsk : pour start.bat
       print "Build CPR"
       include "cpr.asm"
       startCode equ &100
@@ -64,7 +64,7 @@ start:
   
  ; DEFB #ED,#FF
    
-   ld e,scenegame ;sceneGame ; sceneEditor
+   ld e,sceneLangage ;sceneGame ; sceneEditor
    call changeScene  ; sceneManager.asm
 
    gameloop

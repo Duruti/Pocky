@@ -76,16 +76,20 @@ colorBack:
    ENDIF
    ;ds 18
    ; LD BC,#7F00:OUT (C),C:LD C,76:OUT (C),C
+   color
+   ;breakpoint
+
      LD BC,#7F01:OUT (C),C:LD C,88:OUT (C),C
      LD BC,#7F02:OUT (C),C:LD C,68:OUT (C),C
      LD BC,#7F03:OUT (C),C:LD C,85:OUT (C),C
    ;ds 15
+   modeInterruption
    ld bc,&7f8c :out (c),c ; %10001100 bit 0,1 pour le mode
    ;ret
 
    
    ;LD BC,#7F10:OUT (C),C:LD C,70:OUT (C),C
-   
+   ;breakpoint
    palInter:   
    ld hl,paletteMode0 : call loadPaletteGA
    ;LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C

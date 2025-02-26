@@ -19,3 +19,7 @@ enChooseLangage db &00,&c0,&ff,"         I love rosbeeF       ",0 ; 4
 enTextNewCode db &09,&6A,12,"New code : 0000",0
 enNewLevel db &12,&5c,&7,"Level: 0 ",0
 enNewWorld db &07,&5c,&7,"World: 0 ",0
+enTextTrack db &07,&52,&ff,"Code a transmettre",0;          .
+enCodeTrack db &00,&62,&ff,"                                 ",0
+enGreetingText1 db &02,&10,&ff,"Code : Duruti",0
+enGreetingText2 db &08,&30,&ff,"Gfx : BDCIron",0

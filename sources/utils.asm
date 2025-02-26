@@ -276,6 +276,14 @@ cls:
 	Ld bc,#4000
 	Ldir
 	ret
+cls2:
+	Ld hl,#c000
+	Ld de,#c001
+	ld a,0 ; &3F
+	Ld (hl),a
+	Ld bc,#4000
+	Ldir
+	ret
 	nop
 	ret
 

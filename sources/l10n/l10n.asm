@@ -19,6 +19,8 @@ TextNewLevel equ 14
 TextNewWorld equ 15
 TextTrack equ 16
 TextCodeTrack equ 17
+TextGreeting1 equ 18
+TextGreeting2 equ 19
 
 currentLangage db fr ; 0:Fr 1 :En
 
@@ -41,9 +43,10 @@ getAdressText:
 fr_i10n: dw frTextGreetingInfo,frTextChooseLevel,frTextGameover,frTextVictory,frTextLevel
          dw frTextHub,frTextKonami,frTextEnterCode,frCodeLevelOK,frTextWorld,frCodeLevel
          dw frCodeWorld,frChooseLangage,frTextNewCode,frNewLevel,frNewWorld,frTextTrack
-         dw frCodeTrack
+         dw frCodeTrack,frGreetingText1,frGreetingText2
 en_i10n: dw enTextGreetingInfo,enTextChooseLevel,enTextGameover,enTextVictory,enTextLevel
          dw enTextHub,enTextKonami,enTextEnterCode,enCodeLevelOK,enTextWorld,enCodeLevel
-         dw enCodeWorld,enChooseLangage,enTextNewCode,enNewLevel,enNewWorld
+         dw enCodeWorld,enChooseLangage,enTextNewCode,enNewLevel,enNewWorld,frTextTrack
+         dw frCodeTrack,enGreetingText1,enGreetingText2
 include "fr.asm"
 include "en.asm"

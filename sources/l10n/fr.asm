@@ -21,3 +21,5 @@ frNewWorld db &06,&5c,&7,"Monde: 0 ",0
 ;frTextTrack db &00,&52,&ff,"TU ES LE PLUS RAPIDE",0
 frTextTrack db &07,&52,&ff,"Code a transmettre",0;          .
 frCodeTrack db &00,&62,&ff,"                                 ",0
+frGreetingText1 db &0B,&10,&ff,"Code : Duruti",0
+frGreetingText2 db &00,&30,&ff,"Gfx : BDCIron le gros raleur",0

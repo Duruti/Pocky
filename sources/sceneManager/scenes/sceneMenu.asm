@@ -1,7 +1,6 @@
 
 loadMenu
     LD BC,#7F10:OUT (C),C:LD C,88:OUT (C),C
-    
    call loadInterruption ; interruption.asm 
    ld a,1 : ld (isMusicPlaying),a
    ld hl,Music1
@@ -199,7 +198,7 @@ drawCursorMenu
 if export == cpr 
    reboot
       ld a,(newKey) : bit bitEscape,a : ret nz    
-      ld hl,REBOOTcpr : ld de,&c000 : ld bc,13 : ldir
+;;      ld hl,REBOOTcpr : ld de,&c000 : ld bc,13 : ldir
       jp &c000
 endif
 espaceActionMenu:
